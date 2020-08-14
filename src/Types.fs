@@ -2,10 +2,9 @@ namespace MagicCollectionHelper.Types
 
 type Arguments = { filePath: string }
 
-/// Includes every known set of MTG
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself
-type MagicSet = | Core2020
+type MagicSet = MagicSet of string
 
 type Language =
     | English
@@ -18,16 +17,20 @@ type Language =
 type CardEntry =
     { amount: uint
       name: string
-      number: string // TODO: typesafety
+      number: uint option
       foil: bool
       language: Language
-      set: MagicSet }
+      set: MagicSet option }
 
-type Analyzer<'T> =
-    { emptyData: (unit -> 'T)
-      analyze: ('T -> CardEntry -> 'T) }
+type Analyzer<'T, 'S> =
+    { emptyData: (unit -> 'S)
+      collect: ('S -> CardEntry -> 'S)
+      postprocess: ('S -> 'T) }
 
 module Analyzer =
-    let create emptyData analyze =
+    let create emptyData collect postprocess =
         { emptyData = emptyData
-          analyze = analyze }
+          collect = collect
+          postprocess = postprocess }
+
+    let createBasic emptyData collect = create emptyData collect id
