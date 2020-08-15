@@ -2,7 +2,7 @@ namespace MagicCollectionHelper
 
 open MagicCollectionHelper.Types
 
-module SetAnalyzer =
+module SetAnalyser =
     type Result = Map<MagicSet, (Set<uint> * uint)>
 
     type CollectType = Map<MagicSet, Set<uint>>
@@ -27,4 +27,4 @@ module SetAnalyzer =
         |> Map.map (fun _ set -> (set, Set.count set |> uint))
 
     let get =
-        Analyzer.create createEmpty collect postprocess
+        Analyser.create createEmpty collect postprocess

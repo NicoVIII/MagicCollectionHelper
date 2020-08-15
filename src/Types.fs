@@ -20,12 +20,12 @@ type CardEntry =
       language: Language option
       set: MagicSet option }
 
-type Analyzer<'T, 'S> =
+type Analyser<'T, 'S> =
     { emptyData: (unit -> 'S)
       collect: ('S -> CardEntry -> 'S)
       postprocess: ('S -> 'T) }
 
-module Analyzer =
+module Analyser =
     let create emptyData collect postprocess =
         { emptyData = emptyData
           collect = collect

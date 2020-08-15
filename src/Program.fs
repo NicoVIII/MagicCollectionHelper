@@ -23,11 +23,11 @@ module Program =
         // Check, if arguments are valid
         match handleArguments argv with
         | Ok arguments ->
-            let (basicResult, setResult), languageResult = Analyzer.analyze arguments.filePath
-            printfn "%A" basicResult
+            let (basicResult, setResult), languageResult = Analyser.analyse arguments.filePath
             setResult
             |> Map.iter (fun (MagicSet key) value -> printfn "%s - %i: %A" key (snd value) (fst value))
             languageResult
             |> Map.iter (fun (Language key) value -> printfn "%s: %i" key value)
+            printfn "%A" basicResult
             0
         | Error error -> handleError error

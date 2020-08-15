@@ -2,7 +2,7 @@ namespace MagicCollectionHelper
 
 open MagicCollectionHelper.Types
 
-module BasicAnalyzer =
+module BasicAnalyser =
     type Result =
         { amount: uint
           uniqueWithSet: uint
@@ -49,4 +49,4 @@ module BasicAnalyzer =
           foils = data.foils }
 
     let get =
-        Analyzer.create createEmpty collect postprocess
+        Analyser.create createEmpty collect postprocess

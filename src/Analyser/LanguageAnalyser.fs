@@ -2,7 +2,7 @@ namespace MagicCollectionHelper
 
 open MagicCollectionHelper.Types
 
-module LanguageAnalyzer =
+module LanguageAnalyser =
     type Result = Map<Language, uint>
 
     type CollectData = Map<Language, uint>
@@ -25,4 +25,4 @@ module LanguageAnalyzer =
     let private postprocess (data: CollectData): Result = id data
 
     let get =
-        Analyzer.create createEmpty collect postprocess
+        Analyser.create createEmpty collect postprocess
