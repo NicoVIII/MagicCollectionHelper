@@ -6,9 +6,7 @@ type Arguments = { filePath: string }
 // TODO: So a user could add it, if it is missing in the application itself
 type MagicSet = MagicSet of string
 
-type Language =
-    | English
-    | German
+type Language = Language of string
 
 // TODO: condition
 // TODO: comment?
@@ -19,7 +17,7 @@ type CardEntry =
       name: string
       number: uint option
       foil: bool
-      language: Language
+      language: Language option
       set: MagicSet option }
 
 type Analyzer<'T, 'S> =
@@ -32,5 +30,3 @@ module Analyzer =
         { emptyData = emptyData
           collect = collect
           postprocess = postprocess }
-
-    let createBasic emptyData collect = create emptyData collect id

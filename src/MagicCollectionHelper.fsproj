@@ -6,6 +6,7 @@
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="TryParser.fs" />
+    <Compile Include="Analyzer/*.fs" />
     <Compile Include="Analyzer.fs" />
     <Compile Include="ErrorHandling.fs" />
     <Compile Include="Program.fs" />
