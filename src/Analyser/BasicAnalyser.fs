@@ -6,6 +6,7 @@ module BasicAnalyser =
     type Result =
         { amount: uint
           uniqueWithSet: uint
+          withLanguage: uint
           withSet: uint
           foils: uint }
 
@@ -13,13 +14,15 @@ module BasicAnalyser =
         { amount: uint
           foils: uint
           uniqueWithSet: Set<MagicSet * uint>
-          withSet: uint }
+          withSet: uint
+          withLanguage: uint }
 
     let private createEmpty (): CollectData =
         { amount = 0u
           uniqueWithSet = Set.empty<MagicSet * uint>
           foils = 0u
-          withSet = 0u }
+          withSet = 0u
+          withLanguage = 0u }
 
     let private collect (data: CollectData) (entry: CardEntry) =
         let addFoils =
@@ -36,17 +39,24 @@ module BasicAnalyser =
                 (unique, data.withSet + 1u)
             | _ -> (data.uniqueWithSet, data.withSet)
 
+        let withLanguage =
+            match entry.language with
+            | Some language -> data.withLanguage + 1u
+            | None -> data.withLanguage
+
         { data with
               amount = data.amount + entry.amount
               uniqueWithSet = unique
               foils = data.foils + addFoils
-              withSet = withSet }
+              withSet = withSet
+              withLanguage = withLanguage }
 
     let postprocess data: Result =
         { amount = data.amount
           uniqueWithSet = data.uniqueWithSet |> Set.count |> uint
           withSet = data.withSet
-          foils = data.foils }
+          foils = data.foils
+          withLanguage = data.withLanguage }
 
     let get =
         Analyser.create createEmpty collect postprocess
