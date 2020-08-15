@@ -24,10 +24,50 @@ module Program =
         match handleArguments argv with
         | Ok arguments ->
             let (basicResult, setResult), languageResult = Analyser.analyse arguments.filePath
+
+            // Print Setresults
             setResult
-            |> Map.iter (fun (MagicSet key) value -> printfn "%s - %i: %A" key (snd value) (fst value))
+            |> Map.map (fun (MagicSet key) value ->
+                let setData =
+                    CardData.setData.TryFind key
+                    |> Option.map (fun (name, max, _) ->
+                        let percent =
+                            (value.collected, max)
+                            ||> (fun x y -> x |> double, y |> double)
+                            ||> (/)
+                            |> (*) 100.0
+
+                        {| max = max
+                           name = name
+                           percent = percent |})
+
+                {| cards = value.cards
+                   collected = value.collected
+                   setData = setData |})
+            |> Map.toList
+            |> List.sortBy (fun (_, value) ->
+                value.setData
+                |> Option.map (fun setData -> setData.percent * -1.0)
+                |> Option.defaultValue 0.0)
+            |> List.iter (fun ((MagicSet key), value) ->
+                let setMax, percent, setName =
+                    value.setData
+                    |> function
+                    | Some setData ->
+                        let max = setData.max |> string
+
+                        let percent = setData.percent |> sprintf "%.1f"
+
+                        max, percent, setData.name
+                    | _ -> "? ", "? ", ""
+
+                printfn "%-3s - %3i/%3s (%5s%%) - %s" key value.collected setMax percent setName)
+
+            // Print Languageresults
             languageResult
             |> Map.iter (fun (Language key) value -> printfn "%s: %i" key value)
+
+            // Print Basicresults
             printfn "%A" basicResult
             0
         | Error error -> handleError error
