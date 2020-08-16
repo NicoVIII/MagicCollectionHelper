@@ -28,21 +28,35 @@ module Program =
             // Print Setresults
             setResult
             |> Map.map (fun (MagicSet key) value ->
-                let setData =
+                // TODO: move this step to the postprocess of the analyser
+                let setDataExt =
                     CardData.setData.TryFind key
                     |> Option.map (fun (name, max, _) ->
+                        // We have to remove cards outside of the normal number range from the collected number
+                        let collected =
+                            value
+                            |> Set.filter (fun el -> el > 0u && el <= max)
+                            |> Set.count
+
                         let percent =
-                            (value.collected, max)
+                            (collected, max)
                             ||> (fun x y -> x |> double, y |> double)
                             ||> (/)
                             |> (*) 100.0
 
                         {| max = max
                            name = name
-                           percent = percent |})
+                           percent = percent |},
+                        collected)
 
-                {| cards = value.cards
-                   collected = value.collected
+                let setData, collected =
+                    setDataExt
+                    |> function
+                    | Some (setData, collected) -> Some setData, collected
+                    | None -> None, value |> Set.count
+
+                {| cards = value
+                   collected = collected
                    setData = setData |})
             |> Map.toList
             |> List.sortBy (fun (_, value) ->

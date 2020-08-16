@@ -22,7 +22,7 @@ module LanguageAnalyser =
             data |> Map.add language amount
         | None -> data
 
-    let private postprocess (data: CollectData): Result = id data
+    let private postprocess (data: CollectData): Result = data
 
     let get =
         Analyser.create createEmpty collect postprocess
