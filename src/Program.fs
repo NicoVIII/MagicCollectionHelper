@@ -26,6 +26,7 @@ module Program =
             let (basicResult, setResult), languageResult = Analyser.analyse arguments.filePath
 
             // Print Setresults
+            printfn "Set Analysis"
             setResult
             |> Map.map (fun (MagicSet key) value ->
                 // TODO: move this step to the postprocess of the analyser
@@ -44,19 +45,30 @@ module Program =
                             ||> (/)
                             |> (*) 100.0
 
+                        // Missing Cards only for nearly complete sets
+                        let missing =
+                            match percent with
+                            | percent when percent > 80.0 ->
+                                seq { 1u .. max }
+                                |> Seq.filter (fun x -> value |> Set.contains x |> not)
+                                |> Seq.toList
+                            | _ -> []
+
                         {| max = max
                            name = name
                            percent = percent |},
-                        collected)
+                        collected,
+                        missing)
 
-                let setData, collected =
+                let setData, collected, missing =
                     setDataExt
                     |> function
-                    | Some (setData, collected) -> Some setData, collected
-                    | None -> None, value |> Set.count
+                    | Some (setData, collected, missing) -> Some setData, collected, missing
+                    | None -> None, value |> Set.count, []
 
                 {| cards = value
                    collected = collected
+                   missing = missing
                    setData = setData |})
             |> Map.toList
             |> List.sortBy (fun (_, value) ->
@@ -75,13 +87,30 @@ module Program =
                         max, percent, setData.name
                     | _ -> "? ", "? ", ""
 
-                printfn "%-3s - %3i/%3s (%5s%%) - %s" key value.collected setMax percent setName)
+                printfn "%-3s - %3i/%3s (%5s%%) - %s" key value.collected setMax percent setName
+                match value.missing with
+                | [] -> ()
+                | missing ->
+                    printfn "Missing:"
+                    missing
+                    |> List.map string
+                    |> List.reduce (fun x y -> x + "," + y)
+                    |> printfn "%s"
+                    printfn "")
+            printfn ""
 
             // Print Languageresults
+            printfn "Language Analysis"
             languageResult
             |> Map.iter (fun (Language key) value -> printfn "%s: %i" key value)
+            printfn ""
 
             // Print Basicresults
-            printfn "%A" basicResult
+            printfn "Basic Analysis"
+            printfn "%5i - Amount" basicResult.amount
+            printfn "%5i - With Language" basicResult.withLanguage
+            printfn "%5i - With Set" basicResult.withSet
+            printfn "%5i - With Set (unique)" basicResult.uniqueWithSet
+            printfn "%5i - Foils" basicResult.foils
             0
         | Error error -> handleError error
