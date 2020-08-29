@@ -4,7 +4,9 @@ type Arguments = { filePath: string }
 
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself
-type MagicSet = MagicSet of string
+type MagicSet =
+    | CardSet of string
+    | TokenSet of string
 
 type Language = Language of string
 

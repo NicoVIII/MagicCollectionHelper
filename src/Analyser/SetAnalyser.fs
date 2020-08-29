@@ -12,7 +12,7 @@ module SetAnalyser =
     let private collect (data: CollectType) (entry: CardEntry): CollectType =
         // We skip cards without set
         match entry.set, entry.number with
-        | Some mtgSet, Some number ->
+        | Some ((CardSet _) as mtgSet), Some number ->
             let set =
                 data
                 |> Map.tryFind mtgSet

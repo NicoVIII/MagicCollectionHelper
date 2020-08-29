@@ -66,7 +66,12 @@ module Analyser =
               row.Set_code
               |> function
               | "" -> None
-              | set -> set |> convertSetAbbrev |> MagicSet |> Some }
+              | set ->
+                  set
+                  |> function
+                  | set when set.Length = 4 && set.StartsWith "T" -> set |> TokenSet
+                  | set -> set |> convertSetAbbrev |> CardSet
+                  |> Some }
 
     let parseCsv (filePath: string) =
         Collection.Load filePath

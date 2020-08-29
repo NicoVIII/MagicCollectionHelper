@@ -46,7 +46,7 @@ module CardData =
         |> Map.add "WAR" ("War of the Spark", 264u, "2019-05-03")
         |> Map.add "M20" ("Core Set 2020", 345u, "2019-07-12")
         |> Map.add "ELD" ("Throne of Eldraine", 269u, "2019-10-04")
-        |> Map.add "THD" ("Theros Beyond Death", 254u, "2020-01-24")
+        |> Map.add "THB" ("Theros Beyond Death", 254u, "2020-01-24")
         |> Map.add "IKO" ("Ikoria: Lair of Behemoths", 254u, "2020-04-17")
         |> Map.add "M21" ("Core Set 2021", 274u, "2020-07-03")
         |> Map.add "2XM" ("Double Masters", 332u, "2020-08-07")

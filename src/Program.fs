@@ -28,7 +28,7 @@ module Program =
             // Print Setresults
             printfn "Set Analysis"
             setResult
-            |> Map.map (fun (MagicSet key) value ->
+            |> Map.map (fun (CardSet key) value ->
                 // TODO: move this step to the postprocess of the analyser
                 let setDataExt =
                     CardData.setData.TryFind key
@@ -75,7 +75,7 @@ module Program =
                 value.setData
                 |> Option.map (fun setData -> setData.percent * -1.0)
                 |> Option.defaultValue 0.0)
-            |> List.iter (fun ((MagicSet key), value) ->
+            |> List.iter (fun ((CardSet key), value) ->
                 let setMax, percent, setName =
                     value.setData
                     |> function
@@ -91,7 +91,7 @@ module Program =
                 match value.missing with
                 | [] -> ()
                 | missing ->
-                    printfn "Missing:"
+                    printfn "Missing (%2i):" missing.Length
                     missing
                     |> List.map string
                     |> List.reduce (fun x y -> x + "," + y)
