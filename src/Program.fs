@@ -48,7 +48,7 @@ module Program =
                         // Missing Cards only for nearly complete sets
                         let missing =
                             match percent with
-                            | percent when percent > 75.0 ->
+                            | percent when percent > 72.0 ->
                                 seq { 1u .. max }
                                 |> Seq.filter (fun x -> value |> Set.contains x |> not)
                                 |> Seq.toList
