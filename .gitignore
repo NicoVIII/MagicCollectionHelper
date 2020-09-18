@@ -2,4 +2,5 @@ bin/
 obj/
 paket-files/
 .ionide/
+deploy/
 collection_*.csv
