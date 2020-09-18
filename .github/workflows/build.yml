@@ -11,49 +11,49 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-    - name: Restore tools
-      run: dotnet tool restore
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Run build
-      run: dotnet build
-    - name: Build linux release
-      run: >-
-        dotnet publish -v quiet -r linux-x64 -c Release
-        -p:PublishSingleFile=true
-        -p:PublishTrimmed=true
-        -p:DebugType=None
-        -o "deploy"
-        && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-linux-x64
-    - name: Build windows release
-      run: >-
-        dotnet publish -v quiet -r win-x64 -c Release
-        -p:PublishSingleFile=true
-        -p:PublishTrimmed=true
-        -p:DebugType=None
-        -o "deploy"
-        && mv ./deploy/MagicCollectionHelper.exe ./deploy/MagicCollectionHelper-win-x64.exe
-    - name: Build macos release
-      run: >-
-        dotnet publish -v quiet -r osx-x64 -c Release
-        -p:PublishSingleFile=true
-        -p:PublishTrimmed=true
-        -p:DebugType=None
-        -o "deploy"
-        && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-osx-x64
-    # For now I simply make a continuous build
-    - name: Release files
-      uses: marvinpinto/action-automatic-releases@v1.1.0
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: latest
-        prerelease: true
-        title: Continuous Build
-        files: |
-          LICENSE.txt
-          deploy/*
+      - uses: actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+      - name: Restore tools
+        run: dotnet tool restore
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Run build
+        run: dotnet build
+      - name: Build linux release
+        run: >-
+          dotnet publish -v quiet -r linux-x64 -c Release
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=true
+          -p:DebugType=None
+          -o "deploy"
+          && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-linux-x64
+      - name: Build windows release
+        run: >-
+          dotnet publish -v quiet -r win-x64 -c Release
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=true
+          -p:DebugType=None
+          -o "deploy"
+          && mv ./deploy/MagicCollectionHelper.exe ./deploy/MagicCollectionHelper-win-x64.exe
+      - name: Build macos release
+        run: >-
+          dotnet publish -v quiet -r osx-x64 -c Release
+          -p:PublishSingleFile=true
+          -p:PublishTrimmed=true
+          -p:DebugType=None
+          -o "deploy"
+          && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-osx-x64
+      # For now I simply make a continuous build
+      - name: Release files
+        uses: marvinpinto/action-automatic-releases@v1.1.0
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: latest
+          prerelease: true
+          title: Continuous Build
+          files: |
+            LICENSE.txt
+            deploy/*

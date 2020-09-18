@@ -24,7 +24,8 @@
         "editorconfig.editorconfig",
         "aaron-bond.better-comments",
         "gruntfuggly.todo-tree",
-        "ybaumes.highlight-trailing-white-spaces"
+        "ybaumes.highlight-trailing-white-spaces",
+        "me-dutour-mathieu.vscode-github-actions"
     ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
