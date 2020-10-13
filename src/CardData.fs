@@ -42,7 +42,7 @@ module CardData =
         |> Map.add "DOM" ("Dominaria", 269u, "2018-04-27")
         |> Map.add "M19" ("Core Set 2019", 280u, "2018-07-13")
         |> Map.add "GRN" ("Guilds of Ravnica", 259u, "2018-10-05")
-        |> Map.add "RNA" ("Ravnica Allegiance", 283u, "2019-01-25")
+        |> Map.add "RNA" ("Ravnica Allegiance", 259u, "2019-01-25")
         |> Map.add "WAR" ("War of the Spark", 264u, "2019-05-03")
         |> Map.add "M20" ("Core Set 2020", 345u, "2019-07-12")
         |> Map.add "ELD" ("Throne of Eldraine", 269u, "2019-10-04")
