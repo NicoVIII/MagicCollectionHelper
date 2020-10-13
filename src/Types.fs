@@ -1,6 +1,25 @@
 namespace MagicCollectionHelper.Types
 
-type Arguments = { filePath: string }
+open Argu
+
+/// Available CliArguments
+type CliArguments =
+    | [<AltCommandLine("-m")>] MissingPercent of float
+    | [<MainCommand; ExactlyOnce; Last>] CollectionFile of path: string
+
+    interface IArgParserTemplate with
+        member s.Usage =
+            match s with
+            | MissingPercent _ -> "how much percent of the collection has to be collected to show missing card ids."
+            | CollectionFile _ -> "file to analyse."
+
+/// Config used by the program. Parsed from CliArguments.
+type ProgramConfig =
+    { filePath: string
+      missingPercent: float }
+    static member create filePath missingPercent =
+        { filePath = filePath
+          missingPercent = missingPercent }
 
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself

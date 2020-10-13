@@ -4,43 +4,33 @@ open Argu
 open System
 open System.IO
 
-open MagicCollectionHelper.ErrorHandling
+open MagicCollectionHelper.InputValidation
 open MagicCollectionHelper.Types
 
 /// This module handles the command line call and prepares the arguments for
 /// the analyzer
 module Program =
-    /// Available CliArguments
-    type CliArguments =
-        | [<MainCommand; ExactlyOnce; Last>] CollectionFile of path: string
-
-        interface IArgParserTemplate with
-            member s.Usage =
-                match s with
-                | CollectionFile _ -> "file to analyse."
-
     /// Prepares command line arguments
     let handleArguments argv =
-        let errorHandler =
-            ProcessExiter
-                (colorizer =
-                    function
-                    | ErrorCode.HelpText -> None
-                    | _ -> Some ConsoleColor.Red)
         // Use Argu to parse the arguments
         let parser =
-            ArgumentParser.Create<CliArguments>
-                (programName = "MagicCollectionHelper(.exe)", errorHandler = errorHandler)
+            ArgumentParser.Create<CliArguments>(programName = Config.programExe, errorHandler = Config.arguErrorHandler)
 
         let results = parser.ParseCommandLine argv
 
-        // We check, if the given file exists
-        match results.TryGetResult(CollectionFile) with
-        | Some filePath ->
-            let filePath = Path.GetFullPath filePath
+        // Validate all parameters
+        let filePath =
+            results.GetResult CollectionFile
+            |> validateFilePath
 
-            if File.Exists filePath then Ok { filePath = filePath } else Error NonExistingFile
-        | _ -> Error InvalidArguments
+        let missingPercent =
+            results.TryGetResult MissingPercent
+            |> validateMissingPercent
+
+        // Use Applicatives to construct the result of the validation
+        ProgramConfig.create
+        <!> filePath
+        <*> missingPercent
 
     [<EntryPoint>]
     let main argv =
@@ -72,7 +62,7 @@ module Program =
                         // Missing Cards only for nearly complete sets
                         let missing =
                             match percent with
-                            | percent when percent > 72.0 ->
+                            | percent when percent > arguments.missingPercent ->
                                 seq { 1u .. max }
                                 |> Seq.filter (fun x -> value |> Set.contains x |> not)
                                 |> Seq.toList
@@ -137,4 +127,4 @@ module Program =
             printfn "%5i - With Set (unique)" basicResult.uniqueWithSet
             printfn "%5i - Foils" basicResult.foils
             0
-        | Error error -> handleError error
+        | Error errors -> handleErrors errors

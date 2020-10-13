@@ -20,3 +20,17 @@ module TryParser =
     let (|Single|_|) = parseSingle
     let (|Double|_|) = parseDouble
     let (|Uint|_|) = parseUint
+
+module Result =
+    let apply fResult xResult =
+        match fResult, xResult with
+        | Ok f, Ok x -> Ok(f x)
+        | Error ex, Ok _ -> Error ex
+        | Ok _, Error ex -> Error ex
+        | Error ex1, Error ex2 -> Error(List.concat [ ex1; ex2 ])
+
+[<AutoOpen>]
+module ResultInfix =
+    // Define result infix operators
+    let (<!>) = Result.map
+    let (<*>) = Result.apply

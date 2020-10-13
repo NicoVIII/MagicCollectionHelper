@@ -4,12 +4,13 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helper.fs" />
+    <Compile Include="Config.fs" />
     <Compile Include="Types.fs" />
-    <Compile Include="TryParser.fs" />
     <Compile Include="CardData.fs" />
     <Compile Include="Analyser/*.fs" />
     <Compile Include="Analyser.fs" />
-    <Compile Include="ErrorHandling.fs" />
+    <Compile Include="InputValidation.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
