@@ -1,18 +1,42 @@
 ﻿namespace MagicCollectionHelper
 
+open Argu
+open System
+open System.IO
+
 open MagicCollectionHelper.ErrorHandling
 open MagicCollectionHelper.Types
-
-open System.IO
 
 /// This module handles the command line call and prepares the arguments for
 /// the analyzer
 module Program =
+    /// Available CliArguments
+    type CliArguments =
+        | [<MainCommand; ExactlyOnce; Last>] CollectionFile of path: string
+
+        interface IArgParserTemplate with
+            member s.Usage =
+                match s with
+                | CollectionFile _ -> "file to analyse."
+
     /// Prepares command line arguments
     let handleArguments argv =
-        // Atm we just accept a filepath for the csv file
-        match argv with
-        | [| filePath |] ->
+        let errorHandler =
+            ProcessExiter
+                (colorizer =
+                    function
+                    | ErrorCode.HelpText -> None
+                    | _ -> Some ConsoleColor.Red)
+        // Use Argu to parse the arguments
+        let parser =
+            ArgumentParser.Create<CliArguments>
+                (programName = "MagicCollectionHelper(.exe)", errorHandler = errorHandler)
+
+        let results = parser.ParseCommandLine argv
+
+        // We check, if the given file exists
+        match results.TryGetResult(CollectionFile) with
+        | Some filePath ->
             let filePath = Path.GetFullPath filePath
 
             if File.Exists filePath then Ok { filePath = filePath } else Error NonExistingFile
