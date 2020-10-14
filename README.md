@@ -8,6 +8,9 @@ and execute `MagicCollectionHelper <filepath>` / `MagicCollectionHelper.exe <fil
 where `<filepath>` is the path to your exported collection. It is typically called something
 like `collection_000000_0000_0000000000.csv`.
 
+I also started implementing some cli options. To have a look at whats available you can use
+`MagicCollectionHelper --help`.
+
 For now this is very experimental, there is no documentation, nice interface or anything. But maybe
 if I have the time and motivation I will further work on this and make it easier to use and more
 powerful.
