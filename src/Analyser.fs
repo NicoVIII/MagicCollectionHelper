@@ -78,31 +78,56 @@ module Analyser =
         |> (fun x -> x.Rows)
         |> Seq.map rowToEntry
 
+    /// Combine analysers to use same loop for collection
     let combine analyser1 analyser2 =
         let createEmpty () =
             (analyser2.emptyData (), analyser1.emptyData ())
 
-        let collect data entry =
-            let result1 = analyser1.collect (data |> snd) entry
-            let result2 = analyser2.collect (data |> fst) entry
+        let collect (data2, data1) entry =
+            let result1 = analyser1.collect data1 entry
+            let result2 = analyser2.collect data2 entry
             (result2, result1)
 
-        let postprocess data =
-            let result1 = analyser1.postprocess (data |> snd)
-            let result2 = analyser2.postprocess (data |> fst)
+        let postprocess (data2, data1) =
+            let result1 = analyser1.postprocess data1
+            let result2 = analyser2.postprocess data2
             (result2, result1)
 
-        Analyser.create createEmpty collect postprocess
+        let print (settings2, settings1) (result2, result1) =
+            let result1 = analyser1.print settings1 result1
+            let result2 = analyser2.print settings2 result2
+            [ result2; seq { "" }; result1 ] |> Seq.concat
 
-    let analyseWith analyser data =
+        Analyser.create createEmpty collect postprocess print
+
+    /// Combine settings
+    let combineSettings settings1 settings2 = (settings2, settings1)
+
+    let analyseWith settings analyser data =
         (analyser.emptyData (), data)
         ||> Seq.fold analyser.collect
         |> analyser.postprocess
+        |> analyser.print settings
 
-    let analyse filepath =
+    let analyse arguments =
+        let basicSettings = ()
+
+        let setSettings =
+            { SetAnalyser.missingPercent = arguments.missingPercent }
+
+        let langSettings = ()
+
+        // Combine all analysers
         let analyser =
             BasicAnalyser.get
             |> combine SetAnalyser.get
             |> combine LanguageAnalyser.get
 
-        parseCsv filepath |> analyseWith analyser
+        // Combine settings
+        let settings =
+            basicSettings
+            |> combineSettings setSettings
+            |> combineSettings langSettings
+
+        parseCsv arguments.filePath
+        |> analyseWith settings analyser

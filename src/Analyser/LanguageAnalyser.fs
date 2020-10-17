@@ -7,6 +7,8 @@ module LanguageAnalyser =
 
     type CollectData = Map<Language, uint>
 
+    type Settings = unit
+
     let private createEmpty (): Result = Map.empty
 
     let private collect (data: CollectData) (entry: CardEntry): Result =
@@ -24,5 +26,18 @@ module LanguageAnalyser =
 
     let private postprocess (data: CollectData): Result = data
 
+    let print (_: Settings) (result: Result) =
+        let p = sprintf
+
+        let title = seq { "Language Analysis" }
+
+        let data =
+            result
+            |> Map.map (fun (Language key) value -> p "%s: %i" key value)
+            |> Map.toSeq
+            |> Seq.map (fun (_, value) -> value)
+
+        [ title; data ] |> Seq.concat
+
     let get =
-        Analyser.create createEmpty collect postprocess
+        Analyser.create createEmpty collect postprocess print

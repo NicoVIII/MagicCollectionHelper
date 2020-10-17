@@ -2,6 +2,8 @@ namespace MagicCollectionHelper
 
 open MagicCollectionHelper.Types
 
+open System.Text
+
 module BasicAnalyser =
     type Result =
         { amount: uint
@@ -16,6 +18,8 @@ module BasicAnalyser =
           uniqueWithSet: Set<MagicSet * uint>
           withSet: uint
           withLanguage: uint }
+
+    type Settings = unit
 
     let private createEmpty (): CollectData =
         { amount = 0u
@@ -58,5 +62,17 @@ module BasicAnalyser =
           foils = data.foils
           withLanguage = data.withLanguage }
 
+    let print (_: Settings) (result: Result) =
+        let p = sprintf
+
+        seq {
+            p "Basic Analysis"
+            p "%5i - Amount" result.amount
+            p "%5i - With Language" result.withLanguage
+            p "%5i - With Set" result.withSet
+            p "%5i - With Set (unique)" result.uniqueWithSet
+            p "%5i - Foils" result.foils
+        }
+
     let get =
-        Analyser.create createEmpty collect postprocess
+        Analyser.create createEmpty collect postprocess print
