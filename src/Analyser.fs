@@ -69,8 +69,8 @@ module Analyser =
               | set ->
                   set
                   |> function
-                  | set when set.Length = 4 && set.StartsWith "T" -> set |> TokenSet
-                  | set -> set |> convertSetAbbrev |> CardSet
+                  | set when set.Length = 4 && set.StartsWith "T" -> set |> TokenSet |> SetOfToken
+                  | set -> set |> convertSetAbbrev |> CardSet |> SetOfCards
                   |> Some }
 
     let parseCsv (filePath: string) =

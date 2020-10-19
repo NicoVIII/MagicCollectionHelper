@@ -21,11 +21,14 @@ type ProgramConfig =
         { filePath = filePath
           missingPercent = missingPercent }
 
+type CardSet = CardSet of string
+type TokenSet = TokenSet of string
+
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself
 type MagicSet =
-    | CardSet of string
-    | TokenSet of string
+    | SetOfCards of CardSet
+    | SetOfToken of TokenSet
 
 type Language = Language of string
 

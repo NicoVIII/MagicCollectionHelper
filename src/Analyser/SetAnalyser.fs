@@ -1,8 +1,8 @@
 namespace MagicCollectionHelper
 
-open MagicCollectionHelper.Types
-
 open System.Text
+
+open MagicCollectionHelper.Types
 
 module SetAnalyser =
     type Result = Map<MagicSet, Set<uint>>
@@ -16,7 +16,7 @@ module SetAnalyser =
     let private collect (data: CollectType) (entry: CardEntry): CollectType =
         // We skip cards without set
         match entry.set, entry.number with
-        | Some ((CardSet _) as mtgSet), Some number ->
+        | Some mtgSet, Some number ->
             let set =
                 data
                 |> Map.tryFind mtgSet
@@ -31,12 +31,24 @@ module SetAnalyser =
     let private print (settings: Settings) (result: Result) =
         let title = "Set Analysis" |> Seq.singleton
 
+        // Split Map into card set and token set map
+        let cardMap, tokenMap =
+            result
+            |> Map.fold (fun (cardMap, tokenMap) set value ->
+                match set with
+                | SetOfCards cardSet ->
+                    let newMap = cardMap |> Map.add cardSet value
+                    (newMap, tokenMap)
+                | SetOfToken tokenSet ->
+                    let newMap = tokenMap |> Map.add tokenSet value
+                    (cardMap, newMap)) (Map.empty, Map.empty)
+
         let data =
             // TODO: Refactor, nobody gets what happens here!
-            result
-            |> Map.map (fun (CardSet key) value ->
+            cardMap
+            |> Map.map (fun set value ->
                 let setDataExt =
-                    CardData.setData.TryFind key
+                    CardData.tryFindByCardSet set
                     |> Option.map (fun (name, max, _) ->
                         // We have to remove cards outside of the normal number range from the collected number
                         let collected =
