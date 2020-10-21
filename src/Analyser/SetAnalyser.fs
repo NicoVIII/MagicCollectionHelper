@@ -5,9 +5,24 @@ open System.Text
 open MagicCollectionHelper.Types
 
 module SetAnalyser =
-    type Result = Map<MagicSet, Set<uint>>
+    type CollectionData<'a> =
+        { collected: uint32
+          max: 'a
+          percent: float }
 
-    type CollectType = Map<MagicSet, Set<uint>>
+    type CardSetData =
+        { cards: CollectionData<CardNumber>
+          missing: Set<SetNumber>
+          name: string
+          token: CollectionData<TokenNumber> option }
+
+    type ResultValue =
+        { cards: Set<SetNumber>
+          setData: CardSetData option }
+
+    type Result = Map<MagicSet, ResultValue>
+
+    type CollectType = Map<MagicSet, Set<SetNumber>>
 
     type Settings = { missingPercent: float }
 
@@ -26,109 +41,182 @@ module SetAnalyser =
             data |> Map.add mtgSet set
         | _ -> data
 
-    let private postprocess (data: CollectType): Result = data
+    module private Postprocess =
+        let inline calcPercent collected max =
+            let collected = collected |> float
+            let max = max |> float
+
+            (collected, max) ||> (/) |> (*) 100.0
+
+        let transformSet (setData: SetDataMap) set numberSet =
+            let setData =
+                setData.TryFind set
+                |> Option.map (fun { name = name; maxCard = max; maxToken = maxToken } ->
+                    let cardData =
+                        let collected =
+                            numberSet
+                            // We have to remove cards outside of the normal number range from the collected number
+                            |> Set.filter (fun number ->
+                                match number with
+                                | SetCardNumber (CardNumber number) -> number > 0u && number <= max.Value
+                                | _ -> false)
+                            |> Set.count
+                            |> uint32
+
+                        { collected = collected
+                          max = max
+                          percent = calcPercent collected max.Value }
+
+                    // If we have the Token max for this set, we generate token data
+                    let tokenData =
+                        match maxToken with
+                        | Some maxToken ->
+                            let collected =
+                                numberSet
+                                // We have to remove cards outside of the token number range from the collected number
+                                |> Set.filter (fun number ->
+                                    match number with
+                                    | SetTokenNumber (TokenNumber number) -> number > 0u && number <= maxToken.Value
+                                    | _ -> false)
+                                |> Set.count
+                                |> uint32
+
+                            { collected = collected
+                              max = maxToken
+                              percent = calcPercent collected maxToken.Value }
+                            |> Some
+                        | None -> None
+
+                    // Missing Cards for complete collection
+                    let missingCards =
+                        seq { 1u .. max.Value }
+                        |> Set.ofSeq
+                        |> Set.map SetNumber.Card
+                        |> Set.filter (fun x -> numberSet |> (Set.contains x >> not))
+
+                    let missingToken =
+                        match maxToken with
+                        | Some maxToken ->
+                            seq { 1u .. maxToken.Value }
+                            |> Set.ofSeq
+                            |> Set.map SetNumber.Token
+                            |> Set.filter (fun x -> numberSet |> (Set.contains x >> not))
+                        | None -> Set.empty
+
+                    let missing = missingCards |> Set.union missingToken
+
+                    { cards = cardData
+                      missing = missing
+                      name = name
+                      token = tokenData })
+
+            { cards = numberSet; setData = setData }
+
+    let private postprocess (cardData: SetDataMap) (data: CollectType): Result =
+        data
+        |> Map.map (Postprocess.transformSet cardData)
+
+    module private Print =
+        let inline private setLine unwrap (set: MagicSet) setName collectionData =
+            [ sprintf
+                "%4s - %3i/%3i (%.1f%%)"
+                  set.Value
+                  collectionData.collected
+                  (collectionData.max |> unwrap)
+                  collectionData.percent
+              match setName with
+              | Some setName -> sprintf " - %s" setName
+              | None -> () ]
+            |> List.reduce (+)
+            |> Seq.singleton
+
+        let cardSetLine set setName =
+            setLine CardNumber.unwrap set (Some setName)
+
+        let tokenSetLine (MagicSet set) =
+            setLine TokenNumber.unwrap ("T" + set |> MagicSet) None
 
     let private print (settings: Settings) (result: Result) =
-        let title = "Set Analysis" |> Seq.singleton
-
-        // Split Map into card set and token set map
-        let cardMap, tokenMap =
+        // We sort sets descending by "fullness"
+        // If we have no set data we sort by number of cards + tokens, then number of cards
+        let setsSorted =
             result
-            |> Map.fold (fun (cardMap, tokenMap) set value ->
-                match set with
-                | SetOfCards cardSet ->
-                    let newMap = cardMap |> Map.add cardSet value
-                    (newMap, tokenMap)
-                | SetOfToken tokenSet ->
-                    let newMap = tokenMap |> Map.add tokenSet value
-                    (cardMap, newMap)) (Map.empty, Map.empty)
-
-        let data =
-            // TODO: Refactor, nobody gets what happens here!
-            cardMap
-            |> Map.map (fun set value ->
-                let setDataExt =
-                    CardData.tryFindByCardSet set
-                    |> Option.map (fun (name, max, _) ->
-                        // We have to remove cards outside of the normal number range from the collected number
-                        let collected =
-                            value
-                            |> Set.filter (fun el -> el > 0u && el <= max)
-                            |> Set.count
-
-                        let percent =
-                            (collected, max)
-                            ||> (fun x y -> x |> double, y |> double)
-                            ||> (/)
-                            |> (*) 100.0
-
-                        // Missing Cards only for nearly complete sets
-                        let missing =
-                            match percent with
-                            | percent when percent > settings.missingPercent ->
-                                seq { 1u .. max }
-                                |> Seq.filter (fun x -> value |> Set.contains x |> not)
-                                |> Seq.toList
-                            | _ -> []
-
-                        {| max = max
-                           name = name
-                           percent = percent |},
-                        collected,
-                        missing)
-
-                let setData, collected, missing =
-                    setDataExt
-                    |> function
-                    | Some (setData, collected, missing) -> Some setData, collected, missing
-                    | None -> None, value |> Set.count, []
-
-                {| cards = value
-                   collected = collected
-                   missing = missing
-                   setData = setData |})
             |> Map.toSeq
             |> Seq.sortBy (fun (_, value) ->
                 value.setData
-                |> Option.map (fun setData -> setData.percent * -1.0)
-                |> Option.defaultValue 0.0)
-            |> Seq.map (fun ((CardSet key), value) ->
-                let setMax, percent, setName =
-                    value.setData
-                    |> function
-                    | Some setData ->
-                        let max = setData.max |> string
+                |> Option.map (fun setData -> setData.cards.percent * -1.0) // Use negative numbers
+                |> Option.defaultValue
+                    (let cards, token = value.cards |> SetNumber.splitSet
+                     let cardsValue = cards.Count |> (-) 1000 |> double // Stay in positive numbers
 
-                        let percent = setData.percent |> sprintf "%.1f"
+                     let tokenValue = token.Count |> double |> (*) -0.001
 
-                        max, percent, setData.name
-                    | _ -> "? ", "? ", ""
+                     cardsValue + tokenValue))
 
-                let mutable out =
-                    sprintf "%-3s - %3i/%3s (%5s%%) - %s" key value.collected setMax percent setName
-                    |> Seq.singleton
+        let titleLine = "Set Analysis" |> Seq.singleton
 
-                match value.missing with
-                | [] -> ()
-                | missing ->
-                    let title =
-                        sprintf "Missing (%2i): " missing.Length
-                        |> Seq.singleton
+        let setLines =
+            setsSorted
+            |> Seq.map (fun (set, value) ->
+                match value.setData with
+                | Some setData ->
+                    // Print set line and maybe token set line
+                    [ Print.cardSetLine set setData.name setData.cards
+                      match setData.token with
+                      | Some ({ collected = collected } as tokenData) when collected > 0u ->
+                          Print.tokenSetLine set tokenData
+                      | _ -> () ]
+                    |> Seq.concat
+                | None ->
+                    let cards, token = value.cards |> SetNumber.splitSet
 
-                    let ids =
-                        missing
-                        |> Seq.map string
-                        |> Seq.reduce (fun x y -> x + "," + y)
-                        |> Seq.singleton
-
-                    out <-
-                        [ out; title; ids; Seq.singleton "" ]
-                        |> Seq.concat
-
-                out)
+                    sprintf "%4s - No set data found (%2i cards/%2i token)" set.Value cards.Count token.Count
+                    |> Seq.singleton)
             |> Seq.concat
 
-        [ title; data ] |> Seq.concat
+        let missingLines =
+            setsSorted
+            |> Seq.choose (fun (set, value) ->
+                let setData = value.setData
+                match setData with
+                | Some ({ missing = missing; cards = { percent = percent } } as setData) when percent > settings.missingPercent
+                                                                                              && missing.Count > 0 ->
+                    Some(set, setData)
+                | _ -> None)
+            |> Seq.map (fun ((MagicSet set), setData) ->
+                let titleLine =
+                    sprintf "%-3s - %2i missing:" set setData.missing.Count
+                    |> Seq.singleton
+
+                let cardIds, tokenIds = setData.missing |> SetNumber.splitSeq
+
+                let mutable missingLines = Seq.empty
+
+                if Seq.length cardIds > 0 then
+                    missingLines <-
+                        cardIds
+                        |> Seq.map (fun (CardNumber number) -> number |> string)
+                        |> Seq.reduce (fun x y -> x + "," + y)
+                        |> Seq.singleton
+                        |> Seq.append missingLines
+
+                if Seq.length tokenIds > 0 then
+                    missingLines <-
+                        tokenIds
+                        |> Seq.map (fun (TokenNumber number) -> number |> string)
+                        |> Seq.reduce (fun x y -> x + "," + y)
+                        |> (+) "Token: "
+                        |> Seq.singleton
+                        |> Seq.append missingLines
+
+                [ titleLine; missingLines ] |> Seq.concat)
+            |> Seq.reduce (fun x y -> [ x; Seq.singleton ""; y ] |> Seq.concat)
+
+        [ titleLine
+          setLines
+          Seq.singleton ""
+          missingLines ]
+        |> Seq.concat
 
     let get =
         Analyser.create createEmpty collect postprocess print

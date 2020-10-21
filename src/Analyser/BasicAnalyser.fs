@@ -15,7 +15,7 @@ module BasicAnalyser =
     type CollectData =
         { amount: uint
           foils: uint
-          uniqueWithSet: Set<MagicSet * uint>
+          uniqueWithSet: Set<MagicSet * SetNumber>
           withSet: uint
           withLanguage: uint }
 
@@ -23,7 +23,7 @@ module BasicAnalyser =
 
     let private createEmpty (): CollectData =
         { amount = 0u
-          uniqueWithSet = Set.empty<MagicSet * uint>
+          uniqueWithSet = Set.empty
           foils = 0u
           withSet = 0u
           withLanguage = 0u }
@@ -55,7 +55,7 @@ module BasicAnalyser =
               withSet = withSet
               withLanguage = withLanguage }
 
-    let postprocess data: Result =
+    let postprocess (_: SetDataMap) data: Result =
         { amount = data.amount
           uniqueWithSet = data.uniqueWithSet |> Set.count |> uint
           withSet = data.withSet

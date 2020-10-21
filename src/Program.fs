@@ -37,7 +37,8 @@ module Program =
         // Check, if arguments are valid
         match handleArguments argv with
         | Ok arguments ->
-            Analyser.analyse arguments
+            let setData = CardData.createSetData ()
+            Analyser.analyse setData arguments
             |> Seq.iter (printfn "%s")
 
             0

@@ -21,14 +21,43 @@ type ProgramConfig =
         { filePath = filePath
           missingPercent = missingPercent }
 
-type CardSet = CardSet of string
-type TokenSet = TokenSet of string
+type CardNumber =
+    | CardNumber of uint32
+    static member unwrap(CardNumber x) = x
+    member this.Value = CardNumber.unwrap this
+
+type TokenNumber =
+    | TokenNumber of uint32
+    static member unwrap(TokenNumber x) = x
+    member this.Value = TokenNumber.unwrap this
+
+type SetNumber =
+    | SetCardNumber of CardNumber
+    | SetTokenNumber of TokenNumber
+
+module SetNumber =
+    let Card = CardNumber >> SetCardNumber
+    let Token = TokenNumber >> SetTokenNumber
+
+    let splitSet =
+        Set.fold (fun (cards, tokens) number ->
+            match number with
+            | SetCardNumber cardNumber -> (cards |> Set.add cardNumber, tokens)
+            | SetTokenNumber tokenNumber -> (cards, tokens |> Set.add tokenNumber)) (Set.empty, Set.empty)
+
+    let splitSeq s =
+        Seq.fold (fun (cards, tokens) number ->
+            match number with
+            | SetCardNumber cardNumber -> (Seq.append cards [ cardNumber ], tokens)
+            | SetTokenNumber tokenNumber -> (cards, Seq.append tokens [ tokenNumber ])) (Seq.empty, Seq.empty) s
 
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself
 type MagicSet =
-    | SetOfCards of CardSet
-    | SetOfToken of TokenSet
+    | MagicSet of string
+    member this.Value =
+        let (MagicSet value) = this
+        value
 
 type Language = Language of string
 
@@ -39,15 +68,23 @@ type Language = Language of string
 type CardEntry =
     { amount: uint
       name: string
-      number: uint option
+      number: SetNumber option
       foil: bool
       language: Language option
       set: MagicSet option }
 
+type SetData =
+    { date: string
+      maxCard: CardNumber
+      maxToken: TokenNumber option
+      name: string }
+
+type SetDataMap = Map<MagicSet, SetData>
+
 type Analyser<'result, 'collect, 'settings> =
     { emptyData: (unit -> 'collect)
       collect: ('collect -> CardEntry -> 'collect)
-      postprocess: ('collect -> 'result)
+      postprocess: (SetDataMap -> 'collect -> 'result)
       print: ('settings -> 'result -> string seq) }
 
 module Analyser =

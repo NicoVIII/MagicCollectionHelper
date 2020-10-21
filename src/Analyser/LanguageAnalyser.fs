@@ -24,7 +24,7 @@ module LanguageAnalyser =
             data |> Map.add language amount
         | None -> data
 
-    let private postprocess (data: CollectData): Result = data
+    let private postprocess (_: SetDataMap) (data: CollectData): Result = data
 
     let print (_: Settings) (result: Result) =
         let p = sprintf

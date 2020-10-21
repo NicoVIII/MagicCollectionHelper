@@ -55,7 +55,13 @@ module Analyser =
     let rowToEntry (row: Collection.Row) =
         { amount = row.Amount |> uint
           name = row.Card_name
-          number = row.Collector_number |> parseUint
+          number =
+              row.Collector_number
+              |> parseUint
+              |> Option.map (function
+                  | number when row.Set_code.Length = 4
+                                && row.Set_code.StartsWith "T" -> number |> TokenNumber |> SetTokenNumber
+                  | number -> number |> CardNumber |> SetCardNumber)
           foil = row.Is_foil.GetValueOrDefault() = 1
           language =
               row.Language
@@ -69,8 +75,10 @@ module Analyser =
               | set ->
                   set
                   |> function
-                  | set when set.Length = 4 && set.StartsWith "T" -> set |> TokenSet |> SetOfToken
-                  | set -> set |> convertSetAbbrev |> CardSet |> SetOfCards
+                  | set when set.Length = 4 && set.StartsWith "T" -> set.Substring 1
+                  | set -> set
+                  |> convertSetAbbrev
+                  |> MagicSet
                   |> Some }
 
     let parseCsv (filePath: string) =
@@ -88,9 +96,9 @@ module Analyser =
             let result2 = analyser2.collect data2 entry
             (result2, result1)
 
-        let postprocess (data2, data1) =
-            let result1 = analyser1.postprocess data1
-            let result2 = analyser2.postprocess data2
+        let postprocess setData (data2, data1) =
+            let result1 = analyser1.postprocess setData data1
+            let result2 = analyser2.postprocess setData data2
             (result2, result1)
 
         let print (settings2, settings1) (result2, result1) =
@@ -103,13 +111,13 @@ module Analyser =
     /// Combine settings
     let combineSettings settings1 settings2 = (settings2, settings1)
 
-    let analyseWith settings analyser data =
+    let analyseWith settings setData analyser data =
         (analyser.emptyData (), data)
         ||> Seq.fold analyser.collect
-        |> analyser.postprocess
+        |> analyser.postprocess setData
         |> analyser.print settings
 
-    let analyse arguments =
+    let analyse setData arguments =
         let basicSettings = ()
 
         let setSettings =
@@ -130,4 +138,4 @@ module Analyser =
             |> combineSettings langSettings
 
         parseCsv arguments.filePath
-        |> analyseWith settings analyser
+        |> analyseWith settings setData analyser
