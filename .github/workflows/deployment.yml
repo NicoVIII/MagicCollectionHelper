@@ -29,6 +29,7 @@ jobs:
           -p:PublishSingleFile=true
           -p:PublishTrimmed=true
           -p:TrimMode=Link
+          -p:IncludeNativeLibrariesForSelfExtract=true
           -p:PublishReadyToRun=true
           -p:DebugType=None
           -o "deploy"
@@ -39,6 +40,7 @@ jobs:
           -p:PublishSingleFile=true
           -p:PublishTrimmed=true
           -p:TrimMode=Link
+          -p:IncludeNativeLibrariesForSelfExtract=true
           -p:DebugType=None
           -o "deploy"
           && mv ./deploy/MagicCollectionHelper.exe ./deploy/MagicCollectionHelper-win-x64.exe
@@ -48,6 +50,7 @@ jobs:
           -p:PublishSingleFile=true
           -p:PublishTrimmed=true
           -p:TrimMode=Link
+          -p:IncludeNativeLibrariesForSelfExtract=true
           -p:DebugType=None
           -o "deploy"
           && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-osx-x64
