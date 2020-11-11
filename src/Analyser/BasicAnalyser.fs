@@ -66,7 +66,7 @@ module BasicAnalyser =
         let p = sprintf
 
         seq {
-            p "Basic Analysis"
+            "Basic Analysis"
             p "%5i - Amount" result.amount
             p "%5i - With Language" result.withLanguage
             p "%5i - With Set" result.withSet

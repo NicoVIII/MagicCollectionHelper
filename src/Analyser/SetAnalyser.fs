@@ -125,7 +125,7 @@ module SetAnalyser =
                   (collectionData.max |> unwrap)
                   collectionData.percent
               match setName with
-              | Some setName -> sprintf " - %s" setName
+              | Some setName -> $" - %s{setName}"
               | None -> () ]
             |> List.reduce (+)
             |> Seq.singleton
@@ -170,7 +170,7 @@ module SetAnalyser =
                 | None ->
                     let cards, token = value.cards |> SetNumber.splitSet
 
-                    sprintf "%4s - No set data found (%2i cards/%2i token)" set.Value cards.Count token.Count
+                    $"%4s{set.Value} - No set data found (%2i{cards.Count} cards/%2i{token.Count} token)"
                     |> Seq.singleton)
             |> Seq.concat
 
@@ -185,7 +185,7 @@ module SetAnalyser =
                 | _ -> None)
             |> Seq.map (fun ((MagicSet set), setData) ->
                 let titleLine =
-                    sprintf "%-3s - %2i missing:" set setData.missing.Count
+                    $"%-3s{set} - %2i{setData.missing.Count} missing:"
                     |> Seq.singleton
 
                 let cardIds, tokenIds = setData.missing |> SetNumber.splitSeq
