@@ -39,7 +39,6 @@ jobs:
           -p:PublishSingleFile=true
           -p:PublishTrimmed=true
           -p:TrimMode=Link
-          -p:PublishReadyToRun=true
           -p:DebugType=None
           -o "deploy"
           && mv ./deploy/MagicCollectionHelper.exe ./deploy/MagicCollectionHelper-win-x64.exe
@@ -49,7 +48,6 @@ jobs:
           -p:PublishSingleFile=true
           -p:PublishTrimmed=true
           -p:TrimMode=Link
-          -p:PublishReadyToRun=true
           -p:DebugType=None
           -o "deploy"
           && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-osx-x64
