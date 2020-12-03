@@ -56,7 +56,7 @@ jobs:
           && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-osx-x64
       # For now I simply make a continuous build
       - name: Release files
-        uses: marvinpinto/action-automatic-releases@v1.1.0
+        uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: latest
