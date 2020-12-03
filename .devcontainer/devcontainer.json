@@ -4,9 +4,7 @@
         "dockerfile": "Dockerfile",
         "args": {
             // Update 'VARIANT' to pick a .NET version: 5.0 (preview)
-            "VARIANT": "5.0",
-            // Options
-            "UPGRADE_PACKAGES": "false"
+            "VARIANT": "0.152.1-5.0",
         }
     },
     // Set container specific defaults for F# in .NET Core 2.1+
