@@ -23,6 +23,8 @@ jobs:
         run: dotnet tool restore
       - name: Restore dependencies
         run: dotnet restore
+      - name: Build for debug before releasing
+        run: dotnet build
       - name: Build linux release
         run: >-
           dotnet publish -v m -r linux-x64 -c Release
