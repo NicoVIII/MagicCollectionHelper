@@ -4,21 +4,25 @@ open Argu
 
 /// Available CliArguments
 type CliArguments =
+    | Dozenalize
     | [<AltCommandLine("-m")>] MissingPercent of float
     | [<MainCommand; ExactlyOnce; Last>] CollectionFile of path: string
 
     interface IArgParserTemplate with
         member s.Usage =
             match s with
+            | Dozenalize _ -> "should the numbers be printed in base 12 instead of base 10"
             | MissingPercent _ -> "how much percent of the collection has to be collected to show missing card ids."
             | CollectionFile _ -> "file to analyse."
 
 /// Config used by the program. Parsed from CliArguments.
 type ProgramConfig =
-    { filePath: string
+    { dozenalize: bool
+      filePath: string
       missingPercent: float }
-    static member create filePath missingPercent =
-        { filePath = filePath
+    static member create dozenalize filePath missingPercent =
+        { dozenalize = dozenalize
+          filePath = filePath
           missingPercent = missingPercent }
 
 type CardNumber =
@@ -40,16 +44,21 @@ module SetNumber =
     let Token = TokenNumber >> SetTokenNumber
 
     let splitSet =
-        Set.fold (fun (cards, tokens) number ->
-            match number with
-            | SetCardNumber cardNumber -> (cards |> Set.add cardNumber, tokens)
-            | SetTokenNumber tokenNumber -> (cards, tokens |> Set.add tokenNumber)) (Set.empty, Set.empty)
+        Set.fold
+            (fun (cards, tokens) number ->
+                match number with
+                | SetCardNumber cardNumber -> (cards |> Set.add cardNumber, tokens)
+                | SetTokenNumber tokenNumber -> (cards, tokens |> Set.add tokenNumber))
+            (Set.empty, Set.empty)
 
     let splitSeq s =
-        Seq.fold (fun (cards, tokens) number ->
-            match number with
-            | SetCardNumber cardNumber -> (Seq.append cards [ cardNumber ], tokens)
-            | SetTokenNumber tokenNumber -> (cards, Seq.append tokens [ tokenNumber ])) (Seq.empty, Seq.empty) s
+        Seq.fold
+            (fun (cards, tokens) number ->
+                match number with
+                | SetCardNumber cardNumber -> (Seq.append cards [ cardNumber ], tokens)
+                | SetTokenNumber tokenNumber -> (cards, Seq.append tokens [ tokenNumber ]))
+            (Seq.empty, Seq.empty)
+            s
 
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself

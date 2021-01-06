@@ -6,3 +6,5 @@ framework: net5.0
 nuget FSharp.Core ~> 5.0
 nuget FSharp.Data ~> 3.3
 nuget Argu ~> 6
+
+github NicoVIII/Dozenalize:main

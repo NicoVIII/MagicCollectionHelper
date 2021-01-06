@@ -19,7 +19,7 @@ module BasicAnalyser =
           withSet: uint
           withLanguage: uint }
 
-    type Settings = unit
+    type Settings = { dozenalize: bool }
 
     let private createEmpty (): CollectData =
         { amount = 0u
@@ -62,16 +62,19 @@ module BasicAnalyser =
           foils = data.foils
           withLanguage = data.withLanguage }
 
-    let print (_: Settings) (result: Result) =
+    let print (settings: Settings) (result: Result) =
         let p = sprintf
+
+        let inline pN x =
+            Numbers.print settings.dozenalize 0uy (int x)
 
         seq {
             "Basic Analysis"
-            p "%5i - Amount" result.amount
-            p "%5i - With Language" result.withLanguage
-            p "%5i - With Set" result.withSet
-            p "%5i - With Set (unique)" result.uniqueWithSet
-            p "%5i - Foils" result.foils
+            p "%5s - Amount" (pN result.amount)
+            p "%5s - With Language" (pN result.withLanguage)
+            p "%5s - With Set" (pN result.withSet)
+            p "%5s - With Set (unique)" (pN result.uniqueWithSet)
+            p "%5s - Foils" (pN result.foils)
         }
 
     let get =

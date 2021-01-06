@@ -19,6 +19,8 @@ module Program =
         let results = parser.ParseCommandLine argv
 
         // Validate all parameters
+        let dozenalize = results.Contains Dozenalize
+
         let filePath =
             results.GetResult CollectionFile
             |> validateFilePath
@@ -28,8 +30,7 @@ module Program =
             |> validateMissingPercent
 
         // Use Applicatives to construct the result of the validation
-        ProgramConfig.create
-        <!> filePath
+        ProgramConfig.create dozenalize <!> filePath
         <*> missingPercent
 
     [<EntryPoint>]
@@ -38,6 +39,7 @@ module Program =
         match handleArguments argv with
         | Ok arguments ->
             let setData = CardData.createSetData ()
+
             Analyser.analyse setData arguments
             |> Seq.iter (printfn "%s")
 

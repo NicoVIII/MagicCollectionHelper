@@ -1,5 +1,7 @@
 namespace MagicCollectionHelper
 
+open System
+
 module TryParser =
     // convenient, functional TryParse wrappers returning option<'a>
     let tryParseWith (tryParseFunc: string -> bool * _) =
@@ -34,3 +36,14 @@ module ResultInfix =
     // Define result infix operators
     let (<!>) = Result.map
     let (<*>) = Result.apply
+
+open Dozenalize
+
+module Numbers =
+    let config = Types.Config.PreConf.pitman
+
+    let inline print dozenal precision number =
+        if dozenal then
+            Display.number config (byte precision) (decimal number)
+        else
+            String.Format($"{{0:F{precision}}}", number)

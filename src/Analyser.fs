@@ -58,9 +58,11 @@ module Analyser =
           number =
               row.Collector_number
               |> parseUint
-              |> Option.map (function
-                  | number when row.Set_code.Length = 4
-                                && row.Set_code.StartsWith "T" -> number |> TokenNumber |> SetTokenNumber
+              |> Option.map
+                  (function
+                  | number when
+                      row.Set_code.Length = 4
+                      && row.Set_code.StartsWith "T" -> number |> TokenNumber |> SetTokenNumber
                   | number -> number |> CardNumber |> SetCardNumber)
           foil = row.Is_foil.GetValueOrDefault() = 1
           language =
@@ -118,12 +120,13 @@ module Analyser =
         |> analyser.print settings
 
     let analyse setData arguments =
-        let basicSettings = ()
+        let basicSettings: BasicAnalyser.Settings = { dozenalize = arguments.dozenalize }
 
-        let setSettings =
-            { SetAnalyser.missingPercent = arguments.missingPercent }
+        let setSettings: SetAnalyser.Settings =
+            { missingPercent = arguments.missingPercent
+              dozenalize = arguments.dozenalize }
 
-        let langSettings = ()
+        let langSettings: LanguageAnalyser.Settings = { dozenalize = arguments.dozenalize }
 
         // Combine all analysers
         let analyser =

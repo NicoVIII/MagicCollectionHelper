@@ -4,14 +4,17 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Helper.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="Helper.fs" />
     <Compile Include="CardData.fs" />
     <Compile Include="Analyser/*.fs" />
     <Compile Include="Analyser.fs" />
     <Compile Include="InputValidation.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\paket-files\NicoVIII\Dozenalize\src\Dozenalize\Dozenalize.fsproj" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

@@ -24,7 +24,9 @@ module SetAnalyser =
 
     type CollectType = Map<MagicSet, Set<SetNumber>>
 
-    type Settings = { missingPercent: float }
+    type Settings =
+        { missingPercent: float
+          dozenalize: bool }
 
     let private createEmpty (): CollectType = Map.empty
 
@@ -42,73 +44,75 @@ module SetAnalyser =
         | _ -> data
 
     module private Postprocess =
-        let inline calcPercent collected max =
-            let collected = collected |> float
-            let max = max |> float
-
-            (collected, max) ||> (/) |> (*) 100.0
+        let inline calcPercent collected max = (float collected) / (float max)
 
         let transformSet (setData: SetDataMap) set numberSet =
             let setData =
                 setData.TryFind set
-                |> Option.map (fun { name = name; maxCard = max; maxToken = maxToken } ->
-                    let cardData =
-                        let collected =
-                            numberSet
-                            // We have to remove cards outside of the normal number range from the collected number
-                            |> Set.filter (fun number ->
-                                match number with
-                                | SetCardNumber (CardNumber number) -> number > 0u && number <= max.Value
-                                | _ -> false)
-                            |> Set.count
-                            |> uint32
-
-                        { collected = collected
-                          max = max
-                          percent = calcPercent collected max.Value }
-
-                    // If we have the Token max for this set, we generate token data
-                    let tokenData =
-                        match maxToken with
-                        | Some maxToken ->
+                |> Option.map
+                    (fun { name = name
+                           maxCard = max
+                           maxToken = maxToken } ->
+                        let cardData =
                             let collected =
                                 numberSet
-                                // We have to remove cards outside of the token number range from the collected number
-                                |> Set.filter (fun number ->
-                                    match number with
-                                    | SetTokenNumber (TokenNumber number) -> number > 0u && number <= maxToken.Value
-                                    | _ -> false)
+                                // We have to remove cards outside of the normal number range from the collected number
+                                |> Set.filter
+                                    (fun number ->
+                                        match number with
+                                        | SetCardNumber (CardNumber number) -> number > 0u && number <= max.Value
+                                        | _ -> false)
                                 |> Set.count
                                 |> uint32
 
                             { collected = collected
-                              max = maxToken
-                              percent = calcPercent collected maxToken.Value }
-                            |> Some
-                        | None -> None
+                              max = max
+                              percent = calcPercent collected max.Value }
 
-                    // Missing Cards for complete collection
-                    let missingCards =
-                        seq { 1u .. max.Value }
-                        |> Set.ofSeq
-                        |> Set.map SetNumber.Card
-                        |> Set.filter (fun x -> numberSet |> (Set.contains x >> not))
+                        // If we have the Token max for this set, we generate token data
+                        let tokenData =
+                            match maxToken with
+                            | Some maxToken ->
+                                let collected =
+                                    numberSet
+                                    // We have to remove cards outside of the token number range from the collected number
+                                    |> Set.filter
+                                        (fun number ->
+                                            match number with
+                                            | SetTokenNumber (TokenNumber number) ->
+                                                number > 0u && number <= maxToken.Value
+                                            | _ -> false)
+                                    |> Set.count
+                                    |> uint32
 
-                    let missingToken =
-                        match maxToken with
-                        | Some maxToken ->
-                            seq { 1u .. maxToken.Value }
+                                { collected = collected
+                                  max = maxToken
+                                  percent = calcPercent collected maxToken.Value }
+                                |> Some
+                            | None -> None
+
+                        // Missing Cards for complete collection
+                        let missingCards =
+                            seq { 1u .. max.Value }
                             |> Set.ofSeq
-                            |> Set.map SetNumber.Token
+                            |> Set.map SetNumber.Card
                             |> Set.filter (fun x -> numberSet |> (Set.contains x >> not))
-                        | None -> Set.empty
 
-                    let missing = missingCards |> Set.union missingToken
+                        let missingToken =
+                            match maxToken with
+                            | Some maxToken ->
+                                seq { 1u .. maxToken.Value }
+                                |> Set.ofSeq
+                                |> Set.map SetNumber.Token
+                                |> Set.filter (fun x -> numberSet |> (Set.contains x >> not))
+                            | None -> Set.empty
 
-                    { cards = cardData
-                      missing = missing
-                      name = name
-                      token = tokenData })
+                        let missing = missingCards |> Set.union missingToken
+
+                        { cards = cardData
+                          missing = missing
+                          name = name
+                          token = tokenData })
 
             { cards = numberSet; setData = setData }
 
@@ -117,99 +121,119 @@ module SetAnalyser =
         |> Map.map (Postprocess.transformSet cardData)
 
     module private Print =
-        let inline private setLine unwrap (set: MagicSet) setName collectionData =
+        let inline private setLine dozenalize unwrap (set: MagicSet) setName collectionData =
+            let percent =
+                if dozenalize then
+                    collectionData.percent * 144.
+                else
+                    collectionData.percent * 100.
+
             [ sprintf
-                "%4s - %3i/%3i (%.1f%%)"
-                  set.Value
-                  collectionData.collected
-                  (collectionData.max |> unwrap)
-                  collectionData.percent
+                "%4s - %3s/%3s (%s%s)"
+                set.Value
+                (Numbers.print dozenalize 0 (int collectionData.collected))
+                (Numbers.print dozenalize 0 (collectionData.max |> unwrap |> int))
+                (Numbers.print dozenalize 1 percent)
+                (if dozenalize then "pg" else "%")
               match setName with
               | Some setName -> $" - %s{setName}"
               | None -> () ]
             |> List.reduce (+)
             |> Seq.singleton
 
-        let cardSetLine set setName =
-            setLine CardNumber.unwrap set (Some setName)
+        let cardSetLine dozenalize set setName =
+            setLine dozenalize CardNumber.unwrap set (Some setName)
 
-        let tokenSetLine (MagicSet set) =
-            setLine TokenNumber.unwrap ("T" + set |> MagicSet) None
+        let tokenSetLine dozenalize (MagicSet set) =
+            setLine dozenalize TokenNumber.unwrap ("T" + set |> MagicSet) None
 
     let private print (settings: Settings) (result: Result) =
+        let dozenalize = settings.dozenalize
+
         // We sort sets descending by "fullness"
         // If we have no set data we sort by number of cards + tokens, then number of cards
         let setsSorted =
             result
             |> Map.toSeq
-            |> Seq.sortBy (fun (_, value) ->
-                value.setData
-                |> Option.map (fun setData -> setData.cards.percent * -1.0) // Use negative numbers
-                |> Option.defaultValue
-                    (let cards, token = value.cards |> SetNumber.splitSet
-                     let cardsValue = cards.Count |> (-) 1000 |> double // Stay in positive numbers
+            |> Seq.sortBy
+                (fun (_, value) ->
+                    value.setData
+                    |> Option.map (fun setData -> setData.cards.percent * -100.0) // Use negative numbers
+                    |> Option.defaultValue (
+                        let cards, token = value.cards |> SetNumber.splitSet
+                        let cardsValue = cards.Count |> (-) 1000 |> double // Stay in positive numbers
 
-                     let tokenValue = token.Count |> double |> (*) -0.001
+                        let tokenValue = token.Count |> double |> (*) -0.001
 
-                     cardsValue + tokenValue))
+                        cardsValue + tokenValue
+                    ))
 
         let titleLine = "Set Analysis" |> Seq.singleton
 
         let setLines =
             setsSorted
-            |> Seq.map (fun (set, value) ->
-                match value.setData with
-                | Some setData ->
-                    // Print set line and maybe token set line
-                    [ Print.cardSetLine set setData.name setData.cards
-                      match setData.token with
-                      | Some ({ collected = collected } as tokenData) when collected > 0u ->
-                          Print.tokenSetLine set tokenData
-                      | _ -> () ]
-                    |> Seq.concat
-                | None ->
-                    let cards, token = value.cards |> SetNumber.splitSet
+            |> Seq.map
+                (fun (set, value) ->
+                    match value.setData with
+                    | Some setData ->
+                        // Print set line and maybe token set line
+                        [ Print.cardSetLine dozenalize set setData.name setData.cards
+                          match setData.token with
+                          | Some ({ collected = collected } as tokenData) when collected > 0u ->
+                              Print.tokenSetLine dozenalize set tokenData
+                          | _ -> () ]
+                        |> Seq.concat
+                    | None ->
+                        let cards, token = value.cards |> SetNumber.splitSet
 
-                    $"%4s{set.Value} - No set data found (%2i{cards.Count} cards/%2i{token.Count} token)"
-                    |> Seq.singleton)
+                        $"%4s{set.Value} - No set data found (%2i{cards.Count} cards/%2i{token.Count} token)"
+                        |> Seq.singleton)
             |> Seq.concat
 
         let missingLines =
             setsSorted
-            |> Seq.choose (fun (set, value) ->
-                let setData = value.setData
-                match setData with
-                | Some ({ missing = missing; cards = { percent = percent } } as setData) when percent > settings.missingPercent
-                                                                                              && missing.Count > 0 ->
-                    Some(set, setData)
-                | _ -> None)
-            |> Seq.map (fun ((MagicSet set), setData) ->
-                let titleLine =
-                    $"%-3s{set} - %2i{setData.missing.Count} missing:"
-                    |> Seq.singleton
+            |> Seq.choose
+                (fun (set, value) ->
+                    let setData = value.setData
 
-                let cardIds, tokenIds = setData.missing |> SetNumber.splitSeq
+                    match setData with
+                    | Some ({ missing = missing
+                              cards = { percent = percent } } as setData) when
+                        percent > settings.missingPercent
+                        && missing.Count > 0 -> Some(set, setData)
+                    | _ -> None)
+            |> Seq.map
+                (fun ((MagicSet set), setData) ->
+                    let missing =
+                        setData.missing.Count
+                        |> Numbers.print dozenalize 0
 
-                let mutable missingLines = Seq.empty
-
-                if Seq.length cardIds > 0 then
-                    missingLines <-
-                        cardIds
-                        |> Seq.map (fun (CardNumber number) -> number |> string)
-                        |> Seq.reduce (fun x y -> x + "," + y)
+                    let titleLine =
+                        $"%-3s{set} - %2s{missing} missing:"
                         |> Seq.singleton
-                        |> Seq.append missingLines
 
-                if Seq.length tokenIds > 0 then
-                    missingLines <-
-                        tokenIds
-                        |> Seq.map (fun (TokenNumber number) -> number |> string)
-                        |> Seq.reduce (fun x y -> x + "," + y)
-                        |> (+) "Token: "
-                        |> Seq.singleton
-                        |> Seq.append missingLines
+                    let cardIds, tokenIds = setData.missing |> SetNumber.splitSeq
 
-                [ titleLine; missingLines ] |> Seq.concat)
+                    let mutable missingLines = Seq.empty
+
+                    if Seq.length cardIds > 0 then
+                        missingLines <-
+                            cardIds
+                            |> Seq.map (fun (CardNumber number) -> number |> Numbers.print dozenalize 0)
+                            |> Seq.reduce (fun x y -> x + "," + y)
+                            |> Seq.singleton
+                            |> Seq.append missingLines
+
+                    if Seq.length tokenIds > 0 then
+                        missingLines <-
+                            tokenIds
+                            |> Seq.map (fun (TokenNumber number) -> number |> Numbers.print dozenalize 0)
+                            |> Seq.reduce (fun x y -> x + "," + y)
+                            |> (+) "Token: "
+                            |> Seq.singleton
+                            |> Seq.append missingLines
+
+                    [ titleLine; missingLines ] |> Seq.concat)
             |> Seq.reduce (fun x y -> [ x; Seq.singleton ""; y ] |> Seq.concat)
 
         [ titleLine
