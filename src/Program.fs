@@ -11,7 +11,7 @@ open MagicCollectionHelper.Types
 /// the analyzer
 module Program =
     /// Prepares command line arguments
-    let handleArguments argv =
+    let handleArguments argv: ProgramConfig =
         // Use Argu to parse the arguments
         let parser =
             ArgumentParser.Create<CliArguments>(programName = Config.programExe, errorHandler = Config.arguErrorHandler)
@@ -19,33 +19,32 @@ module Program =
         let results = parser.ParseCommandLine argv
 
         // Validate all parameters
-        let dozenalize = results.Contains Dozenalize |> Ok
+        let dozenalize = results.Contains Dozenalize
 
         let filePath =
-            results.GetResult CollectionFile
-            |> validateFilePath
+            results.PostProcessResult(<@ CollectionFile @>, validateFilePath)
 
         let missingPercent =
-            results.TryGetResult MissingPercent
-            |> validateMissingPercent
+            if results.Contains MissingPercent then
+                results.PostProcessResult(<@ MissingPercent @>, validateMissingPercent)
+            else
+                Config.missingPercentDefault
 
-        let setWithFoils = results.Contains SetWithFoils |> Ok
+        let setWithFoils = results.Contains SetWithFoils
 
         // Use Applicatives to construct the result of the validation
-        ProgramConfig.create <!> dozenalize
-        <*> filePath
-        <*> missingPercent
-        <*> setWithFoils
+        { dozenalize = dozenalize
+          filePath = filePath
+          missingPercent = missingPercent
+          setWithFoils = setWithFoils }
 
     [<EntryPoint>]
     let main argv =
         // Check, if arguments are valid
-        match handleArguments argv with
-        | Ok arguments ->
-            let setData = CardData.createSetData ()
+        let config = handleArguments argv
+        let setData = CardData.createSetData ()
 
-            Analyser.analyse setData arguments
-            |> Seq.iter (printfn "%s")
+        Analyser.analyse setData config
+        |> Seq.iter (printfn "%s")
 
-            0
-        | Error errors -> handleErrors errors
+        0

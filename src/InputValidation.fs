@@ -19,17 +19,18 @@ module InputValidation =
         errors
         |> List.map errorToString
         |> List.iter (printfn "%s")
+
         1 // Return non-zero exit code
 
     let validateFilePath filePath =
         let filePath = filePath |> Path.GetFullPath
-        if File.Exists filePath then Ok filePath else Error [ NonExistingFile ]
+
+        if File.Exists filePath then
+            filePath
+        else
+            failwith "collection file does not exist"
 
     let validateMissingPercent missingPercent =
-        let missingPercent =
-            missingPercent
-            |> Option.defaultValue Config.missingPercentDefault
-
         match missingPercent with
-        | mp when mp >= 0.0 && mp <= 100.0 -> Ok mp
-        | _ -> Error [ InvalidMissingPercent ]
+        | mp when mp >= 0.0 && mp <= 100.0 -> mp / 100.0
+        | _ -> failwith "percent have to be between 0.0 and 100.0"

@@ -119,15 +119,15 @@ module Analyser =
         |> analyser.postprocess setData
         |> analyser.print settings
 
-    let analyse setData arguments =
-        let basicSettings: BasicAnalyser.Settings = { dozenalize = arguments.dozenalize }
+    let analyse setData config =
+        let basicSettings: BasicAnalyser.Settings = { dozenalize = config.dozenalize }
 
         let setSettings: SetAnalyser.Settings =
-            { missingPercent = arguments.missingPercent
-              dozenalize = arguments.dozenalize
-              withFoils = arguments.setWithFoils }
+            { missingPercent = config.missingPercent
+              dozenalize = config.dozenalize
+              withFoils = config.setWithFoils }
 
-        let langSettings: LanguageAnalyser.Settings = { dozenalize = arguments.dozenalize }
+        let langSettings: LanguageAnalyser.Settings = { dozenalize = config.dozenalize }
 
         // Combine all analysers
         let analyser =
@@ -141,5 +141,5 @@ module Analyser =
             |> combineSettings setSettings
             |> combineSettings langSettings
 
-        parseCsv arguments.filePath
+        parseCsv config.filePath
         |> analyseWith settings setData analyser
