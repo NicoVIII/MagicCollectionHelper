@@ -26,21 +26,25 @@ module SetAnalyser =
 
     type Settings =
         { missingPercent: float
-          dozenalize: bool }
+          dozenalize: bool
+          withFoils: bool }
 
     let private createEmpty (): CollectType = Map.empty
 
-    let private collect (data: CollectType) (entry: CardEntry): CollectType =
+    let private collect settings (data: CollectType) (entry: CardEntry): CollectType =
         // We skip cards without set
         match entry.set, entry.number with
         | Some mtgSet, Some number ->
-            let set =
-                data
-                |> Map.tryFind mtgSet
-                |> Option.defaultValue Set.empty
-                |> Set.add number
+            if not entry.foil || settings.withFoils then
+                let set =
+                    data
+                    |> Map.tryFind mtgSet
+                    |> Option.defaultValue Set.empty
+                    |> Set.add number
 
-            data |> Map.add mtgSet set
+                data |> Map.add mtgSet set
+            else
+                data
         | _ -> data
 
     module private Postprocess =

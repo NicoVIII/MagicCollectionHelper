@@ -19,7 +19,7 @@ module Program =
         let results = parser.ParseCommandLine argv
 
         // Validate all parameters
-        let dozenalize = results.Contains Dozenalize
+        let dozenalize = results.Contains Dozenalize |> Ok
 
         let filePath =
             results.GetResult CollectionFile
@@ -29,9 +29,13 @@ module Program =
             results.TryGetResult MissingPercent
             |> validateMissingPercent
 
+        let setWithFoils = results.Contains SetWithFoils |> Ok
+
         // Use Applicatives to construct the result of the validation
-        ProgramConfig.create dozenalize <!> filePath
+        ProgramConfig.create <!> dozenalize
+        <*> filePath
         <*> missingPercent
+        <*> setWithFoils
 
     [<EntryPoint>]
     let main argv =

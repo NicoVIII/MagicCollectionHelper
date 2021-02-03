@@ -93,9 +93,9 @@ module Analyser =
         let createEmpty () =
             (analyser2.emptyData (), analyser1.emptyData ())
 
-        let collect (data2, data1) entry =
-            let result1 = analyser1.collect data1 entry
-            let result2 = analyser2.collect data2 entry
+        let collect (settings2, settings1) (data2, data1) entry =
+            let result1 = analyser1.collect settings1 data1 entry
+            let result2 = analyser2.collect settings2 data2 entry
             (result2, result1)
 
         let postprocess setData (data2, data1) =
@@ -115,7 +115,7 @@ module Analyser =
 
     let analyseWith settings setData analyser data =
         (analyser.emptyData (), data)
-        ||> Seq.fold analyser.collect
+        ||> Seq.fold (analyser.collect settings)
         |> analyser.postprocess setData
         |> analyser.print settings
 
@@ -124,7 +124,8 @@ module Analyser =
 
         let setSettings: SetAnalyser.Settings =
             { missingPercent = arguments.missingPercent
-              dozenalize = arguments.dozenalize }
+              dozenalize = arguments.dozenalize
+              withFoils = arguments.setWithFoils }
 
         let langSettings: LanguageAnalyser.Settings = { dozenalize = arguments.dozenalize }
 

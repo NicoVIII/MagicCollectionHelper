@@ -28,7 +28,7 @@ module BasicAnalyser =
           withSet = 0u
           withLanguage = 0u }
 
-    let private collect (data: CollectData) (entry: CardEntry) =
+    let private collect _ (data: CollectData) (entry: CardEntry) =
         let addFoils =
             match entry.foil with
             | true -> entry.amount

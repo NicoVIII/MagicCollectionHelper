@@ -5,6 +5,7 @@ open Argu
 /// Available CliArguments
 type CliArguments =
     | Dozenalize
+    | SetWithFoils
     | [<AltCommandLine("-m")>] MissingPercent of float
     | [<MainCommand; ExactlyOnce; Last>] CollectionFile of path: string
 
@@ -12,6 +13,7 @@ type CliArguments =
         member s.Usage =
             match s with
             | Dozenalize _ -> "should the numbers be printed in base 12 instead of base 10"
+            | SetWithFoils -> "includes foils in set analyser"
             | MissingPercent _ -> "how much percent of the collection has to be collected to show missing card ids."
             | CollectionFile _ -> "file to analyse."
 
@@ -19,11 +21,13 @@ type CliArguments =
 type ProgramConfig =
     { dozenalize: bool
       filePath: string
-      missingPercent: float }
-    static member create dozenalize filePath missingPercent =
+      missingPercent: float
+      setWithFoils: bool }
+    static member create dozenalize filePath missingPercent setWithFoils =
         { dozenalize = dozenalize
           filePath = filePath
-          missingPercent = missingPercent }
+          missingPercent = missingPercent
+          setWithFoils = setWithFoils }
 
 type CardNumber =
     | CardNumber of uint32
@@ -92,7 +96,7 @@ type SetDataMap = Map<MagicSet, SetData>
 
 type Analyser<'result, 'collect, 'settings> =
     { emptyData: (unit -> 'collect)
-      collect: ('collect -> CardEntry -> 'collect)
+      collect: ('settings -> 'collect -> CardEntry -> 'collect)
       postprocess: (SetDataMap -> 'collect -> 'result)
       print: ('settings -> 'result -> string seq) }
 
