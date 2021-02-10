@@ -96,6 +96,8 @@ module Import =
             Path.GetFileName
             >> (fun (s: string) -> s.StartsWith "collection")
         )
+        // Convert to absolute path
+        |> Option.map (Path.GetFullPath)
 
     let perform =
         searchImportFile >> Option.map (parseCsv)

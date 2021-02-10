@@ -3,12 +3,13 @@
 open Elmish
 open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
-open Avalonia.Input
+open Avalonia.Diagnostics
 open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.FuncUI.Components.Hosts
 
 open MagicCollectionHelper.AvaloniaApp.Components
+open Avalonia.Input
 
 type MainWindow() as this =
     inherit HostWindow()
@@ -20,9 +21,16 @@ type MainWindow() as this =
 
         //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
         //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
+#if DEBUG
+        DevTools.Attach(this, KeyGesture(Key.F12))
+        |> ignore
+#endif
 
         Program.mkSimple (fun () -> Main.Model.init) Main.Update.perform Main.View.render
         |> Program.withHost this
+#if DEBUG
+        |> Program.withConsoleTrace
+#endif
         |> Program.run
 
 type App() =

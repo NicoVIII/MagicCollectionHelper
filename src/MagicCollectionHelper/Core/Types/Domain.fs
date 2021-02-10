@@ -1,31 +1,13 @@
 namespace MagicCollectionHelper.Core.Types
 
-open Argu
-
-/// Available CliArguments
-type CliArguments =
-    | Dozenalize
-    | SetWithFoils
-    | [<AltCommandLine("-m")>] MissingPercent of float
-    | [<MainCommand; ExactlyOnce; Last>] CollectionFile of path: string
-
-    interface IArgParserTemplate with
-        member s.Usage =
-            match s with
-            | Dozenalize _ -> "should the numbers be printed in base 12 instead of base 10"
-            | SetWithFoils -> "includes foils in set analyser"
-            | MissingPercent _ -> "how much percent of the collection has to be collected to show missing card ids."
-            | CollectionFile _ -> "file to analyse."
-
-/// Config used by the program. Parsed from CliArguments.
-type ProgramConfig =
+type Settings =
     { dozenalize: bool
-      filePath: string
       missingPercent: float
       setWithFoils: bool }
-    static member create dozenalize filePath missingPercent setWithFoils =
+
+module Settings =
+    let create dozenalize missingPercent setWithFoils =
         { dozenalize = dozenalize
-          filePath = filePath
           missingPercent = missingPercent
           setWithFoils = setWithFoils }
 
