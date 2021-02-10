@@ -19,7 +19,7 @@ type MainWindow() as this =
         //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
         //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
 
-        Program.mkSimple (fun () -> Counter.init) Counter.update Counter.view
+        Program.mkSimple (fun () -> Main.init) Main.update Main.view
         |> Program.withHost this
         |> Program.run
 

@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Counter.fs" />
+    <Compile Include="Main.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
