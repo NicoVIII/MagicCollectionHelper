@@ -25,37 +25,8 @@ jobs:
         run: dotnet restore
       - name: Build for debug before releasing
         run: dotnet build
-      - name: Build linux release
-        run: >-
-          dotnet publish -v m -r linux-x64 -c Release
-          -p:PublishSingleFile=true
-          -p:PublishTrimmed=true
-          -p:TrimMode=Link
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:PublishReadyToRun=true
-          -p:DebugType=None
-          -o "deploy"
-          && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-linux-x64
-      - name: Build windows release
-        run: >-
-          dotnet publish -v m -r win-x64 -c Release
-          -p:PublishSingleFile=true
-          -p:PublishTrimmed=true
-          -p:TrimMode=Link
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:DebugType=None
-          -o "deploy"
-          && mv ./deploy/MagicCollectionHelper.exe ./deploy/MagicCollectionHelper-win-x64.exe
-      - name: Build macos release
-        run: >-
-          dotnet publish -v m -r osx-x64 -c Release
-          -p:PublishSingleFile=true
-          -p:PublishTrimmed=true
-          -p:TrimMode=Link
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:DebugType=None
-          -o "deploy"
-          && mv ./deploy/MagicCollectionHelper ./deploy/MagicCollectionHelper-osx-x64
+      - name: Bundle releases
+        run: dotnet fsi bundle.fsx
       # For now I simply make a continuous build
       - name: Release files
         uses: marvinpinto/action-automatic-releases@latest
