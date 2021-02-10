@@ -5,11 +5,13 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Config.fs" />
+
     <!-- Main component -->
     <Compile Include="Components/Main/Model.fs" />
     <Compile Include="Components/Main/Model.Generated.fs">
       <MyriadFile>Components/Main/Model.fs</MyriadFile>
-  </Compile>
+    </Compile>
     <Compile Include="Components/Main/View.fs" />
     <Compile Include="Components/Main/Update.fs" />
 

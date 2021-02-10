@@ -32,7 +32,7 @@ let leftBottomBar (state: State) (dispatch: Dispatch): IView =
         StackPanel.orientation Orientation.Horizontal
         StackPanel.children [
             TextBlock.create [
-                TextBlock.text $"Cards in collection: %i{state.cards.Length}"
+                TextBlock.text $"Loaded entries: %i{state.cards.Length}"
             ]
         ]
     ]
