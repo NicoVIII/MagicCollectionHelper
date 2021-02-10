@@ -1,6 +1,6 @@
-namespace MagicCollectionHelper
+namespace MagicCollectionHelper.Core
 
-open MagicCollectionHelper.Types
+open MagicCollectionHelper.Core.Types
 
 open System.Text
 

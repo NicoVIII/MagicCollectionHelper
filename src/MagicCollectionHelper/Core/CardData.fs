@@ -1,8 +1,8 @@
-namespace MagicCollectionHelper
+namespace MagicCollectionHelper.Core
 
 open System
 
-open MagicCollectionHelper.Types
+open MagicCollectionHelper.Core.Types
 
 module CardData =
     let private add (set, max, date: string, tokenMax, name: string): SetDataMap -> SetDataMap =

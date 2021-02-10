@@ -1,4 +1,4 @@
-namespace MagicCollectionHelper
+namespace MagicCollectionHelper.Core
 
 open System
 

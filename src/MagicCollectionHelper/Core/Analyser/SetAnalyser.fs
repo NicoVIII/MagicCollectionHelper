@@ -1,8 +1,8 @@
-namespace MagicCollectionHelper
+namespace MagicCollectionHelper.Core
 
 open System.Text
 
-open MagicCollectionHelper.Types
+open MagicCollectionHelper.Core.Types
 
 module SetAnalyser =
     type CollectionData<'a> =

@@ -5,11 +5,18 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Main.fs" />
+    <!-- Main component -->
+    <Compile Include="Components/Main/Model.fs" />
+    <Compile Include="Components/Main/View.fs" />
+    <Compile Include="Components/Main/Update.fs" />
+
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove=".template.config\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Core\MagicCollectionHelper.Core.fsproj" />
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

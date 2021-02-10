@@ -1,4 +1,4 @@
-namespace MagicCollectionHelper.Types
+namespace MagicCollectionHelper.Core.Types
 
 open Argu
 

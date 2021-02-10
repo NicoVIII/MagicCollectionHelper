@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>dll</OutputType>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
@@ -9,10 +9,9 @@
     <Compile Include="Types.fs" />
     <Compile Include="Helper.fs" />
     <Compile Include="CardData.fs" />
+    <Compile Include="Import.fs" />
     <Compile Include="Analyser/*.fs" />
     <Compile Include="Analyser.fs" />
-    <Compile Include="InputValidation.fs" />
-    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\paket-files\NicoVIII\Dozenalize\src\Dozenalize\Dozenalize.fsproj" />

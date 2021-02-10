@@ -8,6 +8,8 @@ open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.FuncUI.Components.Hosts
 
+open MagicCollectionHelper.AvaloniaApp.Components
+
 type MainWindow() as this =
     inherit HostWindow()
 
@@ -19,7 +21,7 @@ type MainWindow() as this =
         //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
         //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
 
-        Program.mkSimple (fun () -> Main.init) Main.update Main.view
+        Program.mkSimple (fun () -> Main.Model.init) Main.Update.perform Main.View.render
         |> Program.withHost this
         |> Program.run
 
