@@ -7,6 +7,9 @@
   <ItemGroup>
     <!-- Main component -->
     <Compile Include="Components/Main/Model.fs" />
+    <Compile Include="Components/Main/Model.Generated.fs">
+      <MyriadFile>Components/Main/Model.fs</MyriadFile>
+  </Compile>
     <Compile Include="Components/Main/View.fs" />
     <Compile Include="Components/Main/Update.fs" />
 

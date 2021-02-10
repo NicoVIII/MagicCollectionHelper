@@ -6,7 +6,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Config.fs" />
-    <Compile Include="Types.fs" />
+    <Compile Include="Types/Lenses.fs" />
+    <Compile Include="Types/Domain.fs" />
     <Compile Include="Helper.fs" />
     <Compile Include="CardData.fs" />
     <Compile Include="Import.fs" />

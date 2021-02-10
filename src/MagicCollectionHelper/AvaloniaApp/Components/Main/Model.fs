@@ -1,8 +1,10 @@
 namespace MagicCollectionHelper.AvaloniaApp.Components.Main
 
-open MagicCollectionHelper.Core.Types
+open Myriad.Plugins
 
-type State = { cards: CardEntry list }
+[<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
+type State =
+    { cards: MagicCollectionHelper.Core.Types.CardEntry list }
 
 type Msg = | ImportFromFile
 
