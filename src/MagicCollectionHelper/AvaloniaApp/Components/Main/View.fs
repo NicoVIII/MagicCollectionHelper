@@ -7,22 +7,30 @@ open Avalonia.Layout
 open Avalonia.Media
 open Avalonia.Controls.Primitives
 
+open MagicCollectionHelper.AvaloniaApp
+
 let sideBarButton (label: string) (msg: Msg) (enabled: bool) (dispatch: Dispatch) =
     Button.create [
         Button.content label
         Button.isEnabled enabled
-        Button.padding (20., 10.)
+        Button.padding (40., 14.)
         Button.onClick (fun _ -> msg |> dispatch)
     ]
 
 let sideBar (state: State) (dispatch: Dispatch): IView =
-    StackPanel.create [
-        StackPanel.dock Dock.Left
-        StackPanel.orientation Orientation.Vertical
-        StackPanel.children [
-            sideBarButton "Import" ImportFromFile true dispatch
-            sideBarButton "Analyse" Analyse (not state.cards.IsEmpty) dispatch
-        ]
+    Border.create [
+        Border.dock Dock.Left
+        Border.borderBrush "gray"
+        Border.borderThickness (0., 0., 1., 0.)
+        Border.child (
+            StackPanel.create [
+                StackPanel.dock Dock.Left
+                StackPanel.orientation Orientation.Vertical
+                StackPanel.children [
+                    sideBarButton "Import" ImportFromFile true dispatch
+                    sideBarButton "Analyse" Analyse (not state.cards.IsEmpty) dispatch
+                ]
+            ])
     ]
     :> IView
 
@@ -64,18 +72,21 @@ let render (state: State) (dispatch: Dispatch): IView =
         DockPanel.children [
             bottomBar state dispatch
             sideBar state dispatch
-            ScrollViewer.create [
-                ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-                ScrollViewer.padding 10.
-                ScrollViewer.content (
-                    TextBlock.create [
-                        TextBlock.fontSize 12.
-                        TextBlock.horizontalAlignment HorizontalAlignment.Center
-                        TextBlock.textAlignment TextAlignment.Center
-                        TextBlock.textWrapping TextWrapping.Wrap
-                        TextBlock.text state.text
-                    ]
-                )
+            Border.create [
+                Border.background "black"
+                Border.child (
+                    ScrollViewer.create [
+                        ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
+                        ScrollViewer.padding 10.
+                        ScrollViewer.content (
+                            TextBlock.create [
+                                TextBlock.fontFamily Config.monospaceFont
+                                TextBlock.fontSize 12.
+                                TextBlock.textWrapping TextWrapping.Wrap
+                                TextBlock.text state.text
+                            ]
+                        )
+                    ])
             ]
         ]
     ]

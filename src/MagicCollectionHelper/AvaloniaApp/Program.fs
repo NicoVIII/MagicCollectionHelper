@@ -15,9 +15,9 @@ type MainWindow() as this =
     inherit HostWindow()
 
     do
-        base.Title <- "AvaloniaApp"
-        base.Width <- 400.0
-        base.Height <- 400.0
+        base.Title <- "MagicCollectionHelper"
+        base.Width <- 800.0
+        base.Height <- 600.0
 
         //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
         //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
