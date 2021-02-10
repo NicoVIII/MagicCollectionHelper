@@ -9,11 +9,8 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/bin/Debug/net5.0/MagicCollectionHelper.dll",
-            "args": [
-                "--dozenalize",
-                "collection.csv"
-            ],
+            "program": "${workspaceFolder}/src/MagicCollectionHelper/AvaloniaApp/bin/Debug/net5.0/MagicCollectionHelper.AvaloniaApp.dll",
+            "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
