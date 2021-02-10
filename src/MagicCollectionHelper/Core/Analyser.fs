@@ -8,9 +8,9 @@ module Analyser =
         let createEmpty () =
             (analyser2.emptyData (), analyser1.emptyData ())
 
-        let collect (settings2, settings1) (data2, data1) entry =
-            let result1 = analyser1.collect settings1 data1 entry
-            let result2 = analyser2.collect settings2 data2 entry
+        let collect (prefs2, prefs1) (data2, data1) entry =
+            let result1 = analyser1.collect prefs1 data1 entry
+            let result2 = analyser2.collect prefs2 data2 entry
             (result2, result1)
 
         let postprocess setData (data2, data1) =
@@ -18,31 +18,31 @@ module Analyser =
             let result2 = analyser2.postprocess setData data2
             (result2, result1)
 
-        let print (settings2, settings1) (result2, result1) =
-            let result1 = analyser1.print settings1 result1
-            let result2 = analyser2.print settings2 result2
+        let print (prefs2, prefs1) (result2, result1) =
+            let result1 = analyser1.print prefs1 result1
+            let result2 = analyser2.print prefs2 result2
             [ result2; seq { "" }; result1 ] |> Seq.concat
 
         Analyser.create createEmpty collect postprocess print
 
-    /// Combine settings
-    let combineSettings settings1 settings2 = (settings2, settings1)
+    /// Combine preferences
+    let combinePrefs prefs1 prefs2 = (prefs2, prefs1)
 
-    let analyseWith settings setData analyser data =
+    let analyseWith prefs setData analyser data =
         (analyser.emptyData (), data)
-        ||> Seq.fold (analyser.collect settings)
+        ||> Seq.fold (analyser.collect prefs)
         |> analyser.postprocess setData
-        |> analyser.print settings
+        |> analyser.print prefs
 
     let analyse setData config data =
-        let basicSettings: BasicAnalyser.Settings = { dozenalize = config.dozenalize }
+        let basicPrefs: BasicAnalyser.Preferences = { dozenalize = config.dozenalize }
 
-        let setSettings: SetAnalyser.Settings =
+        let setPrefs: SetAnalyser.Preferences =
             { missingPercent = config.missingPercent
               dozenalize = config.dozenalize
               withFoils = config.setWithFoils }
 
-        let langSettings: LanguageAnalyser.Settings = { dozenalize = config.dozenalize }
+        let langPrefs: LanguageAnalyser.Preferences = { dozenalize = config.dozenalize }
 
         // Combine all analysers
         let analyser =
@@ -50,10 +50,10 @@ module Analyser =
             |> combine SetAnalyser.get
             |> combine LanguageAnalyser.get
 
-        // Combine settings
-        let settings =
-            basicSettings
-            |> combineSettings setSettings
-            |> combineSettings langSettings
+        // Combine preferences
+        let prefs =
+            basicPrefs
+            |> combinePrefs setPrefs
+            |> combinePrefs langPrefs
 
-        analyseWith settings setData analyser data
+        analyseWith prefs setData analyser data

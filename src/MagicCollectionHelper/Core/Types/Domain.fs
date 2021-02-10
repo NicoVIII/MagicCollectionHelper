@@ -1,11 +1,11 @@
 namespace MagicCollectionHelper.Core.Types
 
-type Settings =
+type Preferences =
     { dozenalize: bool
       missingPercent: float
       setWithFoils: bool }
 
-module Settings =
+module Preferences =
     let create dozenalize missingPercent setWithFoils =
         { dozenalize = dozenalize
           missingPercent = missingPercent

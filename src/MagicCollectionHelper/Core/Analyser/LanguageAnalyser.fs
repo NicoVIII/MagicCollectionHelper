@@ -7,7 +7,7 @@ module LanguageAnalyser =
 
     type CollectData = Map<Language, uint>
 
-    type Settings = { dozenalize: bool }
+    type Preferences = { dozenalize: bool }
 
     let private createEmpty (): Result = Map.empty
 
@@ -26,7 +26,7 @@ module LanguageAnalyser =
 
     let private postprocess (_: SetDataMap) (data: CollectData): Result = data
 
-    let print (settings: Settings) (result: Result) =
+    let print (settings: Preferences) (result: Result) =
         let p = sprintf
 
         let title = seq { "Language Analysis" }

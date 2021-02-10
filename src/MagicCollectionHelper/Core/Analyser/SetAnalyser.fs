@@ -24,7 +24,7 @@ module SetAnalyser =
 
     type CollectType = Map<MagicSet, Set<SetNumber>>
 
-    type Settings =
+    type Preferences =
         { missingPercent: float
           dozenalize: bool
           withFoils: bool }
@@ -151,7 +151,7 @@ module SetAnalyser =
         let tokenSetLine dozenalize (MagicSet set) =
             setLine dozenalize TokenNumber.unwrap ("T" + set |> MagicSet) None
 
-    let private print (settings: Settings) (result: Result) =
+    let private print (settings: Preferences) (result: Result) =
         let dozenalize = settings.dozenalize
 
         // We sort sets descending by "fullness"

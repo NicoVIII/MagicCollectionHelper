@@ -19,7 +19,7 @@ module BasicAnalyser =
           withSet: uint
           withLanguage: uint }
 
-    type Settings = { dozenalize: bool }
+    type Preferences = { dozenalize: bool }
 
     let private createEmpty (): CollectData =
         { amount = 0u
@@ -62,7 +62,7 @@ module BasicAnalyser =
           foils = data.foils
           withLanguage = data.withLanguage }
 
-    let print (settings: Settings) (result: Result) =
+    let print (settings: Preferences) (result: Result) =
         let p = sprintf
 
         let inline pN x =

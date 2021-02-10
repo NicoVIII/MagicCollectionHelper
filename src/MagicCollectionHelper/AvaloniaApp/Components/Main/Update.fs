@@ -15,8 +15,8 @@ let perform (msg: Msg) (state: State): State =
             |> setlr StateLenses.cards state
         | None -> state
     | Analyse ->
-        let settings = Settings.create false 0.8 false
+        let prefs = Preferences.create false 0.8 false
 
-        Analyser.analyse state.setData settings (state.cards |> Seq.ofList)
+        Analyser.analyse state.setData prefs (state.cards |> Seq.ofList)
         |> String.concat Environment.NewLine
         |> setlr StateLenses.text state
