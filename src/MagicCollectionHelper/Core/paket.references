@@ -1,2 +1,5 @@
 FSharp.Data
+Myriad.Core
+Myriad.Sdk
+Myriad.Plugins
 TypedPersistence.Json

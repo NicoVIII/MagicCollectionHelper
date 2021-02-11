@@ -15,10 +15,10 @@ let perform (msg: Msg) (state: State): State =
             |> setlr StateLenses.cards state
         | None -> state
     | Analyse ->
-        let prefs = Preferences.create false 0.8 false
-
-        Analyser.analyse state.setData prefs (state.cards |> Seq.ofList)
+        Analyser.analyse state.setData state.prefs (state.cards |> Seq.ofList)
         |> String.concat Environment.NewLine
         |> setlr StateLenses.analyseText state
     | ChangeViewMode viewMode ->
         setl StateLenses.viewMode viewMode state
+    | ChangePrefs prefs ->
+        setl StateLenses.prefs prefs state

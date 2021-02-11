@@ -8,7 +8,6 @@ open Avalonia.Media
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Main.ViewComponents
-open MagicCollectionHelper.Core.Types
 
 let sideBarButton (label: string) (msg: Msg) (dispatch: Dispatch) =
     Button.create [
@@ -63,17 +62,7 @@ let content (state: State) (dispatch: Dispatch): IView =
     | ViewMode.Analyse ->
         AnalyseView.render state dispatch
     | Preferences ->
-        Border.create [
-            Border.padding 10.
-            Border.child (
-                TextBlock.create [
-                    TextBlock.fontFamily Config.monospaceFont
-                    TextBlock.fontSize 12.
-                    TextBlock.textWrapping TextWrapping.Wrap
-                    TextBlock.text "TBD"
-                ]
-            )
-        ]:> IView
+        PreferenceView.render state dispatch
 
 let leftBottomBar (state: State) (dispatch: Dispatch): IView =
     StackPanel.create [
@@ -109,12 +98,6 @@ let bottomBar (state: State) (dispatch: Dispatch): IView =
     :> IView
 
 let render (state: State) (dispatch: Dispatch): IView =
-    let text =
-        match getl StateLenses.viewMode state with
-        | Start -> Config.startText
-        | ViewMode.Analyse -> state.analyseText
-        | Preferences -> ""
-
     DockPanel.create [
         DockPanel.children [
             bottomBar state dispatch

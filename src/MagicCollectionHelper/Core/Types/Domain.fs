@@ -1,11 +1,14 @@
 namespace MagicCollectionHelper.Core.Types
 
-type Preferences =
+open Myriad.Plugins
+
+[<Generator.Lenses("types", "Lens")>]
+type Prefs =
     { dozenalize: bool
       missingPercent: float
       setWithFoils: bool }
 
-module Preferences =
+module Prefs =
     let create dozenalize missingPercent setWithFoils =
         { dozenalize = dozenalize
           missingPercent = missingPercent

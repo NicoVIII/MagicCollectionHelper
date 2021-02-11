@@ -18,6 +18,12 @@ module StateLenses =
             (fun (x: State) (value: MagicCollectionHelper.Core.Types.CardEntry list) -> { x with cards = value })
         )
 
+    let prefs =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.prefs),
+            (fun (x: State) (value: MagicCollectionHelper.Core.Types.Prefs) -> { x with prefs = value })
+        )
+
     let setData =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.setData),
