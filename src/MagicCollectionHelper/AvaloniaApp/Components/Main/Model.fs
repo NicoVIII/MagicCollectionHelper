@@ -2,9 +2,11 @@ namespace MagicCollectionHelper.AvaloniaApp.Components.Main
 
 open Myriad.Plugins
 
+open System
+
 type ViewMode =
     | Analyse
-    | Config
+    | Preferences
     | Start
 
 [<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
@@ -17,14 +19,24 @@ type State =
 type Msg =
     | Import
     | Analyse
+    | ChangeViewMode of ViewMode
 
 type Dispatch = Msg -> unit
 
 module Model =
     open MagicCollectionHelper.Core
 
+    let arrow =
+        [ "     ."
+          "   .:;:."
+          " .:;;;;;:."
+          "   ;;;;;"
+          "   ;;;;; Press here after 'Import'"
+          "   ;;;;;" ]
+        |> String.concat Environment.NewLine
+
     let init =
-        { analyseText = ""
+        { analyseText = arrow
           cards = []
           setData = CardData.createSetData ()
           viewMode = Start }

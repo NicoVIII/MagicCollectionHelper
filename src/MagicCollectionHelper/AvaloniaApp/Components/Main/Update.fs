@@ -20,4 +20,5 @@ let perform (msg: Msg) (state: State): State =
         Analyser.analyse state.setData prefs (state.cards |> Seq.ofList)
         |> String.concat Environment.NewLine
         |> setlr StateLenses.analyseText state
-        |> setl StateLenses.viewMode ViewMode.Analyse
+    | ChangeViewMode viewMode ->
+        setl StateLenses.viewMode viewMode state

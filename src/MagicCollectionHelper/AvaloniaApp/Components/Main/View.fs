@@ -5,15 +5,14 @@ open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Layout
 open Avalonia.Media
-open Avalonia.Controls.Primitives
 
 open MagicCollectionHelper.AvaloniaApp
+open MagicCollectionHelper.AvaloniaApp.Components.Main.ViewComponents
 open MagicCollectionHelper.Core.Types
 
-let sideBarButton (label: string) (msg: Msg) (enabled: bool) (dispatch: Dispatch) =
+let sideBarButton (label: string) (msg: Msg) (dispatch: Dispatch) =
     Button.create [
         Button.content label
-        Button.isEnabled enabled
         Button.padding (40., 14.)
         Button.onClick (fun _ -> msg |> dispatch)
     ]
@@ -21,19 +20,60 @@ let sideBarButton (label: string) (msg: Msg) (enabled: bool) (dispatch: Dispatch
 let sideBar (state: State) (dispatch: Dispatch): IView =
     Border.create [
         Border.dock Dock.Left
-        Border.borderBrush "gray"
+        Border.borderBrush Config.lineColor
         Border.borderThickness (0., 0., 1., 0.)
         Border.child (
-            StackPanel.create [
-                StackPanel.dock Dock.Left
-                StackPanel.orientation Orientation.Vertical
-                StackPanel.children [
-                    sideBarButton "Import" Import true dispatch
-                    sideBarButton "Analyse" Analyse (not state.cards.IsEmpty) dispatch
+            DockPanel.create [
+                DockPanel.children [
+                    StackPanel.create [
+                        StackPanel.dock Dock.Bottom
+                        StackPanel.orientation Orientation.Vertical
+                        StackPanel.children [
+                            sideBarButton "Preferences" (ChangeViewMode Preferences) dispatch
+                        ]
+                    ]
+                    StackPanel.create [
+                        StackPanel.dock Dock.Top
+                        StackPanel.orientation Orientation.Vertical
+                        StackPanel.children [
+                            sideBarButton "Import" Import dispatch
+                            sideBarButton "Analyse" (ChangeViewMode ViewMode.Analyse) dispatch
+                        ]
+                    ]
                 ]
             ])
     ]
     :> IView
+
+let content (state: State) (dispatch: Dispatch): IView =
+    match state.viewMode with
+    | Start ->
+        Border.create [
+            Border.padding 10.
+            Border.child (
+                TextBlock.create [
+                    TextBlock.fontSize 16.
+                    TextBlock.textAlignment TextAlignment.Center
+                    TextBlock.textWrapping TextWrapping.Wrap
+                    TextBlock.text Config.startText
+                ]
+            )
+        ]
+        :> IView
+    | ViewMode.Analyse ->
+        AnalyseView.render state dispatch
+    | Preferences ->
+        Border.create [
+            Border.padding 10.
+            Border.child (
+                TextBlock.create [
+                    TextBlock.fontFamily Config.monospaceFont
+                    TextBlock.fontSize 12.
+                    TextBlock.textWrapping TextWrapping.Wrap
+                    TextBlock.text "TBD"
+                ]
+            )
+        ]:> IView
 
 let leftBottomBar (state: State) (dispatch: Dispatch): IView =
     StackPanel.create [
@@ -50,7 +90,7 @@ let leftBottomBar (state: State) (dispatch: Dispatch): IView =
 let bottomBar (state: State) (dispatch: Dispatch): IView =
     Border.create [
         Border.dock Dock.Bottom
-        Border.borderBrush "lightgray"
+        Border.borderBrush Config.lineColor
         Border.borderThickness (0., 1., 0., 0.)
         Border.child (
             DockPanel.create [
@@ -73,28 +113,13 @@ let render (state: State) (dispatch: Dispatch): IView =
         match getl StateLenses.viewMode state with
         | Start -> Config.startText
         | ViewMode.Analyse -> state.analyseText
-        | Config -> ""
+        | Preferences -> ""
 
     DockPanel.create [
         DockPanel.children [
             bottomBar state dispatch
             sideBar state dispatch
-            Border.create [
-                Border.background "black"
-                Border.child (
-                    ScrollViewer.create [
-                        ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-                        ScrollViewer.padding 10.
-                        ScrollViewer.content (
-                            TextBlock.create [
-                                TextBlock.fontFamily Config.monospaceFont
-                                TextBlock.fontSize 12.
-                                TextBlock.textWrapping TextWrapping.Wrap
-                                TextBlock.text text
-                            ]
-                        )
-                    ])
-            ]
+            content state dispatch
         ]
     ]
     :> IView
