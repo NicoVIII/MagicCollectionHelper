@@ -7,7 +7,7 @@ open MagicCollectionHelper.Core.Types
 
 let perform (msg: Msg) (state: State): State =
     match msg with
-    | ImportFromFile ->
+    | Import ->
         match Import.perform () with
         | Some import ->
             import
@@ -19,4 +19,5 @@ let perform (msg: Msg) (state: State): State =
 
         Analyser.analyse state.setData prefs (state.cards |> Seq.ofList)
         |> String.concat Environment.NewLine
-        |> setlr StateLenses.text state
+        |> setlr StateLenses.analyseText state
+        |> setl StateLenses.viewMode ViewMode.Analyse

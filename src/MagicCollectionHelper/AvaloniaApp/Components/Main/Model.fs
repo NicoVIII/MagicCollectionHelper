@@ -2,16 +2,20 @@ namespace MagicCollectionHelper.AvaloniaApp.Components.Main
 
 open Myriad.Plugins
 
-open MagicCollectionHelper.AvaloniaApp
+type ViewMode =
+    | Analyse
+    | Config
+    | Start
 
 [<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
 type State =
-    { cards: MagicCollectionHelper.Core.Types.CardEntry list
+    { analyseText: string
+      cards: MagicCollectionHelper.Core.Types.CardEntry list
       setData: MagicCollectionHelper.Core.Types.SetDataMap
-      text: string }
+      viewMode: ViewMode }
 
 type Msg =
-    | ImportFromFile
+    | Import
     | Analyse
 
 type Dispatch = Msg -> unit
@@ -20,6 +24,7 @@ module Model =
     open MagicCollectionHelper.Core
 
     let init =
-        { cards = []
+        { analyseText = ""
+          cards = []
           setData = CardData.createSetData ()
-          text = Config.startText }
+          viewMode = Start }

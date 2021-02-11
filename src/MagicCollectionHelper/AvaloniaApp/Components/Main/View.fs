@@ -8,6 +8,7 @@ open Avalonia.Media
 open Avalonia.Controls.Primitives
 
 open MagicCollectionHelper.AvaloniaApp
+open MagicCollectionHelper.Core.Types
 
 let sideBarButton (label: string) (msg: Msg) (enabled: bool) (dispatch: Dispatch) =
     Button.create [
@@ -27,7 +28,7 @@ let sideBar (state: State) (dispatch: Dispatch): IView =
                 StackPanel.dock Dock.Left
                 StackPanel.orientation Orientation.Vertical
                 StackPanel.children [
-                    sideBarButton "Import" ImportFromFile true dispatch
+                    sideBarButton "Import" Import true dispatch
                     sideBarButton "Analyse" Analyse (not state.cards.IsEmpty) dispatch
                 ]
             ])
@@ -68,6 +69,12 @@ let bottomBar (state: State) (dispatch: Dispatch): IView =
     :> IView
 
 let render (state: State) (dispatch: Dispatch): IView =
+    let text =
+        match getl StateLenses.viewMode state with
+        | Start -> Config.startText
+        | ViewMode.Analyse -> state.analyseText
+        | Config -> ""
+
     DockPanel.create [
         DockPanel.children [
             bottomBar state dispatch
@@ -83,7 +90,7 @@ let render (state: State) (dispatch: Dispatch): IView =
                                 TextBlock.fontFamily Config.monospaceFont
                                 TextBlock.fontSize 12.
                                 TextBlock.textWrapping TextWrapping.Wrap
-                                TextBlock.text state.text
+                                TextBlock.text text
                             ]
                         )
                     ])

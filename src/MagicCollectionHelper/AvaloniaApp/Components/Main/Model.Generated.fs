@@ -6,6 +6,12 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Components.Main
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Main
+    let analyseText =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.analyseText),
+            (fun (x: State) (value: string) -> { x with analyseText = value })
+        )
+
     let cards =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.cards),
@@ -18,8 +24,8 @@ module StateLenses =
             (fun (x: State) (value: MagicCollectionHelper.Core.Types.SetDataMap) -> { x with setData = value })
         )
 
-    let text =
+    let viewMode =
         MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.text),
-            (fun (x: State) (value: string) -> { x with text = value })
+            (fun (x: State) -> x.viewMode),
+            (fun (x: State) (value: ViewMode) -> { x with viewMode = value })
         )
