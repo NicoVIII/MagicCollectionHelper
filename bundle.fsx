@@ -78,7 +78,8 @@ let publish runtime =
     |> File.Move
 
 // Start of script
-Directory.Delete(Config.outputPath, true)
+if Directory.Exists Config.outputPath then
+    Directory.Delete(Config.outputPath, true)
 
 publish Linux
 
