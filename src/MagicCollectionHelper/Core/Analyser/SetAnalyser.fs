@@ -133,7 +133,7 @@ module SetAnalyser =
                     collectionData.percent * 100.
 
             [ sprintf
-                "%4s - %3s/%3s (%s%s)"
+                "%5s - %3s/%3s (%s%s)"
                 set.Value
                 (Numbers.print dozenalize 0 (int collectionData.collected))
                 (Numbers.print dozenalize 0 (collectionData.max |> unwrap |> int))
@@ -190,7 +190,7 @@ module SetAnalyser =
                     | None ->
                         let cards, token = value.cards |> SetNumber.splitSet
 
-                        $"%4s{set.Value} - No set data found (%2i{cards.Count} cards/%2i{token.Count} token)"
+                        $"%5s{set.Value} - No set data found (%2i{cards.Count} cards/%2i{token.Count} token)"
                         |> Seq.singleton)
             |> Seq.concat
 
