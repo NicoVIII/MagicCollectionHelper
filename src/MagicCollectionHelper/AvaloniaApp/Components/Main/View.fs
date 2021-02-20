@@ -1,6 +1,7 @@
 module MagicCollectionHelper.AvaloniaApp.Components.Main.View
 
 open Avalonia.Controls
+open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Layout
@@ -9,14 +10,19 @@ open Avalonia.Media
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Main.ViewComponents
 
-let sideBarButton (label: string) viewMode (dispatch: Dispatch) =
-    Button.create [
-        Button.content label
-        Button.padding (40., 14.)
-        Button.onClick (fun _ -> viewMode |> ChangeViewMode |> dispatch)
+let sideBarButton currentViewMode (label: string) viewMode (dispatch: Dispatch) =
+    let isActive = currentViewMode = viewMode
+
+    ToggleButton.create [
+        ToggleButton.isChecked isActive
+        ToggleButton.content label
+        ToggleButton.padding (40., 14.)
+        ToggleButton.onClick (fun _ -> viewMode |> ChangeViewMode |> dispatch)
     ]
 
 let sideBar (state: State) (dispatch: Dispatch): IView =
+    let sideBarButton = sideBarButton state.viewMode
+
     Border.create [
         Border.dock Dock.Left
         Border.borderBrush Config.lineColor
