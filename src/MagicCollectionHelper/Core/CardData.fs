@@ -64,3 +64,5 @@ module CardData =
         |> add ("M21", 274u, "2020-07-03", Some 18u, "Core Set 2021")
         |> add ("2XM", 332u, "2020-08-07", Some 31u, "Double Masters")
         |> add ("ZNR", 280u, "2020-09-25", Some 12u, "Zendikar Rising")
+        |> add ("CMR", 361u, "2020-11-20", Some 14u, "Commander Legends")
+        |> add ("KHM", 285u, "2021-02-05", Some 23u, "Kaldheim")
