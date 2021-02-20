@@ -96,7 +96,7 @@ let bottomBar (state: State) (dispatch: Dispatch): IView =
 let render (state: State) (dispatch: Dispatch): IView =
     DockPanel.create [
         DockPanel.children [
-            bottomBar state dispatch
+            // bottomBar state dispatch
             sideBar state dispatch
             content state dispatch
         ]
