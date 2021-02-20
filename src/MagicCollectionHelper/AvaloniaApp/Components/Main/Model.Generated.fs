@@ -12,10 +12,23 @@ module StateLenses =
             (fun (x: State) (value: string) -> { x with analyseText = value })
         )
 
+    let inventory =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.inventory),
+            (fun (x: State) (value: LocationCardMap) -> { x with inventory = value })
+        )
+
     let cards =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.cards),
             (fun (x: State) (value: MagicCollectionHelper.Core.Types.CardEntry list) -> { x with cards = value })
+        )
+
+    let locations =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.locations),
+            (fun (x: State) (value: MagicCollectionHelper.Core.Types.CustomLocation list) ->
+                { x with locations = value })
         )
 
     let prefs =

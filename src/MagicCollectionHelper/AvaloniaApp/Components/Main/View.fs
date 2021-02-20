@@ -44,6 +44,7 @@ let sideBar (state: State) (dispatch: Dispatch): IView =
                         StackPanel.children [
                             sideBarButton "Collection" Collection dispatch
                             sideBarButton "Analyse" ViewMode.Analyse dispatch
+                            sideBarButton "Inventory" Inventory dispatch
                         ]
                     ]
                 ]
@@ -57,6 +58,8 @@ let content (state: State) (dispatch: Dispatch): IView =
         CollectionView.render state dispatch
     | ViewMode.Analyse ->
         AnalyseView.render state dispatch
+    | Inventory ->
+        InventoryView.render state dispatch
     | Preferences ->
         PreferenceView.render state dispatch
 

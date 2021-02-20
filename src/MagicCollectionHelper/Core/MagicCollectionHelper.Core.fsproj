@@ -15,6 +15,7 @@
     <Compile Include="Import/Collection.fs" />
     <Compile Include="Analyser/*.fs" />
     <Compile Include="Analyser.fs" />
+    <Compile Include="Inventory.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\paket-files\NicoVIII\Dozenalize\src\Dozenalize\Dozenalize.fsproj" />

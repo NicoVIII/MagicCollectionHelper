@@ -22,3 +22,6 @@ let perform (msg: Msg) (state: State): State =
         setl StateLenses.viewMode viewMode state
     | ChangePrefs prefs ->
         setl StateLenses.prefs prefs state
+    | TakeInventory ->
+        Inventory.take state.locations state.cards
+        |> setlr StateLenses.inventory state

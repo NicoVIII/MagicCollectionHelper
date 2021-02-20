@@ -91,3 +91,25 @@ module Analyser =
           collect = collect
           postprocess = postprocess
           print = print }
+
+type Card =
+    { name: string
+      number: SetNumber option
+      foil: bool
+      language: Language option
+      set: MagicSet option }
+
+type Rule =
+    | InSet of MagicSet list
+    | InLanguage of Language
+    | IsFoil of bool
+    | Limit of uint
+
+type CustomLocation =
+    { name: string
+      rules: Rule list }
+
+/// Location, where a part of the collection is
+type InventoryLocation =
+    | Custom of CustomLocation
+    | Fallback
