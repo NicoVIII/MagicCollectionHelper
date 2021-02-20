@@ -7,6 +7,8 @@ open Avalonia.FuncUI.Types
 open Avalonia.Layout
 open Avalonia.Media
 
+open MagicCollectionHelper.Core.Types
+
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Main
 open MagicCollectionHelper.AvaloniaApp.Elements
@@ -31,7 +33,12 @@ module CollectionView =
             Border.padding 10.
             Border.child(
                 TextBlock.create [
-                    TextBlock.text "TBD - This should become a collection explorer"
+                    if state.cards.IsEmpty then
+                        TextBlock.text "Your collection is empty. Import it first."
+                    else
+                        let cardAmount =
+                            List.sumBy (fun entry -> entry.amount) state.cards
+                        TextBlock.text $"You have %i{cardAmount} cards in your collection."
                 ]
             )
         ] :> IView
