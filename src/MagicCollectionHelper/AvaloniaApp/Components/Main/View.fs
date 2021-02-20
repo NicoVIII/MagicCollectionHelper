@@ -9,11 +9,11 @@ open Avalonia.Media
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Main.ViewComponents
 
-let sideBarButton (label: string) (msg: Msg) (dispatch: Dispatch) =
+let sideBarButton (label: string) viewMode (dispatch: Dispatch) =
     Button.create [
         Button.content label
         Button.padding (40., 14.)
-        Button.onClick (fun _ -> msg |> dispatch)
+        Button.onClick (fun _ -> viewMode |> ChangeViewMode |> dispatch)
     ]
 
 let sideBar (state: State) (dispatch: Dispatch): IView =
@@ -27,16 +27,17 @@ let sideBar (state: State) (dispatch: Dispatch): IView =
                     StackPanel.create [
                         StackPanel.dock Dock.Bottom
                         StackPanel.orientation Orientation.Vertical
+                        StackPanel.spacing 1.
                         StackPanel.children [
-                            sideBarButton "Preferences" (ChangeViewMode Preferences) dispatch
+                            sideBarButton "Preferences" Preferences dispatch
                         ]
                     ]
                     StackPanel.create [
-                        StackPanel.dock Dock.Top
                         StackPanel.orientation Orientation.Vertical
+                        StackPanel.spacing 1.
                         StackPanel.children [
-                            sideBarButton "Import" Import dispatch
-                            sideBarButton "Analyse" (ChangeViewMode ViewMode.Analyse) dispatch
+                            sideBarButton "Collection" Collection dispatch
+                            sideBarButton "Analyse" ViewMode.Analyse dispatch
                         ]
                     ]
                 ]
@@ -46,19 +47,8 @@ let sideBar (state: State) (dispatch: Dispatch): IView =
 
 let content (state: State) (dispatch: Dispatch): IView =
     match state.viewMode with
-    | Start ->
-        Border.create [
-            Border.padding 10.
-            Border.child (
-                TextBlock.create [
-                    TextBlock.fontSize 16.
-                    TextBlock.textAlignment TextAlignment.Center
-                    TextBlock.textWrapping TextWrapping.Wrap
-                    TextBlock.text Config.startText
-                ]
-            )
-        ]
-        :> IView
+    | Collection ->
+        CollectionView.render state dispatch
     | ViewMode.Analyse ->
         AnalyseView.render state dispatch
     | Preferences ->

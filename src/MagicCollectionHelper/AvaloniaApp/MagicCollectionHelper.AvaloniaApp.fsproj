@@ -8,12 +8,16 @@
     <Compile Include="Config.fs" />
     <Compile Include="ViewHelper.fs" />
 
+    <!-- Elements -->
+    <Compile Include="Elements/Elements.fs" />
+
     <!-- Main component -->
     <Compile Include="Components/Main/Model.fs" />
     <Compile Include="Components/Main/Model.Generated.fs">
       <MyriadFile>Components/Main/Model.fs</MyriadFile>
     </Compile>
     <Compile Include="Components/Main/ViewComponents/AnalyseView.fs" />
+    <Compile Include="Components/Main/ViewComponents/CollectionView.fs" />
     <Compile Include="Components/Main/ViewComponents/PreferenceView.fs" />
     <Compile Include="Components/Main/View.fs" />
     <Compile Include="Components/Main/Update.fs" />

@@ -7,8 +7,8 @@ open MagicCollectionHelper.Core.Types
 
 type ViewMode =
     | Analyse
+    | Collection
     | Preferences
-    | Start
 
 [<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
 type State =
@@ -19,7 +19,7 @@ type State =
       viewMode: ViewMode }
 
 type Msg =
-    | Import
+    | ImportCollection
     | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
@@ -43,4 +43,4 @@ module Model =
           cards = []
           prefs = Types.Prefs.create false Config.missingPercentDefault false
           setData = CardData.createSetData ()
-          viewMode = Start }
+          viewMode = Collection }

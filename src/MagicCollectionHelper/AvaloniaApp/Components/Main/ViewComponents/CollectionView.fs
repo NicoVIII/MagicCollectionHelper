@@ -11,33 +11,30 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Main
 open MagicCollectionHelper.AvaloniaApp.Elements
 
-module AnalyseView =
+module CollectionView =
     let topBar (state: State) (dispatch: Dispatch): IView =
         ActionButtonBar.create [
             ActionButton.create {
-                text = "Analyse"
-                isEnabled = (not state.cards.IsEmpty)
-                action = (fun _ -> Analyse |> dispatch)
+                text = "Import collection"
+                isEnabled = (state.cards.IsEmpty)
+                action = (fun _ -> ImportCollection |> dispatch)
+            }
+            ActionButton.create {
+                text = "Import decks"
+                isEnabled = false
+                action = (fun _ -> ())
             }
         ]
 
     let content (state: State) (dispatch: Dispatch): IView =
         Border.create [
-            Border.background "black"
-            Border.child (
-                ScrollViewer.create [
-                    ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-                    ScrollViewer.padding 10.
-                    ScrollViewer.content (
-                        TextBlock.create [
-                            TextBlock.fontFamily Config.monospaceFont
-                            TextBlock.fontSize 12.
-                            TextBlock.textWrapping TextWrapping.Wrap
-                            TextBlock.text state.analyseText
-                        ]
-                    )
-                ])
-        ]:> IView
+            Border.padding 10.
+            Border.child(
+                TextBlock.create [
+                    TextBlock.text "TBD - This should become a collection explorer"
+                ]
+            )
+        ] :> IView
 
     let render (state: State) (dispatch: Dispatch): IView =
         DockPanel.create [
