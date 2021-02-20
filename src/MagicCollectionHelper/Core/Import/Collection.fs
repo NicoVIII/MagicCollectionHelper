@@ -1,7 +1,7 @@
 namespace MagicCollectionHelper.Core
 
 [<RequireQualifiedAccess>]
-module Import =
+module CollectionImport =
     open FSharp.Data
     open System.IO
 

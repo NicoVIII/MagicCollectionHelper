@@ -8,7 +8,7 @@ open MagicCollectionHelper.Core.Types
 let perform (msg: Msg) (state: State): State =
     match msg with
     | ImportCollection ->
-        match Import.perform () with
+        match CollectionImport.perform () with
         | Some import ->
             import
             |> List.ofSeq
