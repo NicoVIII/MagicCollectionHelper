@@ -5,10 +5,12 @@ open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.Components
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
+open Avalonia.Layout
 
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
+open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
 
 let topBar (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
@@ -46,7 +48,10 @@ let locationItem (location, (entryList: CardEntry list)) =
     ]
 
 let content (state: State) (dispatch: Dispatch): IView =
-    if state.loadInProgress then
+    match state.editLocations, state.loadInProgress with
+    | true, _ ->
+        LocationEdit.render state dispatch
+    | false, true ->
         Border.create [
             Border.padding 10.
             Border.child(
@@ -54,7 +59,7 @@ let content (state: State) (dispatch: Dispatch): IView =
                     TextBlock.text "Loading..."
                 ])
         ] :> IView
-    else
+    | false, false ->
         TreeView.create [
             TreeView.dataItems(
                 state.inventory
@@ -70,6 +75,11 @@ let render (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView 
     DockPanel.create [
         DockPanel.children [
             topBar entries state dispatch
+            Button.create [
+                Button.dock Dock.Top
+                Button.content (if state.editLocations then "Close" else "Edit")
+                Button.onClick (fun _ -> OpenLocationEdit |> dispatch)
+            ]
             ScrollViewer.create [
                 ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
                 ScrollViewer.content (content state dispatch)

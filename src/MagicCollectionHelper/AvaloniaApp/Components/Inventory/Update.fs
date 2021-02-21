@@ -23,3 +23,7 @@ let perform (entries: CardEntry list) (msg: Msg) (state: State) =
             |> setlr StateLenses.inventory state
             |> setl StateLenses.loadInProgress false
         (state, Cmd.none)
+    | OpenLocationEdit ->
+        let state = setl StateLenses.editLocations true state
+
+        (state, Cmd.none)

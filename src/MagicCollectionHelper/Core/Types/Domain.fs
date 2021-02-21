@@ -57,7 +57,11 @@ type MagicSet =
         let (MagicSet value) = this
         value
 
-type Language = Language of string
+type Language =
+    | Language of string
+    member this.Value =
+        let (Language value) = this
+        value
 
 // TODO: condition
 // TODO: comment?
@@ -99,8 +103,9 @@ type Card =
       language: Language option
       set: MagicSet option }
 
+[<Generator.DuCases("dus")>]
 type Rule =
-    | InSet of MagicSet list
+    | InSet of MagicSet
     | InLanguage of Language
     | IsFoil of bool
     | Limit of uint

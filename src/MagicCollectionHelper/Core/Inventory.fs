@@ -9,9 +9,9 @@ module Inventory =
 
     let fitsRule cardsInLoc (card: Card) rule =
         match rule with
-        | InSet sets ->
+        | InSet set ->
             match card.set with
-            | Some set -> List.contains set sets
+            | Some s -> s = set
             | None -> false
         | InLanguage lang ->
             match card.language with

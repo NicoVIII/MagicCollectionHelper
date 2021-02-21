@@ -6,6 +6,12 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Components.Inventory
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Inventory
+    let editLocations =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.editLocations),
+            (fun (x: State) (value: bool) -> { x with editLocations = value })
+        )
+
     let inventory =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.inventory),
