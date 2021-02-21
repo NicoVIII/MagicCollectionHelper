@@ -7,6 +7,8 @@ open Avalonia.FuncUI.Types
 open Avalonia.Layout
 open Avalonia.Media
 
+open MagicCollectionHelper.Core.Types
+
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Main.ViewComponents
 
@@ -21,7 +23,7 @@ let sideBarButton currentViewMode (label: string) viewMode (dispatch: Dispatch) 
     ]
 
 let sideBar (state: State) (dispatch: Dispatch): IView =
-    let sideBarButton = sideBarButton state.viewMode
+    let sideBarButton = sideBarButton (getl StateL.viewMode state)
 
     Border.create [
         Border.dock Dock.Left
@@ -53,23 +55,27 @@ let sideBar (state: State) (dispatch: Dispatch): IView =
     :> IView
 
 let content (state: State) (dispatch: Dispatch): IView =
-    match state.viewMode with
+    match getl StateL.viewMode state with
     | Collection ->
         CollectionView.render state dispatch
     | ViewMode.Analyse ->
         AnalyseView.render state dispatch
     | Inventory ->
-        InventoryView.render state dispatch
+        let entries = getl StateL.entries state
+        let dispatch = InventoryMsg >> dispatch
+        Components.Inventory.View.render entries state.inventory dispatch
     | Preferences ->
         PreferenceView.render state dispatch
 
 let leftBottomBar (state: State) (dispatch: Dispatch): IView =
+    let entries = getl StateL.entries state
+
     StackPanel.create [
         StackPanel.dock Dock.Left
         StackPanel.orientation Orientation.Horizontal
         StackPanel.children [
             TextBlock.create [
-                TextBlock.text $"Loaded entries: %i{state.cards.Length}"
+                TextBlock.text $"Loaded entries: %i{entries.Length}"
             ]
         ]
     ]

@@ -15,10 +15,12 @@ open MagicCollectionHelper.AvaloniaApp.Elements
 
 module CollectionView =
     let topBar (state: State) (dispatch: Dispatch): IView =
+        let entries = getl StateL.entries state
+
         ActionButtonBar.create [
             ActionButton.create {
                 text = "Import collection"
-                isEnabled = (state.cards.IsEmpty)
+                isEnabled = (entries.IsEmpty)
                 action = (fun _ -> ImportCollection |> dispatch)
             }
             ActionButton.create {
@@ -29,15 +31,17 @@ module CollectionView =
         ]
 
     let content (state: State) (dispatch: Dispatch): IView =
+        let entries = getl StateL.entries state
+
         Border.create [
             Border.padding 10.
             Border.child(
                 TextBlock.create [
-                    if state.cards.IsEmpty then
+                    if entries.IsEmpty then
                         TextBlock.text "Your collection is empty. Import it first."
                     else
                         let cardAmount =
-                            List.sumBy (fun entry -> entry.amount) state.cards
+                            List.sumBy (fun entry -> entry.amount) entries
                         TextBlock.text $"You have %i{cardAmount} cards in your collection."
                 ]
             )

@@ -1,2 +1,5 @@
+["components-inventory"]
+namespace = "MagicCollectionHelper.AvaloniaApp.Components.Inventory"
+
 ["components-main"]
 namespace = "MagicCollectionHelper.AvaloniaApp.Components.Main"

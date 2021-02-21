@@ -4,47 +4,51 @@
 //------------------------------------------------------------------------------
 namespace rec MagicCollectionHelper.AvaloniaApp.Components.Main
 
-module StateLenses =
+module CommonStateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Main
     let analyseText =
         MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.analyseText),
-            (fun (x: State) (value: string) -> { x with analyseText = value })
+            (fun (x: CommonState) -> x.analyseText),
+            (fun (x: CommonState) (value: string) -> { x with analyseText = value })
+        )
+
+    let entries =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.entries),
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.CardEntry list) ->
+                { x with entries = value })
+        )
+
+    let prefs =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.prefs),
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.Prefs) -> { x with prefs = value })
+        )
+
+    let setData =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.setData),
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.SetDataMap) -> { x with setData = value })
+        )
+
+    let viewMode =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.viewMode),
+            (fun (x: CommonState) (value: ViewMode) -> { x with viewMode = value })
+        )
+namespace rec MagicCollectionHelper.AvaloniaApp.Components.Main
+
+module StateLenses =
+    open MagicCollectionHelper.AvaloniaApp.Components.Main
+    let common =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.common),
+            (fun (x: State) (value: CommonState) -> { x with common = value })
         )
 
     let inventory =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.inventory),
-            (fun (x: State) (value: LocationCardMap) -> { x with inventory = value })
-        )
-
-    let cards =
-        MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.cards),
-            (fun (x: State) (value: MagicCollectionHelper.Core.Types.CardEntry list) -> { x with cards = value })
-        )
-
-    let locations =
-        MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.locations),
-            (fun (x: State) (value: MagicCollectionHelper.Core.Types.CustomLocation list) ->
-                { x with locations = value })
-        )
-
-    let prefs =
-        MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.prefs),
-            (fun (x: State) (value: MagicCollectionHelper.Core.Types.Prefs) -> { x with prefs = value })
-        )
-
-    let setData =
-        MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.setData),
-            (fun (x: State) (value: MagicCollectionHelper.Core.Types.SetDataMap) -> { x with setData = value })
-        )
-
-    let viewMode =
-        MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.viewMode),
-            (fun (x: State) (value: ViewMode) -> { x with viewMode = value })
+            (fun (x: State) (value: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State) ->
+                { x with inventory = value })
         )

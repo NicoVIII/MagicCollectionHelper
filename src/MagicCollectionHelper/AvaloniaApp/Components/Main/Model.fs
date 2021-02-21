@@ -9,27 +9,30 @@ type ViewMode =
     | Inventory
     | Preferences
 
-type LocationCardMap =
-    Map<MagicCollectionHelper.Core.Types.InventoryLocation, MagicCollectionHelper.Core.Types.CardEntry list>
-
 [<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
-type State =
+type CommonState =
     { analyseText: string
-      inventory: LocationCardMap
-      cards: MagicCollectionHelper.Core.Types.CardEntry list
-      locations: MagicCollectionHelper.Core.Types.CustomLocation list
+      entries: MagicCollectionHelper.Core.Types.CardEntry list
       prefs: MagicCollectionHelper.Core.Types.Prefs
       setData: MagicCollectionHelper.Core.Types.SetDataMap
       viewMode: ViewMode }
 
+[<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
+type State =
+    {
+        common: CommonState
+        inventory: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State
+    }
+
 open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.AvaloniaApp.Components
 
 type Msg =
     | ImportCollection
     | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
-    | TakeInventory
+    | InventoryMsg of Inventory.Msg
 
 type Dispatch = Msg -> unit
 
@@ -45,33 +48,13 @@ module Model =
           "   ;;;;;" ]
         |> String.concat Environment.NewLine
 
-    let init =
-        // Test Locations
-        let locations = [
-            { name = "Collection GRN"
-              rules = [ InSet [MagicSet "GRN"]; Limit 1u ] }
-            { name = "Collection RNA"
-              rules = [ InSet [MagicSet "RNA"]; Limit 1u ] }
-            { name = "Collection WAR"
-              rules = [ InSet [MagicSet "WAR"]; Limit 1u ] }
-            { name = "Collection ELD"
-              rules = [ InSet [MagicSet "ELD"]; Limit 1u ] }
-            { name = "Collection THB"
-              rules = [ InSet [MagicSet "THB"]; Limit 1u ] }
-            { name = "Collection IKO"
-              rules = [ InSet [MagicSet "IKO"]; Limit 1u ] }
-            { name = "Collection ZNR"
-              rules = [ InSet [MagicSet "ZNR"]; Limit 1u ] }
-            { name = "Collection KHM"
-              rules = [ InSet [MagicSet "KHM"]; Limit 1u ] }
-            { name = "Lookup"
-              rules = [ Limit 1u ] }
-        ]
-
+    let initCommon:CommonState =
         { analyseText = arrow
-          inventory = Map.empty
-          cards = []
-          locations = locations
+          entries = []
           prefs = Prefs.create false Config.missingPercentDefault false
           setData = CardData.createSetData ()
           viewMode = Collection }
+
+    let init: State =
+        { common = initCommon
+          inventory = Inventory.Model.init }

@@ -11,7 +11,7 @@ open MagicCollectionHelper.Core.Types
 
 module PreferenceView =
     let render (state: State) (dispatch: Dispatch): IView =
-        let prefs = state.prefs
+        let prefs = getl StateL.prefs state
 
         Border.create [
             Border.padding 10.
