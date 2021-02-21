@@ -21,18 +21,27 @@ let topBar (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView 
     ]
 
 let cardItem (entry: CardEntry) =
+    let amount =
+        match entry.amount with
+        | amount when amount < 10u ->
+            $" {amount}"
+        | amount ->
+            $"{amount}"
+
     TextBlock.create [
-        TextBlock.text entry.name
+        TextBlock.text $"{amount} {entry.name}"
     ]
 
 let locationItem (location, (entryList: CardEntry list)) =
+    let sum = List.sumBy (fun entry -> entry.amount) entryList
+
     TreeViewItem.create [
         match location with
         | Custom location ->
-            TreeViewItem.header location.name
+            TreeViewItem.header $"{location.name} ({sum})"
         | Fallback ->
-            TreeViewItem.header "Leftover"
-        TreeViewItem.dataItems entryList
+            TreeViewItem.header $"Leftover ({sum})"
+        TreeViewItem.dataItems (List.sortBy (fun (entry: CardEntry) -> entry.name) entryList)
         TreeViewItem.itemTemplate (DataTemplateView<CardEntry>.create(cardItem))
     ]
 
