@@ -12,6 +12,12 @@ module StateLenses =
             (fun (x: State) (value: LocationCardMap) -> { x with inventory = value })
         )
 
+    let loadInProgress =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.loadInProgress),
+            (fun (x: State) (value: bool) -> { x with loadInProgress = value })
+        )
+
     let locations =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.locations),

@@ -37,6 +37,8 @@ type Msg =
 type Dispatch = Msg -> unit
 
 module Model =
+    open Elmish
+
     open MagicCollectionHelper.Core
 
     let arrow =
@@ -48,13 +50,16 @@ module Model =
           "   ;;;;;" ]
         |> String.concat Environment.NewLine
 
-    let initCommon:CommonState =
+    let initCommon (): CommonState =
         { analyseText = arrow
           entries = []
           prefs = Prefs.create false Config.missingPercentDefault false
           setData = CardData.createSetData ()
           viewMode = Collection }
 
-    let init: State =
-        { common = initCommon
-          inventory = Inventory.Model.init }
+    let init () =
+        let state: State =
+            { common = initCommon ()
+              inventory = Inventory.Model.init () }
+
+        (state, Cmd.none)

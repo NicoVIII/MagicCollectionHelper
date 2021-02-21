@@ -9,16 +9,19 @@ type LocationCardMap =
 [<Generator.Lenses("components-inventory", "MagicCollectionHelper.Core.Types.Lens")>]
 type State =
     { inventory: LocationCardMap
+      loadInProgress: bool
       locations: MagicCollectionHelper.Core.Types.CustomLocation list }
 
-type Msg = | TakeInventory
+type Msg =
+    | TakeInventory
+    | SaveInventory of LocationCardMap
 
 type Dispatch = Msg -> unit
 
 module Model =
     open MagicCollectionHelper.Core.Types
 
-    let init: State =
+    let init (): State =
         // Test Locations
         let locations = [
             { name = "Collection GRN"
@@ -42,4 +45,5 @@ module Model =
         ]
 
         { inventory = Map.empty
+          loadInProgress = false
           locations = locations }

@@ -84,3 +84,9 @@ module Inventory =
 
         // Collapse into entries again
         Map.map (fun _ cardList -> cardToEntryList cardList) locCardMap
+
+    // Because this process can take some time, we provide an async version
+    let takeAsync locations entries =
+        async {
+            return take locations entries
+        }

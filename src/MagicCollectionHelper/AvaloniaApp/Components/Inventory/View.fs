@@ -5,8 +5,6 @@ open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.Components
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
-open Avalonia.Layout
-open Avalonia.Media
 
 open MagicCollectionHelper.Core.Types
 
@@ -39,26 +37,33 @@ let locationItem (location, (entryList: CardEntry list)) =
     ]
 
 let content (state: State) (dispatch: Dispatch): IView =
-    ScrollViewer.create [
-        ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-        ScrollViewer.content(
-            TreeView.create [
-                TreeView.dataItems(
-                    state.inventory
-                    |> Map.toList
-                    |> List.sortBy (fun (l, _) ->
-                        // We sort like our locations are sorted
-                        List.tryFindIndex (fun l' -> Custom l' = l) state.locations
-                        |> Option.defaultValue 999))
-                TreeView.itemTemplate (DataTemplateView<InventoryLocation * CardEntry list>.create(locationItem))
-            ]
-        )
-    ] :> IView
+    if state.loadInProgress then
+        Border.create [
+            Border.padding 10.
+            Border.child(
+                TextBlock.create [
+                    TextBlock.text "Loading..."
+                ])
+        ] :> IView
+    else
+        TreeView.create [
+            TreeView.dataItems(
+                state.inventory
+                |> Map.toList
+                |> List.sortBy (fun (l, _) ->
+                    // We sort like our locations are sorted
+                    List.tryFindIndex (fun l' -> Custom l' = l) state.locations
+                    |> Option.defaultValue 999))
+            TreeView.itemTemplate (DataTemplateView<InventoryLocation * CardEntry list>.create(locationItem))
+        ] :> IView
 
 let render (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
     DockPanel.create [
         DockPanel.children [
             topBar entries state dispatch
-            content state dispatch
+            ScrollViewer.create [
+                ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
+                ScrollViewer.content (content state dispatch)
+            ]
         ]
     ]:> IView

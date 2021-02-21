@@ -26,7 +26,7 @@ type MainWindow() as this =
         |> ignore
 #endif
 
-        Program.mkSimple (fun () -> Main.Model.init) Main.Update.perform Main.View.render
+        Program.mkProgram Main.Model.init Main.Update.perform Main.View.render
         |> Program.withHost this
 #if DEBUG
         |> Program.withConsoleTrace
