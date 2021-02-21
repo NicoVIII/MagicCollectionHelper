@@ -13,6 +13,7 @@ type ViewMode =
 type CommonState =
     { analyseText: string
       entries: MagicCollectionHelper.Core.Types.CardEntry list
+      loadInProgress: bool
       prefs: MagicCollectionHelper.Core.Types.Prefs
       setData: MagicCollectionHelper.Core.Types.SetDataMap
       viewMode: ViewMode }
@@ -29,6 +30,7 @@ open MagicCollectionHelper.AvaloniaApp.Components
 
 type Msg =
     | ImportCollection
+    | SaveCollection of CardEntry seq option
     | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
@@ -53,6 +55,7 @@ module Model =
     let initCommon (): CommonState =
         { analyseText = arrow
           entries = []
+          loadInProgress = false
           prefs = Prefs.create false Config.missingPercentDefault false
           setData = CardData.createSetData ()
           viewMode = Collection }

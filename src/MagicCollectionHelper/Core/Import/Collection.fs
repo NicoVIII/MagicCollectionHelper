@@ -101,3 +101,9 @@ module CollectionImport =
 
     let perform =
         searchImportFile >> Option.map (parseCsv)
+
+    // Because import could become an expensive task, we provide an async version
+    let performAsync () =
+        async {
+            return perform ()
+        }

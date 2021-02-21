@@ -19,6 +19,12 @@ module CommonStateLenses =
                 { x with entries = value })
         )
 
+    let loadInProgress =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.loadInProgress),
+            (fun (x: CommonState) (value: bool) -> { x with loadInProgress = value })
+        )
+
     let prefs =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: CommonState) -> x.prefs),

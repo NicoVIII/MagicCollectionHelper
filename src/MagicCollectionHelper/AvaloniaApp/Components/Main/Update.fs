@@ -11,13 +11,20 @@ open MagicCollectionHelper.AvaloniaApp.Components
 let perform (msg: Msg) (state: State) =
     match msg with
     | ImportCollection ->
+        let state = setl StateL.loadInProgress true state
+        let fnc () = CollectionImport.performAsync ()
+        let cmd = Cmd.OfAsync.perform fnc () SaveCollection
+
+        (state, cmd)
+    | SaveCollection import ->
         let state =
-            match CollectionImport.perform () with
+            match import with
             | Some import ->
                 import
                 |> List.ofSeq
                 |> setlr StateL.entries state
             | None -> state
+            |> setl StateL.loadInProgress false
 
         (state, Cmd.none)
     | Analyse ->

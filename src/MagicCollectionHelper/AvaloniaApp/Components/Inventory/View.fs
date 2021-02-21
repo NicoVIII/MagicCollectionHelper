@@ -15,7 +15,7 @@ let topBar (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView 
     ActionButtonBar.create [
         ActionButton.create {
             text = "Take inventory"
-            isEnabled = (not entries.IsEmpty)
+            isEnabled = (not (entries.IsEmpty || state.loadInProgress))
             action = (fun _ -> TakeInventory |> dispatch)
         }
     ]
