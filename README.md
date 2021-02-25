@@ -1,4 +1,5 @@
 # MagicCollectionHelper
+[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/NicoVIII/MagicCollectionHelper)
 
 This is (for now) a small tool which helps analysing MTG collections exported as CSV
 from the brilliant website <https://deckstats.net>.
