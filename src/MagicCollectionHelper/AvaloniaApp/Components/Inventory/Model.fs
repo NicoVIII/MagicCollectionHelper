@@ -17,6 +17,7 @@ type Msg =
     | TakeInventory
     | SaveInventory of LocationCardMap
     | OpenLocationEdit
+    | CloseLocationEdit
 
 type Dispatch = Msg -> unit
 

@@ -78,7 +78,12 @@ let render (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView 
             Button.create [
                 Button.dock Dock.Top
                 Button.content (if state.editLocations then "Close" else "Edit")
-                Button.onClick (fun _ -> OpenLocationEdit |> dispatch)
+                Button.onClick ((fun _ ->
+                    if state.editLocations then
+                        CloseLocationEdit
+                    else
+                        OpenLocationEdit
+                    |> dispatch), SubPatchOptions.Always)
             ]
             ScrollViewer.create [
                 ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled

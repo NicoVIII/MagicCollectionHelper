@@ -27,3 +27,7 @@ let perform (entries: CardEntry list) (msg: Msg) (state: State) =
         let state = setl StateLenses.editLocations true state
 
         (state, Cmd.none)
+    | CloseLocationEdit ->
+        let state = setl StateLenses.editLocations false state
+
+        (state, Cmd.none)
