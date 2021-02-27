@@ -5,8 +5,6 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="DataTemplateView.fs" />
-
     <Compile Include="Config.fs" />
     <Compile Include="ViewHelper.fs" />
 
@@ -39,6 +37,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\MagicCollectionHelper.Core.fsproj" />
+    <ProjectReference Include="..\..\..\third-party\Avalonia.FuncUI\src\Avalonia.FuncUI\Avalonia.FuncUI.fsproj" />
+    <ProjectReference Include="..\..\..\third-party\Avalonia.FuncUI\src\Avalonia.FuncUI.DSL\Avalonia.FuncUI.DSL.fsproj" />
+    <ProjectReference Include="..\..\..\third-party\Avalonia.FuncUI\src\Avalonia.FuncUI.Elmish\Avalonia.FuncUI.Elmish.fsproj" />
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

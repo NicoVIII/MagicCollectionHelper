@@ -34,10 +34,18 @@ let cardItem (entry: CardEntry) =
         TextBlock.text $"{amount} {entry.name}"
     ]
 
-let locationItem (location, (entryList: CardEntry list)) =
-    let sum = List.sumBy (fun entry -> entry.amount) entryList
+type TestMe =
+    {
+        l: InventoryLocation
+        e: CardEntry seq
+    }
 
-    TreeViewItem.create [
+let locationItem t =
+    let (location, entryList) = (t.l, t.e)
+
+    let sum = Seq.sumBy (fun entry -> entry.amount) entryList
+
+    (*TreeViewItem.create [
         match location with
         | Custom location ->
             TreeViewItem.header $"{location.name} ({sum})"
@@ -45,6 +53,13 @@ let locationItem (location, (entryList: CardEntry list)) =
             TreeViewItem.header $"Leftover ({sum})"
         TreeViewItem.dataItems (List.sortBy (fun (entry: CardEntry) -> entry.name) entryList)
         TreeViewItem.itemTemplate (DataTemplateView<CardEntry>.create(cardItem))
+    ]*)
+    TextBlock.create [
+        match location with
+        | Custom location ->
+            TextBlock.text $"{location.name} ({sum})"
+        | Fallback ->
+            TextBlock.text $"Leftover ({sum})"
     ]
 
 let content (state: State) (dispatch: Dispatch): IView =
@@ -67,8 +82,9 @@ let content (state: State) (dispatch: Dispatch): IView =
                 |> List.sortBy (fun (l, _) ->
                     // We sort like our locations are sorted
                     List.tryFindIndex (fun l' -> Custom l' = l) state.locations
-                    |> Option.defaultValue 999))
-            TreeView.itemTemplate (DataTemplateView<InventoryLocation * CardEntry list>.create(locationItem))
+                    |> Option.defaultValue 999)
+                |> List.map (fun (l, e) -> { l = l; e = e }))
+            TreeView.itemTemplate (DataTemplateView<TestMe>.create((fun t -> t.e), locationItem))
         ] :> IView
 
 let render (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =

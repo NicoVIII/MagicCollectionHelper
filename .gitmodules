@@ -1,0 +1,3 @@
+[submodule "third-party/Avalonia.FuncUI"]
+	path = third-party/Avalonia.FuncUI
+	url = https://github.com/NicoVIII/Avalonia.FuncUI.git
