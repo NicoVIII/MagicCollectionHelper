@@ -46,7 +46,7 @@ module CollectionView =
                         TextBlock.text "Your collection is empty. Import it first."
                     | false, false ->
                         let cardAmount =
-                            List.sumBy (fun entry -> entry.amount) entries
+                            List.sumBy (fun (entry: DeckStatsCardEntry) -> entry.amount) entries
                         TextBlock.text $"You have %i{cardAmount} cards in your collection."
                 ]
             )

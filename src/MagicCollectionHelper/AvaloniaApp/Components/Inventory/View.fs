@@ -22,16 +22,18 @@ let topBar (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView 
         }
     ]
 
-let cardItem (entry: CardEntry) =
+let cardItem (infoMap: CardInfoMap) (entry: CardEntry) =
     let amount =
         match entry.amount with
         | amount when amount < 10u ->
             $" {amount}"
         | amount ->
             $"{amount}"
+    let cardInfo =
+        infoMap.Item (entry.set, entry.number)
 
     TextBlock.create [
-        TextBlock.text $"{amount} {entry.name}"
+        TextBlock.text $"{amount} {cardInfo.name}"
     ]
 
 type TestMe =

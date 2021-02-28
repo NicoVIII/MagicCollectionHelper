@@ -4,45 +4,38 @@ open MagicCollectionHelper.Core.Types
 
 [<RequireQualifiedAccess>]
 module Inventory =
-    let isSameCard (card1: Card) (card2: Card) =
-        card1.name = card2.name
+    let isSameCard (infoMap: CardInfoMap) (card1: Card) (card2: Card) =
+        let name1 = infoMap.Item (card1.set, card1.number)
+        let name2 = infoMap.Item (card2.set, card2.number)
+        name1 = name2
 
-    let fitsRule cardsInLoc (card: Card) rule =
+    let fitsRule (infoMap: CardInfoMap) cardsInLoc (card: Card) rule =
         match rule with
-        | InSet set ->
-            match card.set with
-            | Some s -> s = set
-            | None -> false
-        | InLanguage lang ->
-            match card.language with
-            | Some cLang -> lang = cLang
-            | None -> false
+        | InSet set -> set = card.set
+        | InLanguage lang -> lang = card.language
+        | IsFoil foil -> card.foil = foil
         | Limit limit ->
-            let sum = List.sumBy (fun c -> if isSameCard c card then 1 else 0) cardsInLoc
+            let sum = List.sumBy (fun c -> if isSameCard infoMap c card then 1 else 0) cardsInLoc
             (uint) sum < limit
-        | IsFoil foil ->
-            card.foil = foil
 
-    let fitsInLocation (locCardMap: Map<InventoryLocation, Card list>) card location =
+    let fitsInLocation (infoMap: CardInfoMap) (locCardMap: Map<InventoryLocation, Card list>) card location =
         let cardList = locCardMap.Item (Custom location)
 
         location.rules
-        |> List.forall (fitsRule cardList card)
+        |> List.forall (fitsRule infoMap cardList card)
 
-    let determineLocation locCardMap locations card =
+    let determineLocation (infoMap: CardInfoMap) locCardMap locations card =
         locations
-        |> List.tryFind (fitsInLocation locCardMap card)
+        |> List.tryFind (fitsInLocation infoMap locCardMap card)
 
-    let cardForEntry (entry: CardEntry) =
-        { Card.name = entry.name
-          number = entry.number
+    let cardForEntry (entry: CardEntry): Card =
+        { number = entry.number
           foil = entry.foil
           language = entry.language
           set = entry.set }
 
-    let newEntryForCard (card: Card) =
-        { CardEntry.name = card.name
-          amount = 1u
+    let newEntryForCard (card: Card): CardEntry =
+        { amount = 1u
           number = card.number
           foil = card.foil
           language = card.language
@@ -61,7 +54,7 @@ module Inventory =
                     (newEntryForCard card) :: entryList
         entryList
 
-    let take locations entries =
+    let take (infoMap: CardInfoMap) locations entries =
         let mutable locCardMap =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
@@ -75,7 +68,7 @@ module Inventory =
             let card = cardForEntry entry
 
             for _ = 1 to (int) entry.amount do
-                let location = determineLocation locCardMap locations card
+                let location = determineLocation infoMap locCardMap locations card
                 match location with
                 | Some location ->
                     locCardMap <- Map.change (Custom location) (fun (Some l) -> card :: l |> Some) locCardMap
@@ -86,7 +79,7 @@ module Inventory =
         Map.map (fun _ cardList -> cardToEntryList cardList) locCardMap
 
     // Because this process can take some time, we provide an async version
-    let takeAsync locations entries =
+    let takeAsync infoMap locations entries =
         async {
-            return take locations entries
+            return take infoMap locations entries
         }

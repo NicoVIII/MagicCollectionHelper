@@ -31,7 +31,7 @@ module SetAnalyser =
 
     let private createEmpty (): CollectType = Map.empty
 
-    let private collect settings (data: CollectType) (entry: CardEntry): CollectType =
+    let private collect settings (data: CollectType) (entry: DeckStatsCardEntry): CollectType =
         // We skip cards without set
         match entry.set, entry.number with
         | Some mtgSet, Some number ->
@@ -148,8 +148,8 @@ module SetAnalyser =
         let cardSetLine dozenalize set setName =
             setLine dozenalize CardNumber.unwrap set (Some setName)
 
-        let tokenSetLine dozenalize (MagicSet set) =
-            setLine dozenalize TokenNumber.unwrap ("T" + set |> MagicSet) None
+        let tokenSetLine dozenalize (set: MagicSet) =
+            setLine dozenalize TokenNumber.unwrap ("T" + set.Value |> MagicSet.create) None
 
     let private print (settings: Preferences) (result: Result) =
         let dozenalize = settings.dozenalize
@@ -207,13 +207,13 @@ module SetAnalyser =
                         && missing.Count > 0 -> Some(set, setData)
                     | _ -> None)
             |> Seq.map
-                (fun ((MagicSet set), setData) ->
+                (fun (set: MagicSet, setData) ->
                     let missing =
                         setData.missing.Count
                         |> Numbers.print dozenalize 0
 
                     let titleLine =
-                        $"%-3s{set} - %2s{missing} missing:"
+                        $"%-3s{set.Value} - %2s{missing} missing:"
                         |> Seq.singleton
 
                     let cardIds, tokenIds = setData.missing |> SetNumber.splitSeq

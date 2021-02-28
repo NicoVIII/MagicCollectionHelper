@@ -7,7 +7,7 @@ open MagicCollectionHelper.Core.Types
 module CardData =
     let private add (set, max, date: string, tokenMax, name: string): SetDataMap -> SetDataMap =
         // Wrap data in value objects
-        let set = set |> MagicSet
+        let set = set |> MagicSet.create
 
         Map.add
             set

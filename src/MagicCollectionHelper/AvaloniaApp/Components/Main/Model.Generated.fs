@@ -15,8 +15,15 @@ module CommonStateLenses =
     let entries =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: CommonState) -> x.entries),
-            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.CardEntry list) ->
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list) ->
                 { x with entries = value })
+        )
+
+    let infoMap =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.infoMap),
+            (fun (x: CommonState) (value: Map<MagicCollectionHelper.Core.Types.MagicSet * MagicCollectionHelper.Core.Types.SetNumber, MagicCollectionHelper.Core.Types.CardInfo>) ->
+                { x with infoMap = value })
         )
 
     let loadInProgress =

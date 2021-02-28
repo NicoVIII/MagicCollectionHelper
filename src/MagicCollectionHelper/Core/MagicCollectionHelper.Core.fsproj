@@ -12,6 +12,7 @@
     </Compile>
     <Compile Include="Helper.fs" />
     <Compile Include="CardData.fs" />
+    <Compile Include="Import/CardData.fs" />
     <Compile Include="Import/Collection.fs" />
     <Compile Include="Analyser/*.fs" />
     <Compile Include="Analyser.fs" />

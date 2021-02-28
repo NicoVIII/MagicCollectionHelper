@@ -4,3 +4,4 @@ paket-files/
 .ionide/
 deploy/
 collection*.csv
+default-cards*.json

@@ -61,7 +61,9 @@ let content (state: State) (dispatch: Dispatch): IView =
     | ViewMode.Analyse ->
         AnalyseView.render state dispatch
     | Inventory ->
-        let entries = getl StateL.entries state
+        let entries =
+            getl StateL.entries state
+            |> CardEntry.listFromDeckStats
         let dispatch = InventoryMsg >> dispatch
         Components.Inventory.View.render entries state.inventory dispatch
     | Preferences ->

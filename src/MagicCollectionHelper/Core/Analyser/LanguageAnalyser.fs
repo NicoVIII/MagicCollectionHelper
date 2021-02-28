@@ -11,7 +11,7 @@ module LanguageAnalyser =
 
     let private createEmpty (): Result = Map.empty
 
-    let private collect _ (data: CollectData) (entry: CardEntry): Result =
+    let private collect _ (data: CollectData) (entry: DeckStatsCardEntry): Result =
         // We skip cards without language
         match entry.language with
         | Some language ->
