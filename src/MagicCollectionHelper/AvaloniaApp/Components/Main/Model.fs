@@ -13,7 +13,7 @@ type ViewMode =
 type CommonState =
     { analyseText: string
       entries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
-      infoMap: Map<MagicCollectionHelper.Core.Types.MagicSet * MagicCollectionHelper.Core.Types.SetNumber, MagicCollectionHelper.Core.Types.CardInfo>
+      infoMap: MagicCollectionHelper.Core.Types.CardInfoMap
       loadInProgress: bool
       prefs: MagicCollectionHelper.Core.Types.Prefs
       setData: MagicCollectionHelper.Core.Types.SetDataMap
@@ -32,7 +32,7 @@ open MagicCollectionHelper.AvaloniaApp.Components
 type Msg =
     | ImportCardInfo
     | ImportCollection
-    | SaveCardInfo of Map<MagicSet * SetNumber,CardInfo> option
+    | SaveCardInfo of CardInfoMap option
     | SaveCollection of DeckStatsCardEntry seq option
     | Analyse
     | ChangeViewMode of ViewMode

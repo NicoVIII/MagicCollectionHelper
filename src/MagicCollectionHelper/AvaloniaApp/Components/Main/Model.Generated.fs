@@ -22,8 +22,7 @@ module CommonStateLenses =
     let infoMap =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: CommonState) -> x.infoMap),
-            (fun (x: CommonState) (value: Map<MagicCollectionHelper.Core.Types.MagicSet * MagicCollectionHelper.Core.Types.SetNumber, MagicCollectionHelper.Core.Types.CardInfo>) ->
-                { x with infoMap = value })
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.CardInfoMap) -> { x with infoMap = value })
         )
 
     let loadInProgress =

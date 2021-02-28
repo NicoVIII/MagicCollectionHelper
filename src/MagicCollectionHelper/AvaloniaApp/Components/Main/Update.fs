@@ -12,7 +12,7 @@ let perform (msg: Msg) (state: State) =
     match msg with
     | ImportCardInfo ->
         let fnc = CardDataImport.performAsync
-        let cmd = Cmd.OfAsync.perform fnc () SaveCardInfo
+        let cmd = Cmd.OfAsync.either fnc () SaveCardInfo (fun x -> raise x)
 
         state, cmd
     | ImportCollection ->

@@ -64,8 +64,9 @@ let content (state: State) (dispatch: Dispatch): IView =
         let entries =
             getl StateL.entries state
             |> CardEntry.listFromDeckStats
+        let infoMap = getl StateL.infoMap state
         let dispatch = InventoryMsg >> dispatch
-        Components.Inventory.View.render entries state.inventory dispatch
+        Components.Inventory.View.render infoMap entries state.inventory dispatch
     | Preferences ->
         PreferenceView.render state dispatch
 

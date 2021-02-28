@@ -5,9 +5,20 @@ open MagicCollectionHelper.Core.Types
 [<RequireQualifiedAccess>]
 module Inventory =
     let isSameCard (infoMap: CardInfoMap) (card1: Card) (card2: Card) =
-        let name1 = infoMap.Item (card1.set, card1.number)
-        let name2 = infoMap.Item (card2.set, card2.number)
-        name1 = name2
+        let info1 = infoMap.TryFind (card1.set, card1.number)
+        let info2 = infoMap.TryFind (card2.set, card2.number)
+        match info1, info2 with
+        | Some info1, Some info2 -> info1.name = info2.name
+        | _ ->
+            printfn
+                "Warning: Didn't had enough Cardinfo to compare: %s-%i and %s-%i | %A | %A"
+                card1.set.Value
+                card1.number.Value
+                card2.set.Value
+                card2.number.Value
+                info1
+                info2
+            false
 
     let fitsRule (infoMap: CardInfoMap) cardsInLoc (card: Card) rule =
         match rule with

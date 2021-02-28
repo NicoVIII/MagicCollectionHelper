@@ -15,12 +15,7 @@ module CollectionImport =
           number =
               row.Collector_number
               |> parseUint
-              |> Option.map
-                  (function
-                  | number when
-                      row.Set_code.Length = 4
-                      && row.Set_code.StartsWith "T" -> number |> TokenNumber |> SetTokenNumber
-                  | number -> number |> CardNumber |> SetCardNumber)
+              |> Option.map (CollectorNumber)
           foil = row.Is_foil.GetValueOrDefault() = 1
           language =
               row.Language
@@ -31,13 +26,7 @@ module CollectionImport =
               row.Set_code
               |> function
               | "" -> None
-              | set ->
-                  set
-                  |> function
-                  | set when set.Length = 4 && set.StartsWith "T" -> set.Substring 1
-                  | set -> set
-                  |> MagicSet.create
-                  |> Some }
+              | set -> MagicSet.create set |> Some }
 
     let private parseCsv (filePath: string) =
         Collection.Load filePath

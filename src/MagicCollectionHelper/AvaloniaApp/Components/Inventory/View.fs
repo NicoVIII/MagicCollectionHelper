@@ -13,11 +13,11 @@ open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
 
-let topBar (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
+let topBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
     ActionButtonBar.create [
         ActionButton.create {
             text = "Take inventory"
-            isEnabled = (not (entries.IsEmpty || state.loadInProgress))
+            isEnabled = (not (infoMap.IsEmpty || entries.IsEmpty || state.loadInProgress))
             action = (fun _ -> TakeInventory |> dispatch)
         }
     ]
@@ -89,10 +89,10 @@ let content (state: State) (dispatch: Dispatch): IView =
             TreeView.itemTemplate (DataTemplateView<TestMe>.create((fun t -> t.e), locationItem))
         ] :> IView
 
-let render (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
+let render (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
     DockPanel.create [
         DockPanel.children [
-            topBar entries state dispatch
+            topBar infoMap entries state dispatch
             Button.create [
                 Button.dock Dock.Top
                 Button.content (if state.editLocations then "Close" else "Edit")

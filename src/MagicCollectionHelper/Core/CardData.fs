@@ -6,15 +6,23 @@ open MagicCollectionHelper.Core.Types
 
 module CardData =
     let private add (set, max, date: string, tokenMax, name: string): SetDataMap -> SetDataMap =
-        // Wrap data in value objects
-        let set = set |> MagicSet.create
-
-        Map.add
-            set
-            { date = date
-              maxCard = max |> CardNumber
-              maxToken = Option.map (TokenNumber) tokenMax
-              name = name }
+        let addCardSet =
+            Map.add
+                (MagicSet.create set)
+                { date = date
+                  max = max |> CollectorNumber
+                  name = name }
+        let addTokenSet =
+            match tokenMax with
+            | Some max ->
+                Map.add
+                    (MagicSet.create $"T{set}")
+                    { date = date
+                      max = max |> CollectorNumber
+                      name = $"{name} Token" }
+            | None ->
+                id
+        addCardSet >> addTokenSet
 
     // Data mostly from https://mtg.gamepedia.com/Set#List_of_Magic_expansions_and_sets
     // TODO: Dynamically fetch those data from an API or an editable config file

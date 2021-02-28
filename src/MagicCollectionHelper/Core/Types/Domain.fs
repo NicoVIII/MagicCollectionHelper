@@ -15,40 +15,10 @@ module Prefs =
           missingPercent = missingPercent
           setWithFoils = setWithFoils }
 
-type CardNumber =
-    | CardNumber of uint32
-    static member unwrap(CardNumber x) = x
-    member this.Value = CardNumber.unwrap this
-
-type TokenNumber =
-    | TokenNumber of uint32
-    static member unwrap(TokenNumber x) = x
-    member this.Value = TokenNumber.unwrap this
-
-type SetNumber =
-    | SetCardNumber of CardNumber
-    | SetTokenNumber of TokenNumber
-
-module SetNumber =
-    let Card = CardNumber >> SetCardNumber
-    let Token = TokenNumber >> SetTokenNumber
-
-    let splitSet =
-        Set.fold
-            (fun (cards, tokens) number ->
-                match number with
-                | SetCardNumber cardNumber -> (cards |> Set.add cardNumber, tokens)
-                | SetTokenNumber tokenNumber -> (cards, tokens |> Set.add tokenNumber))
-            (Set.empty, Set.empty)
-
-    let splitSeq s =
-        Seq.fold
-            (fun (cards, tokens) number ->
-                match number with
-                | SetCardNumber cardNumber -> (Seq.append cards [ cardNumber ], tokens)
-                | SetTokenNumber tokenNumber -> (cards, Seq.append tokens [ tokenNumber ]))
-            (Seq.empty, Seq.empty)
-            s
+type CollectorNumber =
+    | CollectorNumber of uint32
+    static member unwrap(CollectorNumber x) = x
+    member this.Value = CollectorNumber.unwrap this
 
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself
@@ -119,15 +89,14 @@ type Language =
 // TODO: added
 type DeckStatsCardEntry =
     { amount: uint
-      number: SetNumber option
+      number: CollectorNumber option
       foil: bool
       language: Language option
       set: MagicSet option }
 
 type SetData =
     { date: string
-      maxCard: CardNumber
-      maxToken: TokenNumber option
+      max: CollectorNumber
       name: string }
 
 type SetDataMap = Map<MagicSet, SetData>
@@ -146,14 +115,14 @@ module Analyser =
           print = print }
 
 type Card =
-    { number: SetNumber
+    { number: CollectorNumber
       foil: bool
       language: Language
       set: MagicSet }
 
 type CardEntry =
     { amount: uint
-      number: SetNumber
+      number: CollectorNumber
       foil: bool
       language: Language
       set: MagicSet }
@@ -201,9 +170,9 @@ type Color =
 type CardInfo = {
     name: string
     set: MagicSet
-    collectorNumber: SetNumber
+    collectorNumber: CollectorNumber
     colors: Color list
     colorIdentity: Color list
 }
 
-type CardInfoMap = Map<MagicSet * SetNumber, CardInfo>
+type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>

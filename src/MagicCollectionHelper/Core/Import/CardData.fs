@@ -34,7 +34,7 @@ module CardDataImport =
             let collectorNumber =
                 jObject.["collector_number"].ToString()
                 |> function
-                   | Uint number -> number |> CardNumber |> SetCardNumber |> Some
+                   | Uint number -> number |> CollectorNumber |> Some
                    | _ -> None
             match collectorNumber with
             | Some collectorNumber ->

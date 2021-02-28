@@ -15,7 +15,7 @@ module BasicAnalyser =
     type CollectData =
         { amount: uint
           foils: uint
-          uniqueWithSet: Set<MagicSet * SetNumber>
+          uniqueWithSet: Set<MagicSet * CollectorNumber>
           withSet: uint
           withLanguage: uint }
 
