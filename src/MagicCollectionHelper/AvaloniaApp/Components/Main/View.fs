@@ -22,8 +22,9 @@ let sideBarButton currentViewMode (label: string) viewMode (dispatch: Dispatch) 
         ToggleButton.onClick (fun _ -> viewMode |> ChangeViewMode |> dispatch)
     ]
 
-let sideBar (state: State) (dispatch: Dispatch): IView =
-    let sideBarButton = sideBarButton (getl StateL.viewMode state)
+let sideBar (state: State) (dispatch: Dispatch) : IView =
+    let sideBarButton =
+        sideBarButton (getl StateL.viewMode state)
 
     Border.create [
         Border.dock Dock.Left
@@ -50,27 +51,26 @@ let sideBar (state: State) (dispatch: Dispatch): IView =
                         ]
                     ]
                 ]
-            ])
+            ]
+        )
     ]
     :> IView
 
-let content (state: State) (dispatch: Dispatch): IView =
+let content (state: State) (dispatch: Dispatch) : IView =
     match getl StateL.viewMode state with
-    | Collection ->
-        CollectionView.render state dispatch
-    | ViewMode.Analyse ->
-        AnalyseView.render state dispatch
+    | Collection -> CollectionView.render state dispatch
+    | ViewMode.Analyse -> AnalyseView.render state dispatch
     | Inventory ->
         let entries =
             getl StateL.entries state
-            |> CardEntry.listFromDeckStats
+            |> DeckStatsCardEntry.listToEntries
+
         let infoMap = getl StateL.infoMap state
         let dispatch = InventoryMsg >> dispatch
         Components.Inventory.View.render infoMap entries state.inventory dispatch
-    | Preferences ->
-        PreferenceView.render state dispatch
+    | Preferences -> PreferenceView.render state dispatch
 
-let leftBottomBar (state: State) (dispatch: Dispatch): IView =
+let leftBottomBar (state: State) (dispatch: Dispatch) : IView =
     let entries = getl StateL.entries state
 
     StackPanel.create [
@@ -84,7 +84,7 @@ let leftBottomBar (state: State) (dispatch: Dispatch): IView =
     ]
     :> IView
 
-let bottomBar (state: State) (dispatch: Dispatch): IView =
+let bottomBar (state: State) (dispatch: Dispatch) : IView =
     Border.create [
         Border.dock Dock.Bottom
         Border.borderBrush Config.lineColor
@@ -105,7 +105,7 @@ let bottomBar (state: State) (dispatch: Dispatch): IView =
     ]
     :> IView
 
-let render (state: State) (dispatch: Dispatch): IView =
+let render (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             // bottomBar state dispatch

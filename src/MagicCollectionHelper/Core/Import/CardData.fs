@@ -13,38 +13,41 @@ module CardDataImport =
         | null -> []
         | jToken ->
             jToken.Children()
-            |> Seq.map (fun c ->
-                c.ToString()
-                |> function
-                   | "W" -> White
-                   | "U" -> Blue
-                   | "B" -> Black
-                   | "R" -> Red
-                   | "G" -> Green
-                   | c -> failwith $"Unknown color string: {c}"
-            )
+            |> Seq.map
+                (fun c ->
+                    c.ToString()
+                    |> function
+                    | "W" -> White
+                    | "U" -> Blue
+                    | "B" -> Black
+                    | "R" -> Red
+                    | "G" -> Green
+                    | c -> failwith $"Unknown color string: {c}")
             |> Seq.toList
 
-    let private lineToInfo (line: string): CardInfo option =
+    let private lineToInfo (line: string) : CardInfo option =
         let line' = line.Trim(' ', ',', '[', ']')
+
         if line' = "" then
             None
         else
             let jObject = JObject.Parse line'
+
             let collectorNumber =
                 jObject.["collector_number"].ToString()
                 |> function
-                   | Uint number -> number |> CollectorNumber |> Some
-                   | _ -> None
+                | Uint number -> number |> CollectorNumber |> Some
+                | _ -> None
+
             match collectorNumber with
             | Some collectorNumber ->
-                {
-                    name = jObject.["name"].ToString()
-                    set = jObject.["set"].ToString() |> MagicSet.create
-                    collectorNumber = collectorNumber
-                    colors = jObject.["colors"] |> tokenToColorList
-                    colorIdentity = jObject.["color_identity"] |> tokenToColorList
-                } |> Some
+                { name = jObject.["name"].ToString()
+                  set = jObject.["set"].ToString() |> MagicSet.create
+                  collectorNumber = collectorNumber
+                  colors = jObject.["colors"] |> tokenToColorList
+                  colorIdentity = jObject.["color_identity"] |> tokenToColorList
+                  oracleId = jObject.["oracle_id"].ToString() }
+                |> Some
             | None -> None
 
     let private parseJson (filePath: string) =
@@ -68,7 +71,4 @@ module CardDataImport =
         searchImportFile >> Option.map (parseJson)
 
     // Because import could become an expensive task, we provide an async version
-    let performAsync () =
-        async {
-            return perform ()
-        }
+    let performAsync () = async { return perform () }

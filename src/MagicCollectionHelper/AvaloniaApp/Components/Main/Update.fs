@@ -12,31 +12,30 @@ let perform (msg: Msg) (state: State) =
     match msg with
     | ImportCardInfo ->
         let fnc = CardDataImport.performAsync
-        let cmd = Cmd.OfAsync.either fnc () SaveCardInfo (fun x -> raise x)
+
+        let cmd =
+            Cmd.OfAsync.either fnc () SaveCardInfo (fun x -> raise x)
 
         state, cmd
     | ImportCollection ->
         let state = setl StateL.loadInProgress true state
         let fnc = CollectionImport.performAsync
-        let cmd = Cmd.OfAsync.perform fnc () SaveCollection
+
+        let cmd =
+            Cmd.OfAsync.perform fnc () SaveCollection
 
         state, cmd
     | SaveCardInfo import ->
         let state =
             match import with
-            | Some import ->
-                import
-                |> setlr StateL.infoMap state
+            | Some import -> import |> setlr StateL.infoMap state
             | None -> state
 
         state, Cmd.none
     | SaveCollection import ->
         let state =
             match import with
-            | Some import ->
-                import
-                |> List.ofSeq
-                |> setlr StateL.entries state
+            | Some import -> import |> List.ofSeq |> setlr StateL.entries state
             | None -> state
             |> setl StateL.loadInProgress false
 
@@ -63,9 +62,9 @@ let perform (msg: Msg) (state: State) =
     | InventoryMsg msg ->
         let entries =
             getl StateL.entries state
-            |> CardEntry.listFromDeckStats
-        let infoMap =
-            getl StateL.infoMap state
+            |> DeckStatsCardEntry.listToEntries
+
+        let infoMap = getl StateL.infoMap state
 
         let (iState, iCmd) =
             Inventory.Update.perform infoMap entries msg state.inventory
