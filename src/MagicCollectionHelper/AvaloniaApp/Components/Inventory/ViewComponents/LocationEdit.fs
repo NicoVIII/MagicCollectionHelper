@@ -28,7 +28,7 @@ module LocationEdit =
                 match rule with
                 | InSet v ->
                     TextBox.create [
-                        TextBox.text v.Value
+                        TextBox.text ""
                         TextBox.width 70.
                     ]
                 | InLanguage v ->
@@ -36,10 +36,7 @@ module LocationEdit =
                         TextBox.text v.Value
                         TextBox.width 70.
                     ]
-                | IsFoil v ->
-                    CheckBox.create [
-                        CheckBox.isChecked v
-                    ]
+                | IsFoil v -> CheckBox.create [ CheckBox.isChecked v ]
                 | Limit v ->
                     NumericUpDown.create [
                         NumericUpDown.maximum 99999.
@@ -49,16 +46,17 @@ module LocationEdit =
             ]
         ]
 
-    let renderLocationLine (location: CustomLocation) (dispatch: Dispatch): IView =
+    let renderLocationLine (location: CustomLocation) (dispatch: Dispatch) : IView =
         let possibleRuleTypes =
             typeof<Rule>
             |> FSharpType.GetUnionCases
             |> Array.map (fun case -> case.Name)
+
         let renderRuleLine = renderRuleLine possibleRuleTypes
 
         Border.create [
             Border.padding (20., 10.)
-            Border.child(
+            Border.child (
                 StackPanel.create [
                     StackPanel.orientation Orientation.Vertical
                     StackPanel.spacing 5.
@@ -71,10 +69,12 @@ module LocationEdit =
                         for rule in location.rules do
                             renderRuleLine rule
                     ]
-                ])
-        ] :> IView
+                ]
+            )
+        ]
+        :> IView
 
-    let render (state: State) (dispatch: Dispatch): IView =
+    let render (state: State) (dispatch: Dispatch) : IView =
         StackPanel.create [
             StackPanel.orientation Orientation.Vertical
             StackPanel.children [
@@ -84,4 +84,5 @@ module LocationEdit =
                         Expander.content (renderLocationLine location dispatch)
                     ]
             ]
-        ] :> IView
+        ]
+        :> IView

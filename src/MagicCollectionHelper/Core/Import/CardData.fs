@@ -8,9 +8,9 @@ module CardDataImport =
     open MagicCollectionHelper.Core.TryParser
     open MagicCollectionHelper.Core.Types
 
-    let private tokenToColorList (jToken: JToken) =
+    let private tokenToColorSet (jToken: JToken) =
         match jToken with
-        | null -> []
+        | null -> Set.empty
         | jToken ->
             jToken.Children()
             |> Seq.map
@@ -23,7 +23,7 @@ module CardDataImport =
                     | "R" -> Red
                     | "G" -> Green
                     | c -> failwith $"Unknown color string: {c}")
-            |> Seq.toList
+            |> Set.ofSeq
 
     let private lineToInfo (line: string) : CardInfo option =
         let line' = line.Trim(' ', ',', '[', ']')
@@ -44,8 +44,8 @@ module CardDataImport =
                 { name = jObject.["name"].ToString()
                   set = jObject.["set"].ToString() |> MagicSet.create
                   collectorNumber = collectorNumber
-                  colors = jObject.["colors"] |> tokenToColorList
-                  colorIdentity = jObject.["color_identity"] |> tokenToColorList
+                  colors = jObject.["colors"] |> tokenToColorSet
+                  colorIdentity = jObject.["color_identity"] |> tokenToColorSet
                   oracleId = jObject.["oracle_id"].ToString() }
                 |> Some
             | None -> None

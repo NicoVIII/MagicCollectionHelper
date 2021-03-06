@@ -67,10 +67,17 @@ module Analyser =
 
 [<Generator.DuCases("dus")>]
 type Rule =
-    | InSet of MagicSet
+    | InSet of Set<MagicSet>
     | InLanguage of Language
     | IsFoil of bool
     | Limit of uint
+    | ColorIdentity of Set<Set<Color>>
+
+type SortRule =
+    | ByCollectorNumber
+    | ByColorIdentity
+
+type SortBy = SortRule list
 
 type CustomLocation = { name: string; rules: Rule list }
 

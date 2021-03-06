@@ -1,5 +1,20 @@
 namespace MagicCollectionHelper.Core.Types
 
+/// All colors which are important in Magic
+type Color =
+    | White
+    | Blue
+    | Black
+    | Red
+    | Green
+
+/// The identifier for a language, typically the language a card is in
+type Language =
+    | Language of string
+    member this.Value =
+        let (Language value) = this
+        value
+
 /// The number for collectors of a card inside a given set
 type CollectorNumber =
     | CollectorNumber of uint32
@@ -66,12 +81,16 @@ module MagicSet =
         >> convertSetAbbrev
         >> MagicSet
 
-/// The identifier for a language, typically the language a card is in
-type Language =
-    | Language of string
-    member this.Value =
-        let (Language value) = this
-        value
+/// Additional info for a card
+type CardInfo =
+    { name: string
+      set: MagicSet
+      collectorNumber: CollectorNumber
+      colors: Set<Color>
+      colorIdentity: Set<Color>
+      oracleId: string }
+
+type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 
 /// A card identified by as few properties as possible
 type Card =
@@ -80,24 +99,25 @@ type Card =
       language: Language
       set: MagicSet }
 
+module Card =
+    /// Checks if those two cards are rulewise the same. They do not have to be from the same set
+    let isSame (infoMap: CardInfoMap) (card1: Card) (card2: Card) =
+        let info1 = infoMap.TryFind(card1.set, card1.number)
+        let info2 = infoMap.TryFind(card2.set, card2.number)
+
+        match info1, info2 with
+        | Some info1, Some info2 -> info1.oracleId = info2.oracleId
+        | _ ->
+            printfn
+                "Warning: Didn't had enough Cardinfo to compare: %s-%i and %s-%i | %A | %A"
+                card1.set.Value
+                card1.number.Value
+                card2.set.Value
+                card2.number.Value
+                info1
+                info2
+
+            false
+
 /// A card entry, which is used to condense multiple cards into one card object and an amount
 type CardEntry = { card: Card; amount: uint }
-
-/// All colors which are important in Magic
-type Color =
-    | White
-    | Blue
-    | Black
-    | Red
-    | Green
-
-/// Additional info for a card
-type CardInfo =
-    { name: string
-      set: MagicSet
-      collectorNumber: CollectorNumber
-      colors: Color list
-      colorIdentity: Color list
-      oracleId: string }
-
-type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>

@@ -39,6 +39,9 @@ module ResultInfix =
 
 open Dozenalize
 
+module Set =
+    let inline ofListList set = set |> Set.ofSeq |> Set.map Set.ofSeq
+
 module Numbers =
     let config = Types.Config.PreConf.pitman
 
