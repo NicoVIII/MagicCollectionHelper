@@ -24,6 +24,7 @@ module Rule =
         | InLanguage _ -> "InLanguage"
         | IsFoil _ -> "IsFoil"
         | Limit _ -> "Limit"
+        | LimitExact _ -> "LimitExact"
         | ColorIdentity _ -> "ColorIdentity"
 
     let fromString (x: string) =
@@ -36,7 +37,8 @@ module Rule =
         | InLanguage _ -> 1
         | IsFoil _ -> 2
         | Limit _ -> 3
-        | ColorIdentity _ -> 4
+        | LimitExact _ -> 4
+        | ColorIdentity _ -> 5
 
     let isInSet (x: Rule) =
         match x with
@@ -56,6 +58,11 @@ module Rule =
     let isLimit (x: Rule) =
         match x with
         | Limit _ -> true
+        | _ -> false
+
+    let isLimitExact (x: Rule) =
+        match x with
+        | LimitExact _ -> true
         | _ -> false
 
     let isColorIdentity (x: Rule) =

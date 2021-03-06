@@ -71,15 +71,20 @@ type Rule =
     | InLanguage of Language
     | IsFoil of bool
     | Limit of uint
+    | LimitExact of uint
     | ColorIdentity of Set<Set<Color>>
 
 type SortRule =
+    | BySet
     | ByCollectorNumber
-    | ByColorIdentity
+    | ByName
 
-type SortBy = SortRule list
+type SortRules = SortRule list
 
-type CustomLocation = { name: string; rules: Rule list }
+type CustomLocation =
+    { name: string
+      rules: Rule list
+      sortBy: SortRules }
 
 /// Location, where a part of the collection is
 type InventoryLocation =

@@ -26,6 +26,17 @@ module Inventory =
                     cardsInLoc
 
             (uint) sum < limit
+        | LimitExact limit ->
+            let sum =
+                List.sumBy
+                    (fun (c: Card) ->
+                        if c.set = card.set && c.number = card.number then
+                            1
+                        else
+                            0)
+                    cardsInLoc
+
+            (uint) sum < limit
 
     let fitsInLocation (infoMap: CardInfoMap) (locCardMap: Map<InventoryLocation, Card list>) card location =
         let cardList = locCardMap.Item(Custom location)

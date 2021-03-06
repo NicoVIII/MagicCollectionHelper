@@ -5,107 +5,158 @@ open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.Components
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
-open Avalonia.Layout
 
 open MagicCollectionHelper.Core.Types
 
+open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
 
-let topBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
+let topBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     ActionButtonBar.create [
-        ActionButton.create {
-            text = "Take inventory"
-            isEnabled = (not (infoMap.IsEmpty || entries.IsEmpty || state.loadInProgress))
-            action = (fun _ -> TakeInventory |> dispatch)
-        }
+        ActionButton.create
+            { text = "Take inventory"
+              isEnabled =
+                  (not (
+                      infoMap.IsEmpty
+                      || entries.IsEmpty
+                      || state.loadInProgress
+                  ))
+              action = (fun _ -> TakeInventory |> dispatch) }
     ]
+
+type LocCards =
+    { location: InventoryLocation
+      amount: uint
+      cards: string seq }
 
 let cardItem (infoMap: CardInfoMap) (entry: CardEntry) =
+    let set = entry.card.set
+    let number = entry.card.number
+    let info = infoMap.TryFind(set, number)
+
+    let name =
+        match info with
+        | Some info -> info.name
+        | None -> "???"
+
+    TextBlock.create [
+        TextBlock.fontFamily Config.monospaceFont
+        TextBlock.text $"[%5s{set.Value}-%03i{number.Value}] %2i{entry.amount} {name}"
+    ]
+
+let getSortByValue (e: CardEntry, i: CardInfo option) sortBy =
+    match sortBy with
+    | ByName ->
+        match i with
+        | Some info -> info.name
+        | None -> "???"
+    | BySet ->
+        match e.card.set.Value with
+        | set when set.StartsWith "T" -> set.Substring 1 + "Z"
+        | set -> set + "A"
+    | ByCollectorNumber -> $"%03i{e.card.number.Value}"
+
+let sortEntries (infoMap: CardInfoMap) location (entries: CardEntry list) =
+    let sortRules =
+        match location with
+        | Custom location -> location.sortBy
+        | Fallback -> [ ByName ]
+
+    let sortBy (e: CardEntry) =
+        let info =
+            infoMap.TryFind(e.card.set, e.card.number)
+
+        sortRules |> List.map (getSortByValue (e, info))
+
+    List.sortBy sortBy entries
+
+let locationItem (infoMap: CardInfoMap) (location: InventoryLocation, entries) =
     let amount =
-        match entry.amount with
-        | amount when amount < 10u ->
-            $" {amount}"
-        | amount ->
-            $"{amount}"
-    let card = entry.card
-    let cardInfo = infoMap.Item (card.set, card.number)
+        List.sumBy (fun (e: CardEntry) -> e.amount) entries
 
-    TextBlock.create [
-        TextBlock.text $"{amount} {cardInfo.name}"
+    let entries = sortEntries infoMap location entries
+
+    Expander.create [
+        Expander.header (
+            match location with
+            | Custom location -> $"{location.name} ({amount})"
+            | Fallback -> $"Leftover ({amount})"
+        )
+        Expander.content (
+            Border.create [
+                Border.padding (20., 10.)
+                Border.child (
+                    StackPanel.create [
+                        StackPanel.spacing 4.
+                        StackPanel.children [
+                            for entry in entries do
+                                cardItem infoMap entry
+                        ]
+                    ]
+                )
+            ]
+        )
     ]
 
-type TestMe =
-    {
-        l: InventoryLocation
-        e: CardEntry seq
-    }
-
-let locationItem t =
-    let (location, entryList) = (t.l, t.e)
-
-    let sum = Seq.sumBy (fun entry -> entry.amount) entryList
-
-    (*TreeViewItem.create [
-        match location with
-        | Custom location ->
-            TreeViewItem.header $"{location.name} ({sum})"
-        | Fallback ->
-            TreeViewItem.header $"Leftover ({sum})"
-        TreeViewItem.dataItems (List.sortBy (fun (entry: CardEntry) -> entry.name) entryList)
-        TreeViewItem.itemTemplate (DataTemplateView<CardEntry>.create(cardItem))
-    ]*)
-    TextBlock.create [
-        match location with
-        | Custom location ->
-            TextBlock.text $"{location.name} ({sum})"
-        | Fallback ->
-            TextBlock.text $"Leftover ({sum})"
-    ]
-
-let content (state: State) (dispatch: Dispatch): IView =
+let content (infoMap: CardInfoMap) (state: State) (dispatch: Dispatch) : IView =
     match state.editLocations, state.loadInProgress with
-    | true, _ ->
-        LocationEdit.render state dispatch
+    | true, _ -> LocationEdit.render state dispatch
     | false, true ->
         Border.create [
             Border.padding 10.
-            Border.child(
+            Border.child (
                 TextBlock.create [
                     TextBlock.text "Loading..."
-                ])
-        ] :> IView
+                ]
+            )
+        ]
+        :> IView
     | false, false ->
-        TreeView.create [
-            TreeView.dataItems(
-                state.inventory
-                |> Map.toList
-                |> List.sortBy (fun (l, _) ->
+        let locations =
+            state.inventory
+            |> Map.toList
+            |> List.sortBy
+                (fun (l, _) ->
                     // We sort like our locations are sorted
                     List.tryFindIndex (fun l' -> Custom l' = l) state.locations
                     |> Option.defaultValue 999)
-                |> List.map (fun (l, e) -> { l = l; e = e }))
-            TreeView.itemTemplate (DataTemplateView<TestMe>.create((fun t -> t.e), locationItem))
-        ] :> IView
 
-let render (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch): IView =
+        StackPanel.create [
+            StackPanel.children [
+                for location in locations do
+                    locationItem infoMap location
+            ]
+        ]
+        :> IView
+
+let render (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             topBar infoMap entries state dispatch
             Button.create [
                 Button.dock Dock.Top
-                Button.content (if state.editLocations then "Close" else "Edit")
-                Button.onClick ((fun _ ->
+                Button.content (
                     if state.editLocations then
-                        CloseLocationEdit
+                        "Close"
                     else
-                        OpenLocationEdit
-                    |> dispatch), SubPatchOptions.Always)
+                        "Edit"
+                )
+                Button.onClick (
+                    (fun _ ->
+                        (if state.editLocations then
+                             CloseLocationEdit
+                         else
+                             OpenLocationEdit)
+                        |> dispatch),
+                    SubPatchOptions.Always
+                )
             ]
             ScrollViewer.create [
                 ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-                ScrollViewer.content (content state dispatch)
+                ScrollViewer.content (content infoMap state dispatch)
             ]
         ]
-    ]:> IView
+    ]
+    :> IView

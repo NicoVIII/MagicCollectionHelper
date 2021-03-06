@@ -109,13 +109,11 @@ module Card =
         | Some info1, Some info2 -> info1.oracleId = info2.oracleId
         | _ ->
             printfn
-                "Warning: Didn't had enough Cardinfo to compare: %s-%i and %s-%i | %A | %A"
+                "Warning: Didn't had enough Cardinfo to compare: %s-%i and %s-%i"
                 card1.set.Value
                 card1.number.Value
                 card2.set.Value
                 card2.number.Value
-                info1
-                info2
 
             false
 
