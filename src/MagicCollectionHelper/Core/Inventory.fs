@@ -39,23 +39,14 @@ module Inventory =
         locations
         |> List.tryFind (fitsInLocation infoMap locCardMap card)
 
-    let cardForEntry (entry: CardEntry): Card =
-        { number = entry.number
-          foil = entry.foil
-          language = entry.language
-          set = entry.set }
-
     let newEntryForCard (card: Card): CardEntry =
         { amount = 1u
-          number = card.number
-          foil = card.foil
-          language = card.language
-          set = card.set }
+          card = card }
 
     let cardToEntryList (cardList: Card list) =
         let mutable entryList = []
         for card in cardList do
-            let entry = List.tryFind (fun entry -> card = cardForEntry entry) entryList
+            let entry = List.tryFind (fun entry -> card = entry.card) entryList
             entryList <-
                 match entry with
                 | Some entry ->
@@ -74,17 +65,15 @@ module Inventory =
             map
 
         // Foils at first
-        let entries = List.sortBy (fun (entry: CardEntry) -> if entry.foil then 0 else 1) entries
+        let entries = List.sortBy (fun (entry: CardEntry) -> if entry.card.foil then 0 else 1) entries
         for entry in entries do
-            let card = cardForEntry entry
-
             for _ = 1 to (int) entry.amount do
-                let location = determineLocation infoMap locCardMap locations card
+                let location = determineLocation infoMap locCardMap locations entry.card
                 match location with
                 | Some location ->
-                    locCardMap <- Map.change (Custom location) (fun (Some l) -> card :: l |> Some) locCardMap
+                    locCardMap <- Map.change (Custom location) (fun (Some l) -> entry.card :: l |> Some) locCardMap
                 | None ->
-                    locCardMap <- Map.change Fallback (fun (Some l) -> card :: l |> Some) locCardMap
+                    locCardMap <- Map.change Fallback (fun (Some l) -> entry.card :: l |> Some) locCardMap
 
         // Collapse into entries again
         Map.map (fun _ cardList -> cardToEntryList cardList) locCardMap

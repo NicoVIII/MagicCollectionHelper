@@ -120,14 +120,12 @@ type Card =
       language: Language
       set: MagicSet }
 
-type CardEntry =
-    { amount: uint
-      number: CollectorNumber
-      foil: bool
-      language: Language
-      set: MagicSet }
+type CardEntry = {
+    card: Card
+    amount: uint
+}
 
-module CardEntry =
+ module CardEntry =
     let listFromDeckStats (entries: DeckStatsCardEntry list) =
         entries
         // We only take entries with enough info
@@ -135,10 +133,11 @@ module CardEntry =
             match entry.set, entry.number, entry.language with
             | Some set, Some number, Some lang ->
                 { CardEntry.amount = entry.amount
-                  foil = entry.foil
-                  set = set
-                  number = number
-                  language = lang
+                  card = {
+                      foil = entry.foil
+                      set = set
+                      number = number
+                      language = lang }
                 } :: lst
             | _ -> lst
         ) []

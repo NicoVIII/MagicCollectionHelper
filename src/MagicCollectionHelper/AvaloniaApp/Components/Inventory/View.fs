@@ -29,8 +29,8 @@ let cardItem (infoMap: CardInfoMap) (entry: CardEntry) =
             $" {amount}"
         | amount ->
             $"{amount}"
-    let cardInfo =
-        infoMap.Item (entry.set, entry.number)
+    let card = entry.card
+    let cardInfo = infoMap.Item (card.set, card.number)
 
     TextBlock.create [
         TextBlock.text $"{amount} {cardInfo.name}"
