@@ -41,9 +41,9 @@ let cardItem (infoMap: CardInfoMap) (entry: CardEntry) =
         | Some info -> info.name
         | None -> "???"
 
-    TextBlock.create [
-        TextBlock.fontFamily Config.monospaceFont
-        TextBlock.text $"[%5s{set.Value}-%03i{number.Value}] %2i{entry.amount} {name}"
+    CheckBox.create [
+        CheckBox.fontFamily Config.monospaceFont
+        CheckBox.content $"[%5s{set.Value}-%03i{number.Value}] %2i{entry.amount} {name}"
     ]
 
 let getSortByValue (e: CardEntry, i: CardInfo option) sortBy =
