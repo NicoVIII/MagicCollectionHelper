@@ -13,7 +13,7 @@ open MagicCollectionHelper.AvaloniaApp.ViewHelper
 open MagicCollectionHelper.Core.Types
 
 module LocationEdit =
-    let renderRuleLine text valueControl =
+    let ruleLine text valueControl =
         StackPanel.create [
             StackPanel.orientation Orientation.Horizontal
             StackPanel.spacing 10.
@@ -27,16 +27,42 @@ module LocationEdit =
                 valueControl
             ]
         ]
+        :> IView
 
-    let renderIsFoilRuleLine isFoil =
+    let inSetLine _ _ inSet =
+        let valueControl =
+            TextBlock.create [
+                TextBlock.text (
+                    inSet
+                    |> Set.map (fun (set: MagicSet) -> set.Value)
+                    |> Set.toList
+                    |> String.concat ","
+                )
+            ]
+
+        ruleLine "In set" valueControl
+
+    let isFoilLine dispatch locationName isFoil =
         let valueControl =
             CheckBox.create [
                 CheckBox.isChecked (Some isFoil)
+                CheckBox.onChecked (
+                    (fun _ ->
+                        UpdateLocationRules(locationName, Rules.withIsFoil true)
+                        |> dispatch),
+                    OnChangeOf locationName
+                )
+                CheckBox.onUnchecked (
+                    (fun _ ->
+                        UpdateLocationRules(locationName, Rules.withIsFoil false)
+                        |> dispatch),
+                    OnChangeOf locationName
+                )
             ]
 
-        renderRuleLine "Is foil" valueControl
+        ruleLine "Is foil" valueControl
 
-    let renderLimitRuleLine dispatch location limit =
+    let limitLine dispatch locationName (limit: uint) =
         let valueControl =
             NumericUpDown.create [
                 NumericUpDown.maximum 99999.
@@ -44,33 +70,41 @@ module LocationEdit =
                 NumericUpDown.value (float limit)
                 NumericUpDown.onValueChanged (
                     (fun v ->
-                        let rules =
-                            { location.rules with
-                                  limit = Some(uint v) }
-
-                        UpdateLocationRules(location.name, rules)
+                        UpdateLocationRules(locationName, Rules.withLimit (uint v))
                         |> dispatch),
-                    OnChangeOf(location.name, location.rules)
+                    OnChangeOf locationName
                 )
             ]
 
-        renderRuleLine "Limit" valueControl
+        ruleLine "Limit" valueControl
 
-    let renderLimitExactRuleLine limitExact =
+    let limitExactLine dispatch locationName (limitExact: uint) =
         let valueControl =
             NumericUpDown.create [
                 NumericUpDown.maximum 99999.
                 NumericUpDown.minimum 1.
                 NumericUpDown.value (float limitExact)
-            (*NumericUpDown.onValueChanged
+                NumericUpDown.onValueChanged (
                     (fun v ->
-                        let rule = LimitExact(uint v)
-                        UpdateLocationRule(locationName, rule) |> dispatch)*)
+                        UpdateLocationRules(locationName, Rules.withLimitExact (uint v))
+                        |> dispatch),
+                    OnChangeOf locationName
+                )
             ]
 
-        renderRuleLine "Limit (exact)" valueControl
+        ruleLine "Limit (exact)" valueControl
+
+    let renderRule dispatch locationName filterLine (option: 'a option) =
+        match option with
+        | Some value -> filterLine dispatch locationName value
+        | None -> TextBlock.create [] :> IView
 
     let renderLocationLine (location: CustomLocation) (dispatch: Dispatch) : IView =
+        let renderRule filterLine =
+            renderRule dispatch location.name filterLine
+
+        let rules = location.rules
+
         Border.create [
             Border.padding (20., 10.)
             Border.child (
@@ -84,15 +118,10 @@ module LocationEdit =
                             TextBlock.verticalAlignment VerticalAlignment.Center
                             TextBlock.text "Rules"
                         ]
-                        match location.rules.isFoil with
-                        | Some isFoil -> renderIsFoilRuleLine isFoil
-                        | None -> ()
-                        match location.rules.limit with
-                        | Some limit -> renderLimitRuleLine dispatch location limit
-                        | None -> ()
-                        match location.rules.limitExact with
-                        | Some limitExact -> renderLimitExactRuleLine limitExact
-                        | None -> ()
+                        renderRule inSetLine rules.inSet
+                        renderRule isFoilLine rules.isFoil
+                        renderRule limitLine rules.limit
+                        renderRule limitExactLine rules.limitExact
                     ]
                 ]
             )

@@ -20,7 +20,7 @@ type Msg =
     | SaveInventory of LocationCardMap
     | OpenLocationEdit
     | CloseLocationEdit
-    | UpdateLocationRules of CustomLocationName * Rules
+    | UpdateLocationRules of CustomLocationName * (Rules -> Rules)
 
 type Dispatch = Msg -> unit
 

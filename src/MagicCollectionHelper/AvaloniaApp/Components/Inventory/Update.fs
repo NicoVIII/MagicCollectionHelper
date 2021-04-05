@@ -37,12 +37,17 @@ let perform (infoMap: CardInfoMap) (entries: CardEntry list) (msg: Msg) (state: 
             setl StateLenses.editLocations false state
 
         (state, Cmd.none)
-    | UpdateLocationRules (locationName, rules) ->
+    | UpdateLocationRules (locationName, rulesMutation) ->
+        let mutateRules location =
+            getl CustomLocationLenses.rules location
+            |> rulesMutation
+            |> setlr CustomLocationLenses.rules location
+
         let state =
             state
             |> getl StateLenses.locations
             // Update rules of location
-            |> Map.change locationName (Option.map (setl CustomLocationLenses.rules rules))
+            |> Map.change locationName (Option.map mutateRules)
             |> setlr StateLenses.locations state
 
         (state, Cmd.none)
