@@ -4,18 +4,30 @@ open MagicCollectionHelper.Core.Types
 
 [<RequireQualifiedAccess>]
 module Inventory =
-    let fitsRule (infoMap: CardInfoMap) cardsInLoc (card: Card) rule =
-        let info = infoMap.TryFind(card.set, card.number)
+    let fitsRule option rule =
+        match option with
+        | Some value -> rule value
+        | None -> true
 
-        match rule with
-        | InSet set -> Set.contains card.set set
-        | InLanguage lang -> lang = card.language
-        | IsFoil foil -> card.foil = foil
-        | ColorIdentity colors ->
+    let fitsInSetRule (card: Card) rules =
+        fitsRule rules.inSet (Set.contains card.set)
+
+    let fitsInLanguageRule (card: Card) rules =
+        fitsRule rules.inLanguage (fun language -> language = card.language)
+
+    let fitsIsFoil (card: Card) rules =
+        fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
+
+    let fitsColorIdentity (info: CardInfo option) rules =
+        let rule colorIdentities =
             match info with
             | None -> false
-            | Some info -> Set.contains info.colorIdentity colors
-        | Limit limit ->
+            | Some info -> Set.contains info.colorIdentity colorIdentities
+
+        fitsRule rules.colorIdentity rule
+
+    let fitsLimit infoMap cardsInLoc (card: Card) rules =
+        let rule limit =
             let sum =
                 List.sumBy
                     (fun c ->
@@ -26,7 +38,11 @@ module Inventory =
                     cardsInLoc
 
             (uint) sum < limit
-        | LimitExact limit ->
+
+        fitsRule rules.limit rule
+
+    let fitsLimitExact cardsInLoc (card: Card) rules =
+        let rule limitExact =
             let sum =
                 List.sumBy
                     (fun (c: Card) ->
@@ -36,17 +52,36 @@ module Inventory =
                             0)
                     cardsInLoc
 
-            (uint) sum < limit
+            (uint) sum < limitExact
+
+        fitsRule rules.limitExact rule
+
+    let fitsRules (infoMap: CardInfoMap) cardsInLoc (card: Card) rules =
+        let info = infoMap.TryFind(card.set, card.number)
+
+        [ fitsInSetRule card
+          fitsInLanguageRule card
+          fitsIsFoil card
+          fitsColorIdentity info
+          fitsLimit infoMap cardsInLoc card
+          fitsLimitExact cardsInLoc card ]
+        // Evaluate functions
+        |> List.map (fun fnc -> fnc rules)
+        |> List.forall id
 
     let fitsInLocation (infoMap: CardInfoMap) (locCardMap: Map<InventoryLocation, Card list>) card location =
         let cardList = locCardMap.Item(Custom location)
 
-        location.rules
-        |> List.forall (fitsRule infoMap cardList card)
+        fitsRules infoMap cardList card location.rules
 
     let determineLocation (infoMap: CardInfoMap) locCardMap locations card =
         locations
-        |> List.tryFind (fitsInLocation infoMap locCardMap card)
+        |> Map.tryPick
+            (fun _ location ->
+                if fitsInLocation infoMap locCardMap card location then
+                    Some location
+                else
+                    None)
 
     let newEntryForCard (card: Card) : CardEntry = { amount = 1u; card = card }
 
@@ -74,7 +109,7 @@ module Inventory =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
 
-            for location in locations do
+            for KeyValue (_, location) in locations do
                 map <- Map.add (Custom location) [] map
 
             map

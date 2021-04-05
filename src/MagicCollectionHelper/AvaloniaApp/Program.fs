@@ -29,7 +29,7 @@ type MainWindow() as this =
         Program.mkProgram Main.Model.init Main.Update.perform Main.View.render
         |> Program.withHost this
 #if DEBUG
-        |> Program.withConsoleTrace
+        |> Program.withTrace (fun msg state -> printfn "Got message: %A" msg)
 #endif
         |> Program.run
 

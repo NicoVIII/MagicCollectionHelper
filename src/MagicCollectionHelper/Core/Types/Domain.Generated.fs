@@ -14,58 +14,27 @@ module PrefsLenses =
 
     let setWithFoils =
         Lens((fun (x: Prefs) -> x.setWithFoils), (fun (x: Prefs) (value: bool) -> { x with setWithFoils = value }))
-namespace rec MagicCollectionHelper.Core.Types.DUs
+namespace rec MagicCollectionHelper.Core.Types
 
-module Rule =
+module CustomLocationLenses =
     open MagicCollectionHelper.Core.Types
-    let toString (x: Rule) =
-        match x with
-        | InSet _ -> "InSet"
-        | InLanguage _ -> "InLanguage"
-        | IsFoil _ -> "IsFoil"
-        | Limit _ -> "Limit"
-        | LimitExact _ -> "LimitExact"
-        | ColorIdentity _ -> "ColorIdentity"
+    let name =
+        Lens(
+            (fun (x: CustomLocation) -> x.name),
+            (fun (x: CustomLocation) (value: CustomLocationName) -> { x with name = value })
+        )
 
-    let fromString (x: string) =
-        match x with
-        | _ -> None
+    let rules =
+        Lens((fun (x: CustomLocation) -> x.rules), (fun (x: CustomLocation) (value: Rules) -> { x with rules = value }))
 
-    let toTag (x: Rule) =
-        match x with
-        | InSet _ -> 0
-        | InLanguage _ -> 1
-        | IsFoil _ -> 2
-        | Limit _ -> 3
-        | LimitExact _ -> 4
-        | ColorIdentity _ -> 5
+    let sortBy =
+        Lens(
+            (fun (x: CustomLocation) -> x.sortBy),
+            (fun (x: CustomLocation) (value: SortRules) -> { x with sortBy = value })
+        )
 
-    let isInSet (x: Rule) =
-        match x with
-        | InSet _ -> true
-        | _ -> false
-
-    let isInLanguage (x: Rule) =
-        match x with
-        | InLanguage _ -> true
-        | _ -> false
-
-    let isIsFoil (x: Rule) =
-        match x with
-        | IsFoil _ -> true
-        | _ -> false
-
-    let isLimit (x: Rule) =
-        match x with
-        | Limit _ -> true
-        | _ -> false
-
-    let isLimitExact (x: Rule) =
-        match x with
-        | LimitExact _ -> true
-        | _ -> false
-
-    let isColorIdentity (x: Rule) =
-        match x with
-        | ColorIdentity _ -> true
-        | _ -> false
+    let position =
+        Lens(
+            (fun (x: CustomLocation) -> x.position),
+            (fun (x: CustomLocation) (value: uint) -> { x with position = value })
+        )

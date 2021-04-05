@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,10 +7,8 @@
   <ItemGroup>
     <Compile Include="Config.fs" />
     <Compile Include="ViewHelper.fs" />
-
     <!-- Elements -->
     <Compile Include="Elements/Elements.fs" />
-
     <!-- Inventory component -->
     <Compile Include="Components/Inventory/Model.fs" />
     <Compile Include="Components/Inventory/Model.Generated.fs">
@@ -19,7 +17,6 @@
     <Compile Include="Components/Inventory/ViewComponents/*.fs" />
     <Compile Include="Components/Inventory/View.fs" />
     <Compile Include="Components/Inventory/Update.fs" />
-
     <!-- Main component -->
     <Compile Include="Components/Main/Model.fs" />
     <Compile Include="Components/Main/Model.Generated.fs">
@@ -29,7 +26,6 @@
     <Compile Include="Components/Main/ViewComponents/*.fs" />
     <Compile Include="Components/Main/View.fs" />
     <Compile Include="Components/Main/Update.fs" />
-
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

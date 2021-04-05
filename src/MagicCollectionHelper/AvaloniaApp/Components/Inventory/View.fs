@@ -118,10 +118,16 @@ let content (infoMap: CardInfoMap) (state: State) (dispatch: Dispatch) : IView =
             state.inventory
             |> Map.toList
             |> List.sortBy
-                (fun (l, _) ->
+                (fun (location, _) ->
                     // We sort like our locations are sorted
-                    List.tryFindIndex (fun l' -> Custom l' = l) state.locations
-                    |> Option.defaultValue 999)
+                    Map.tryPick
+                        (fun _ l ->
+                            if Custom l = location then
+                                Some l.position
+                            else
+                                None)
+                        state.locations
+                    |> Option.defaultValue 999u)
 
         StackPanel.create [
             StackPanel.children [

@@ -11,19 +11,21 @@ type State =
     { editLocations: bool
       inventory: LocationCardMap
       loadInProgress: bool
-      locations: MagicCollectionHelper.Core.Types.CustomLocation list }
+      locations: Map<MagicCollectionHelper.Core.Types.CustomLocationName, MagicCollectionHelper.Core.Types.CustomLocation> }
+
+open MagicCollectionHelper.Core.Types
 
 type Msg =
     | TakeInventory
     | SaveInventory of LocationCardMap
     | OpenLocationEdit
     | CloseLocationEdit
+    | UpdateLocationRules of CustomLocationName * Rules
 
 type Dispatch = Msg -> unit
 
 module Model =
     open MagicCollectionHelper.Core
-    open MagicCollectionHelper.Core.Types
 
     let init () : State =
         // Test Locations
@@ -31,128 +33,149 @@ module Model =
             [ { name = "Collection GRN"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "GRN"; "TGRN" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Collection RNA"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "RNA"; "TRNA" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Collection WAR"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "WAR"; "TWAR" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Collection ELD"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "ELD"; "TELD" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Collection THB"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "THB"; "TTHB" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Collection IKO"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "IKO"; "TIKO" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Collection ZNR"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "ZNR"; "TZNR" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Collection KHM"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    [ InSet(
+                    Rules.createEmpty ()
+                    |> Rules.withInSet (
                         [ "KHM"; "TKHM" ]
                         |> Set.ofSeq
                         |> Set.map MagicSet.create
-                      )
-                      LimitExact 1u
-                      IsFoil false ] }
+                    )
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil false }
               { name = "Lookup (Colorless)"
                 sortBy = [ ByName ]
                 rules =
-                    [ Limit 1u
-                      ColorIdentity([ [] ] |> Set.ofListList) ] }
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [] ] |> Set.ofListList) }
               { name = "Lookup (White)"
                 sortBy = [ ByName ]
                 rules =
-                    [ Limit 1u
-                      ColorIdentity([ [ White ] ] |> Set.ofListList) ] }
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList) }
               { name = "Lookup (Blue)"
                 sortBy = [ ByName ]
                 rules =
-                    [ Limit 1u
-                      ColorIdentity([ [ Blue ] ] |> Set.ofListList) ] }
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ Blue ] ] |> Set.ofListList) }
               { name = "Lookup (Black)"
                 sortBy = [ ByName ]
                 rules =
-                    [ Limit 1u
-                      ColorIdentity([ [ Black ] ] |> Set.ofListList) ] }
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ Black ] ] |> Set.ofListList) }
               { name = "Lookup (Red)"
                 sortBy = [ ByName ]
                 rules =
-                    [ Limit 1u
-                      ColorIdentity([ [ Red ] ] |> Set.ofListList) ] }
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ Red ] ] |> Set.ofListList) }
               { name = "Lookup (Green)"
                 sortBy = [ ByName ]
                 rules =
-                    [ Limit 1u
-                      ColorIdentity([ [ Green ] ] |> Set.ofListList) ] }
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ Green ] ] |> Set.ofListList) }
               { name = "Lookup (Mixed 1)"
                 sortBy = [ ByName ]
                 rules =
-                    [ Limit 1u
-                      ColorIdentity(
-                          [ [ White; Blue ]
-                            [ Blue; Black ]
-                            [ Black; Red ]
-                            [ Red; Green ]
-                            [ Green; White ] ]
-                          |> Set.ofListList
-                      ) ] }
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity (
+                        [ [ White; Blue ]
+                          [ Blue; Black ]
+                          [ Black; Red ]
+                          [ Red; Green ]
+                          [ Green; White ] ]
+                        |> Set.ofListList
+                    ) }
               { name = "Lookup (Mixed 2)"
                 sortBy = [ ByName ]
-                rules = [ Limit 1u ] } ]
+                rules = Rules.createEmpty () |> Rules.withLimit 1u } ]
+            // Pack position into location
+            |> List.indexed
+            |> List.map (fun (pos, location) -> CustomLocation.createFromRaw (uint pos) location)
+            // Extract name and provide as map key
+            |> List.map (fun location -> (location.name, location))
+            |> Map.ofList
 
         { editLocations = false
           inventory = Map.empty

@@ -81,13 +81,15 @@ module MagicSet =
         >> convertSetAbbrev
         >> MagicSet
 
+type ColorIdentity = Set<Color>
+
 /// Additional info for a card
 type CardInfo =
     { name: string
       set: MagicSet
       collectorNumber: CollectorNumber
       colors: Set<Color>
-      colorIdentity: Set<Color>
+      colorIdentity: ColorIdentity
       oracleId: string }
 
 type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>

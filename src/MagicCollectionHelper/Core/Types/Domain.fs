@@ -65,15 +65,6 @@ module Analyser =
           postprocess = postprocess
           print = print }
 
-[<Generator.DuCases("dus")>]
-type Rule =
-    | InSet of Set<MagicSet>
-    | InLanguage of Language
-    | IsFoil of bool
-    | Limit of uint
-    | LimitExact of uint
-    | ColorIdentity of Set<Set<Color>>
-
 type SortRule =
     | BySet
     | ByCollectorNumber
@@ -81,10 +72,50 @@ type SortRule =
 
 type SortRules = SortRule list
 
-type CustomLocation =
-    { name: string
-      rules: Rule list
+type CustomLocationName = string
+
+type Rules =
+    { inSet: Set<MagicSet> option
+      inLanguage: Language option
+      isFoil: bool option
+      limit: uint option
+      limitExact: uint option
+      colorIdentity: Set<ColorIdentity> option }
+
+module Rules =
+    let createEmpty () =
+        { inSet = None
+          inLanguage = None
+          isFoil = None
+          limit = None
+          limitExact = None
+          colorIdentity = None }
+
+    let withInSet v rules = { rules with inSet = Some v }
+    let withInLanguage v rules = { rules with inLanguage = Some v }
+    let withIsFoil v rules = { rules with isFoil = Some v }
+    let withLimit v rules = { rules with limit = Some v }
+    let withLimitExact v rules = { rules with limitExact = Some v }
+    let withColorIdentity v rules : Rules = { rules with colorIdentity = Some v }
+
+type RawCustomLocation =
+    { name: CustomLocationName
+      rules: Rules
       sortBy: SortRules }
+
+[<Generator.Lenses("types", "Lens")>]
+type CustomLocation =
+    { name: CustomLocationName
+      rules: Rules
+      sortBy: SortRules
+      position: uint }
+
+module CustomLocation =
+    let createFromRaw pos (raw: RawCustomLocation) =
+        { CustomLocation.name = raw.name
+          rules = raw.rules
+          sortBy = raw.sortBy
+          position = pos }
 
 /// Location, where a part of the collection is
 type InventoryLocation =

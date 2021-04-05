@@ -27,6 +27,6 @@ module StateLenses =
     let locations =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.locations),
-            (fun (x: State) (value: MagicCollectionHelper.Core.Types.CustomLocation list) ->
+            (fun (x: State) (value: Map<MagicCollectionHelper.Core.Types.CustomLocationName, MagicCollectionHelper.Core.Types.CustomLocation>) ->
                 { x with locations = value })
         )
