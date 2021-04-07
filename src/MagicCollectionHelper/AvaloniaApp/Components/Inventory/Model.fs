@@ -118,18 +118,34 @@ module Model =
                     )
                     |> Rules.withLimitExact 1u
                     |> Rules.withIsFoil false }
-              { name = "Lookup (Colorless)"
+              { name = "Lookup 1 (Colorless)"
                 sortBy = [ ByName ]
                 rules =
                     Rules.createEmpty ()
                     |> Rules.withLimit 1u
-                    |> Rules.withColorIdentity ([ [] ] |> Set.ofListList) }
-              { name = "Lookup (White)"
+                    |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
+                    |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList) }
+              { name = "Lookup 2 (Colorless)"
                 sortBy = [ ByName ]
                 rules =
                     Rules.createEmpty ()
                     |> Rules.withLimit 1u
-                    |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList) }
+                    |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
+                    |> Rules.withRarity ([ Common ] |> Set.ofList) }
+              { name = "Lookup 1 (White)"
+                sortBy = [ ByName ]
+                rules =
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
+                    |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList) }
+              { name = "Lookup 2 (White)"
+                sortBy = [ ByName ]
+                rules =
+                    Rules.createEmpty ()
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
+                    |> Rules.withRarity ([ Common ] |> Set.ofList) }
               { name = "Lookup (Blue)"
                 sortBy = [ ByName ]
                 rules =

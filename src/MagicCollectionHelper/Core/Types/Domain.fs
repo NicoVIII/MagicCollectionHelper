@@ -80,6 +80,7 @@ type Rules =
       isFoil: bool option
       limit: uint option
       limitExact: uint option
+      rarity: Set<Rarity> option
       colorIdentity: Set<ColorIdentity> option }
 
 module Rules =
@@ -89,6 +90,7 @@ module Rules =
           isFoil = None
           limit = None
           limitExact = None
+          rarity = None
           colorIdentity = None }
 
     let withInSet v rules = { rules with inSet = Some v }
@@ -96,6 +98,7 @@ module Rules =
     let withIsFoil v rules = { rules with isFoil = Some v }
     let withLimit v rules = { rules with limit = Some v }
     let withLimitExact v rules = { rules with limitExact = Some v }
+    let withRarity v rules : Rules = { rules with rarity = Some v }
     let withColorIdentity v rules : Rules = { rules with colorIdentity = Some v }
 
 type RawCustomLocation =

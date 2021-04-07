@@ -18,6 +18,14 @@ module Inventory =
     let fitsIsFoil (card: Card) rules =
         fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
 
+    let fitsRarity (info: CardInfo option) rules =
+        let rule rarity =
+            match info with
+            | None -> false
+            | Some info -> Set.contains info.rarity rarity
+
+        fitsRule rules.rarity rule
+
     let fitsColorIdentity (info: CardInfo option) rules =
         let rule colorIdentities =
             match info with
@@ -63,6 +71,7 @@ module Inventory =
           fitsInLanguageRule card
           fitsIsFoil card
           fitsColorIdentity info
+          fitsRarity info
           fitsLimit infoMap cardsInLoc card
           fitsLimitExact cardsInLoc card ]
         // Evaluate functions
