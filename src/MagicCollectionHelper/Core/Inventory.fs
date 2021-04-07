@@ -19,6 +19,12 @@ module Inventory =
     let fitsIsFoil (card: Card) rules =
         fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
 
+    let fitsTypeContains (info: CardInfo) rules =
+        fitsRule rules.typeContains (Set.forall info.typeLine.Contains)
+
+    let fitsTypeNotContains (info: CardInfo) rules =
+        fitsRule rules.typeNotContains (Set.forall (info.typeLine.Contains >> not))
+
     let fitsRarity (info: CardInfo) rules =
         fitsRule rules.rarity (fun rarity -> Set.contains info.rarity rarity)
 
@@ -59,6 +65,8 @@ module Inventory =
         [ fitsInSetRule cardWithInfo.card
           fitsInLanguageRule cardWithInfo.card
           fitsIsFoil cardWithInfo.card
+          fitsTypeContains cardWithInfo.info
+          fitsTypeNotContains cardWithInfo.info
           fitsColorIdentity cardWithInfo.info
           fitsRarity cardWithInfo.info
           fitsLimit cardsInLoc cardWithInfo
@@ -77,25 +85,6 @@ module Inventory =
         |> List.tryFind (fitsInLocation locCardMap card)
 
     let newEntryForCard (card: Card) : CardEntry = { amount = 1u; card = card }
-
-    let cardToEntryList (cardList: Card list) =
-        let mutable entryList = []
-
-        for card in cardList do
-            let entry =
-                List.tryFind (fun entry -> card = entry.card) entryList
-
-            entryList <-
-                match entry with
-                | Some entry ->
-                    let newEntry =
-                        { entry with
-                              amount = entry.amount + 1u }
-
-                    newEntry :: List.except [ entry ] entryList
-                | None -> (newEntryForCard card) :: entryList
-
-        entryList
 
     let take (infoMap: CardInfoMap) locations entries =
         // We have to sort locations first
@@ -138,7 +127,7 @@ module Inventory =
             (fun _ cardList ->
                 cardList
                 |> List.map CardWithInfo.card
-                |> cardToEntryList)
+                |> CardEntry.collapseCardList)
             locCardMap
 
     // Because this process can take some time, we provide an async version

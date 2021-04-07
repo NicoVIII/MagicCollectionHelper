@@ -85,6 +85,102 @@ module MagicSet =
 
 type ColorIdentity = Set<Color>
 
+module ColorIdentity =
+    let colorless = Set.empty
+
+    // Mono
+    let white = White |> Set.singleton
+    let blue = Blue |> Set.singleton
+    let black = Black |> Set.singleton
+    let red = Red |> Set.singleton
+    let green = Green |> Set.singleton
+
+    // Two colors - Ravnica guilds
+    let azorius = [ White; Blue ] |> Set.ofList
+    let dimir = [ Blue; Black ] |> Set.ofList
+    let rakdos = [ Black; Red ] |> Set.ofList
+    let gruul = [ Red; Green ] |> Set.ofList
+    let selesnya = [ Green; White ] |> Set.ofList
+    let orzhov = [ White; Black ] |> Set.ofList
+    let izzet = [ Blue; Red ] |> Set.ofList
+    let golgari = [ Black; Green ] |> Set.ofList
+    let boros = [ Red; White ] |> Set.ofList
+    let simic = [ Green; Blue ] |> Set.ofList
+
+    // Three colors - shards of alara + div.
+    let jund = [ Red; Green; Black ] |> Set.ofList
+    let bant = [ Green; White; Blue ] |> Set.ofList
+    let grixis = [ Blue; Black; Red ] |> Set.ofList
+    let naya = [ Red; Green; White ] |> Set.ofList
+    let esper = [ White; Blue; Black ] |> Set.ofList
+    let jeskai = [ Blue; Red; White ] |> Set.ofList
+    let mardu = [ Red; White; Black ] |> Set.ofList
+    let sultai = [ Black; Green; Blue ] |> Set.ofList
+    let temur = [ Green; Blue; Red ] |> Set.ofList
+    let abzan = [ White; Black; Green ] |> Set.ofList
+
+    // Four colors - shards of alara + div.
+    let nonWhite =
+        [ Blue; Black; Red; Green ] |> Set.ofList
+
+    let nonBlue =
+        [ Black; Red; Green; White ] |> Set.ofList
+
+    let nonBlack =
+        [ Red; Green; White; Blue ] |> Set.ofList
+
+    let nonRed =
+        [ Green; White; Blue; Black ] |> Set.ofList
+
+    let nonGreen =
+        [ White; Blue; Black; Red ] |> Set.ofList
+
+    // Five colors
+    let allColors =
+        [ White; Blue; Black; Red; Green ] |> Set.ofList
+
+    let private sorted =
+        [ colorless
+          white
+          blue
+          black
+          red
+          green
+          azorius
+          dimir
+          rakdos
+          gruul
+          selesnya
+          orzhov
+          izzet
+          golgari
+          boros
+          simic
+          jund
+          bant
+          grixis
+          naya
+          esper
+          jeskai
+          mardu
+          sultai
+          temur
+          abzan
+          nonWhite
+          nonBlue
+          nonBlack
+          nonRed
+          nonGreen
+          allColors ]
+
+    let private posMap =
+        sorted
+        |> List.indexed
+        |> List.map (fun (index, colorIdentity) -> (colorIdentity, index))
+        |> Map.ofList
+
+    let getPosition (colorIdentity: ColorIdentity) = posMap.Item colorIdentity
+
 [<Generator.DuCases("cards")>]
 type Rarity =
     | Common
@@ -100,7 +196,9 @@ type CardInfo =
       colors: Set<Color>
       colorIdentity: ColorIdentity
       oracleId: string
-      rarity: Rarity }
+      rarity: Rarity
+      typeLine: string
+      cmc: uint }
 
 type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 
@@ -116,15 +214,38 @@ module Card =
         card1.set = card2.set
         && card1.number = card2.number
 
+/// A card entry, which is used to condense multiple cards into one card object and an amount
+type CardEntry = { card: Card; amount: uint }
+
+module CardEntry =
+    let collapseCardList cardList =
+        cardList
+        |> List.fold
+            (fun cardAmountMap card ->
+                Map.change
+                    card
+                    (function
+                    | Some amount -> amount + 1u |> Some
+                    | None -> Some 1u)
+                    cardAmountMap)
+            Map.empty
+        |> Map.toList
+        |> List.map (fun (card, amount) -> { card = card; amount = amount })
+
 [<Generator.Fields("cards")>]
 type CardWithInfo = { card: Card; info: CardInfo }
 
 module CardWithInfo =
+    let create card info = { card = card; info = info }
+
     /// Checks if those two cards are rulewise the same. They do not have to be from the same set
     let isSame (card1: CardWithInfo) (card2: CardWithInfo) =
         card1.info.oracleId = card2.info.oracleId
 
     let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) = Card.isExactSame card1.card card2.card
 
-/// A card entry, which is used to condense multiple cards into one card object and an amount
-type CardEntry = { card: Card; amount: uint }
+[<Generator.Fields("cards")>]
+type CardEntryWithInfo = { entry: CardEntry; info: CardInfo }
+
+module CardEntryWithInfo =
+    let create entry info = { entry = entry; info = info }

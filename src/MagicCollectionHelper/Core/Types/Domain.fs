@@ -71,9 +71,12 @@ module Analyser =
           print = print }
 
 type SortRule =
+    | ByColorIdentity
     | BySet
     | ByCollectorNumber
     | ByName
+    | ByCmc
+    | ByTypeContains of string list
 
 type SortRules = SortRule list
 
@@ -83,6 +86,8 @@ type Rules =
     { inSet: Set<MagicSet> option
       inLanguage: Language option
       isFoil: bool option
+      typeContains: Set<string> option
+      typeNotContains: Set<string> option
       limit: uint option
       limitExact: uint option
       rarity: Set<Rarity> option
@@ -93,6 +98,8 @@ module Rules =
         { inSet = None
           inLanguage = None
           isFoil = None
+          typeContains = None
+          typeNotContains = None
           limit = None
           limitExact = None
           rarity = None
@@ -101,6 +108,8 @@ module Rules =
     let withInSet v rules = { rules with inSet = Some v }
     let withInLanguage v rules = { rules with inLanguage = Some v }
     let withIsFoil v rules = { rules with isFoil = Some v }
+    let withTypeContains v rules = { rules with typeContains = Some v }
+    let withTypeNotContains v rules = { rules with typeNotContains = Some v }
     let withLimit v rules = { rules with limit = Some v }
     let withLimitExact v rules = { rules with limitExact = Some v }
     let withRarity v rules : Rules = { rules with rarity = Some v }

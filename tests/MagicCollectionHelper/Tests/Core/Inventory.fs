@@ -13,7 +13,9 @@ let cardInfo =
       colors = [] |> Set.ofList
       colorIdentity = [] |> Set.ofList
       oracleId = "f3c40943-1d7c-4ea2-b34f-8df8b6775701"
-      rarity = Rare }
+      rarity = Rare
+      typeLine = "Land"
+      cmc = 0u }
 
 let card =
     { number = CollectorNumber 242u
@@ -53,7 +55,8 @@ let tests =
 
                     let result = fitsRules rules
 
-                    Expect.equal result expected "Expected different result for card")
+                    $"Expected different result for card with rules: {rules}"
+                    |> Expect.equal result expected)
             // We check coloridentity rule
             testCase "coloridentity"
             <| (fun () ->
@@ -70,7 +73,8 @@ let tests =
 
                     let result = fitsRules rules
 
-                    Expect.equal result expected "Expected different result for card")
+                    $"Expected different result for card with rules: {rules}"
+                    |> Expect.equal result expected)
             // We check rarity rule
             testCase "rarity"
             <| (fun () ->
@@ -86,6 +90,41 @@ let tests =
 
                     let result = fitsRules rules
 
-                    Expect.equal result expected "Expected different result for card")
+                    $"Expected different result for card with rules: {rules}"
+                    |> Expect.equal result expected)
+            // We check type contains rule
+            testCase "typeContains"
+            <| (fun () ->
+                let sets =
+                    [ [], true
+                      [ "Land" ], true
+                      [ "Creature" ], false ]
+                    |> List.map (fun (l, r) -> Set.ofList l, r)
+
+                for (set, expected) in sets do
+                    let rules =
+                        Rules.empty |> Rules.withTypeContains set
+
+                    let result = fitsRules rules
+
+                    $"Expected different result for card with rules: {rules}"
+                    |> Expect.equal result expected)
+            // We check type not contains rule
+            testCase "typeNotContains"
+            <| (fun () ->
+                let sets =
+                    [ [], true
+                      [ "Land" ], false
+                      [ "Creature" ], true ]
+                    |> List.map (fun (l, r) -> Set.ofList l, r)
+
+                for (set, expected) in sets do
+                    let rules =
+                        Rules.empty |> Rules.withTypeNotContains set
+
+                    let result = fitsRules rules
+
+                    $"Expected different result for card with rules: {rules}"
+                    |> Expect.equal result expected)
         ]
     ]

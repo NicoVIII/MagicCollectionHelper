@@ -5,6 +5,7 @@ open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.Components
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
+open System
 
 open MagicCollectionHelper.Core.Types
 
@@ -31,52 +32,80 @@ type LocCards =
       amount: uint
       cards: string seq }
 
-let cardItem (infoMap: CardInfoMap) (entry: CardEntry) =
+let cardItem (entryWithInfo: CardEntryWithInfo) =
+    let entry = entryWithInfo.entry
+    let info = entryWithInfo.info
     let set = entry.card.set
     let number = entry.card.number
-    let info = infoMap.TryFind(set, number)
+    let name = info.name
 
-    let name =
-        match info with
-        | Some info -> info.name
-        | None -> "???"
+    let star = if entry.card.foil then "★" else " "
 
     CheckBox.create [
         CheckBox.fontFamily Config.monospaceFont
-        CheckBox.content $"[%5s{set.Value}-%03i{number.Value}] %2i{entry.amount} {name}"
+        CheckBox.content $"{star}[%5s{set.Value}-%03i{number.Value}] %2i{entry.amount} {name}"
     ]
 
-let getSortByValue (e: CardEntry, i: CardInfo option) sortBy =
-    match sortBy with
-    | ByName ->
-        match i with
-        | Some info -> info.name
-        | None -> "???"
-    | BySet ->
-        match e.card.set.Value with
-        | set when set.StartsWith "T" -> set.Substring 1 + "Z"
-        | set -> set + "A"
-    | ByCollectorNumber -> $"%03i{e.card.number.Value}"
+let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
+    let entry = entryWithInfo.entry
+    let info = entryWithInfo.info
 
-let sortEntries (infoMap: CardInfoMap) location (entries: CardEntry list) =
+    match sortBy with
+    | ByColorIdentity ->
+        let pos =
+            ColorIdentity.getPosition info.colorIdentity
+
+        sprintf "%02i" pos
+    | ByName -> info.name
+    | BySet ->
+        let date =
+            Map.tryFind entry.card.set setData
+            |> function
+            | Some setData -> setData.date
+            | None -> "0000-00-00"
+
+        let extension =
+            match entry.card.set.Value with
+            | set when set.StartsWith "T" -> set.Substring 1 + "Z"
+            | set -> set + "A"
+
+        $"{date}{extension}"
+    | ByCollectorNumber -> sprintf "%03i" entry.card.number.Value
+    | ByCmc -> sprintf "%02i" info.cmc
+    | ByTypeContains typeContains ->
+        typeContains
+        |> List.fold
+            (fun (found, strng) typeContains ->
+                if found then
+                    (true, strng + "9")
+                else if info.typeLine.Contains typeContains then
+                    (true, strng + "1")
+                else
+                    (false, strng + "9"))
+            (false, "")
+        |> snd
+
+let sortEntries setData location (entries: CardEntryWithInfo list) =
+    let random = Random()
+
     let sortRules =
         match location with
         | Custom location -> location.sortBy
         | Fallback -> [ ByName ]
 
-    let sortBy (e: CardEntry) =
-        let info =
-            infoMap.TryFind(e.card.set, e.card.number)
-
-        sortRules |> List.map (getSortByValue (e, info))
+    let sortBy (e: CardEntryWithInfo) =
+        sortRules
+        |> List.map (getSortByValue setData e)
+        // We add a random factor at the end
+        |> (fun lst -> List.append lst [ random.Next(0, 10000) |> sprintf "%04i" ])
 
     List.sortBy sortBy entries
 
-let locationItem (infoMap: CardInfoMap) (location: InventoryLocation, entries) =
+let locationItem setData (location: InventoryLocation) entries =
     let amount =
-        List.sumBy (fun (e: CardEntry) -> e.amount) entries
+        List.sumBy (fun (e: CardEntryWithInfo) -> e.entry.amount) entries
 
-    let entries = sortEntries infoMap location entries
+    let entries = sortEntries setData location entries
 
     Expander.create [
         Expander.header (
@@ -92,7 +121,7 @@ let locationItem (infoMap: CardInfoMap) (location: InventoryLocation, entries) =
                         StackPanel.spacing 4.
                         StackPanel.children [
                             for entry in entries do
-                                cardItem infoMap entry
+                                cardItem entry
                         ]
                     ]
                 )
@@ -100,7 +129,7 @@ let locationItem (infoMap: CardInfoMap) (location: InventoryLocation, entries) =
         )
     ]
 
-let content (infoMap: CardInfoMap) (state: State) (dispatch: Dispatch) : IView =
+let content (infoMap: CardInfoMap) setData (state: State) (dispatch: Dispatch) : IView =
     match state.editLocations, state.loadInProgress with
     | true, _ -> LocationEdit.render state dispatch
     | false, true ->
@@ -128,16 +157,26 @@ let content (infoMap: CardInfoMap) (state: State) (dispatch: Dispatch) : IView =
                                 None)
                         state.locations
                     |> Option.defaultValue 999u)
+            |> List.map
+                (fun (location, entries) ->
+                    let cards =
+                        entries
+                        |> List.choose
+                            (fun entry ->
+                                Map.tryFind (entry.card.set, entry.card.number) infoMap
+                                |> Option.map (CardEntryWithInfo.create entry))
+
+                    (location, cards))
 
         StackPanel.create [
             StackPanel.children [
-                for location in locations do
-                    locationItem infoMap location
+                for (location, cards) in locations do
+                    locationItem setData location cards
             ]
         ]
         :> IView
 
-let render (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
+let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             topBar infoMap entries state dispatch
@@ -156,12 +195,12 @@ let render (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (disp
                          else
                              OpenLocationEdit)
                         |> dispatch),
-                    SubPatchOptions.Always
+                    Always
                 )
             ]
             ScrollViewer.create [
                 ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-                ScrollViewer.content (content infoMap state dispatch)
+                ScrollViewer.content (content infoMap setData state dispatch)
             ]
         ]
     ]

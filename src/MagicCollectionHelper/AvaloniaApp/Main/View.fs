@@ -71,9 +71,10 @@ let content (state: State) (dispatch: Dispatch) : IView =
             getl StateLenses.entries state
             |> DeckStatsCardEntry.listToEntries
 
+        let setData = getl StateLenses.setData state
         let infoMap = getl StateLenses.infoMap state
         let dispatch = InventoryMsg >> dispatch
-        Components.Inventory.View.render infoMap entries state.inventory dispatch
+        Components.Inventory.View.render infoMap setData entries state.inventory dispatch
     | Preferences -> PreferenceView.render state dispatch
 
 let leftBottomBar (state: State) (dispatch: Dispatch) : IView =

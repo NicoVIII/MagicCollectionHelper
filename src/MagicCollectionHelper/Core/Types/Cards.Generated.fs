@@ -15,6 +15,17 @@ module CardWithInfo =
               info = mapinfo record'.info }
 namespace rec MagicCollectionHelper.Core.Types.Generated
 
+module CardEntryWithInfo =
+    open MagicCollectionHelper.Core.Types
+    let entry (x: CardEntryWithInfo) = x.entry
+    let info (x: CardEntryWithInfo) = x.info
+    let create (entry: CardEntry) (info: CardInfo): CardEntryWithInfo = { entry = entry; info = info }
+    let map (mapentry: CardEntry -> CardEntry) (mapinfo: CardInfo -> CardInfo) (record': CardEntryWithInfo) =
+        { record' with
+              entry = mapentry record'.entry
+              info = mapinfo record'.info }
+namespace rec MagicCollectionHelper.Core.Types.Generated
+
 module Rarity =
     open MagicCollectionHelper.Core.Types
     let toString (x: Rarity) =

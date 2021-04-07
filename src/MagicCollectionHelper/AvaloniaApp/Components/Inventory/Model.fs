@@ -27,6 +27,16 @@ type Dispatch = Msg -> unit
 module Model =
     open MagicCollectionHelper.Core
 
+    let typeSortDefault =
+        [ "Land"
+          "Creature"
+          "Sorcery"
+          "Instant"
+          "Enchantment"
+          "Artifact"
+          "Planeswalker" ]
+        |> ByTypeContains
+
     let init () : State =
         // Test Locations
         let locations =
@@ -40,7 +50,8 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
               { name = "Collection RNA"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
@@ -51,7 +62,8 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
               { name = "Collection WAR"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
@@ -62,7 +74,8 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
               { name = "Collection ELD"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
@@ -73,7 +86,8 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
               { name = "Collection THB"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
@@ -84,7 +98,8 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
               { name = "Collection IKO"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
@@ -95,7 +110,8 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
               { name = "Collection ZNR"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
@@ -106,7 +122,8 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
               { name = "Collection KHM"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
@@ -117,61 +134,80 @@ module Model =
                         |> Set.map MagicSet.create
                     )
                     |> Rules.withLimitExact 1u
-                    |> Rules.withIsFoil false }
+                    |> Rules.withIsFoil false
+                    |> Rules.withInLanguage (Language "en") }
+              { name = "Foil basic lands"
+                sortBy =
+                    [ ByColorIdentity
+                      BySet
+                      ByCollectorNumber ]
+                rules =
+                    Rules.empty
+                    |> Rules.withLimitExact 1u
+                    |> Rules.withIsFoil true
+                    |> Rules.withTypeContains ([ "Basic Land" ] |> Set.ofList) }
+              { name = "Lookup Rare Lands"
+                sortBy = [ ByColorIdentity ]
+                rules =
+                    Rules.empty
+                    |> Rules.withLimit 1u
+                    |> Rules.withTypeContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withRarity ([ Rare ] |> Set.ofList) }
               { name = "Lookup 1 (Colorless)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList) }
+                    |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList)
+                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList) }
               { name = "Lookup 2 (Colorless)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Common ] |> Set.ofList) }
+                    |> Rules.withRarity ([ Common; Uncommon ] |> Set.ofList) }
               { name = "Lookup 1 (White)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
                     |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList) }
               { name = "Lookup 2 (White)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
                     |> Rules.withRarity ([ Common ] |> Set.ofList) }
               { name = "Lookup (Blue)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Blue ] ] |> Set.ofListList) }
               { name = "Lookup (Black)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Black ] ] |> Set.ofListList) }
               { name = "Lookup (Red)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Red ] ] |> Set.ofListList) }
               { name = "Lookup (Green)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Green ] ] |> Set.ofListList) }
               { name = "Lookup (Mixed 1)"
-                sortBy = [ ByName ]
+                sortBy = [ typeSortDefault; ByCmc ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
@@ -184,7 +220,7 @@ module Model =
                         |> Set.ofListList
                     ) }
               { name = "Lookup (Mixed 2)"
-                sortBy = [ ByName ]
+                sortBy = [ ByCmc ]
                 rules = Rules.empty |> Rules.withLimit 1u } ]
             // Pack position into location
             |> List.indexed

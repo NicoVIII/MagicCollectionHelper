@@ -17,7 +17,8 @@ module CardDataImport =
             jToken.Children()
             |> Seq.map
                 (fun c ->
-                    c.ToString()
+                    c
+                    |> string
                     |> function
                     | "W" -> White
                     | "U" -> Blue
@@ -36,7 +37,8 @@ module CardDataImport =
             let jObject = JObject.Parse line'
 
             let collectorNumber =
-                jObject.["collector_number"].ToString()
+                jObject.["collector_number"]
+                |> string
                 |> function
                 | Uint number -> number |> CollectorNumber |> Some
                 | _ -> None
@@ -59,7 +61,9 @@ module CardDataImport =
                                   | _ -> c)
                           >> String.Concat)
                       |> Rarity.fromString
-                      |> Option.get }
+                      |> Option.get
+                  typeLine = jObject.["type_line"] |> string
+                  cmc = jObject.["cmc"] |> uint }
                 |> Some
             | None -> None
 
