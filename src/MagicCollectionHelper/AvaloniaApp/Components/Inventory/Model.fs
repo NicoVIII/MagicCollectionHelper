@@ -33,7 +33,7 @@ module Model =
             [ { name = "Collection GRN"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "GRN"; "TGRN" ]
                         |> Set.ofSeq
@@ -44,7 +44,7 @@ module Model =
               { name = "Collection RNA"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "RNA"; "TRNA" ]
                         |> Set.ofSeq
@@ -55,7 +55,7 @@ module Model =
               { name = "Collection WAR"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "WAR"; "TWAR" ]
                         |> Set.ofSeq
@@ -66,7 +66,7 @@ module Model =
               { name = "Collection ELD"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "ELD"; "TELD" ]
                         |> Set.ofSeq
@@ -77,7 +77,7 @@ module Model =
               { name = "Collection THB"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "THB"; "TTHB" ]
                         |> Set.ofSeq
@@ -88,7 +88,7 @@ module Model =
               { name = "Collection IKO"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "IKO"; "TIKO" ]
                         |> Set.ofSeq
@@ -99,7 +99,7 @@ module Model =
               { name = "Collection ZNR"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "ZNR"; "TZNR" ]
                         |> Set.ofSeq
@@ -110,7 +110,7 @@ module Model =
               { name = "Collection KHM"
                 sortBy = [ BySet; ByCollectorNumber ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withInSet (
                         [ "KHM"; "TKHM" ]
                         |> Set.ofSeq
@@ -121,59 +121,59 @@ module Model =
               { name = "Lookup 1 (Colorless)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
                     |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList) }
               { name = "Lookup 2 (Colorless)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
                     |> Rules.withRarity ([ Common ] |> Set.ofList) }
               { name = "Lookup 1 (White)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
                     |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList) }
               { name = "Lookup 2 (White)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
                     |> Rules.withRarity ([ Common ] |> Set.ofList) }
               { name = "Lookup (Blue)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Blue ] ] |> Set.ofListList) }
               { name = "Lookup (Black)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Black ] ] |> Set.ofListList) }
               { name = "Lookup (Red)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Red ] ] |> Set.ofListList) }
               { name = "Lookup (Green)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ Green ] ] |> Set.ofListList) }
               { name = "Lookup (Mixed 1)"
                 sortBy = [ ByName ]
                 rules =
-                    Rules.createEmpty ()
+                    Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity (
                         [ [ White; Blue ]
@@ -185,7 +185,7 @@ module Model =
                     ) }
               { name = "Lookup (Mixed 2)"
                 sortBy = [ ByName ]
-                rules = Rules.createEmpty () |> Rules.withLimit 1u } ]
+                rules = Rules.empty |> Rules.withLimit 1u } ]
             // Pack position into location
             |> List.indexed
             |> List.map (fun (pos, location) -> CustomLocation.createFromRaw (uint pos) location)

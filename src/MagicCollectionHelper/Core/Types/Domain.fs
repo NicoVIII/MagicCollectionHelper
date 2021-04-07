@@ -84,7 +84,7 @@ type Rules =
       colorIdentity: Set<ColorIdentity> option }
 
 module Rules =
-    let createEmpty () =
+    let empty =
         { inSet = None
           inLanguage = None
           isFoil = None

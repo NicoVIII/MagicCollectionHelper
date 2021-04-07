@@ -6,8 +6,8 @@ open MagicCollectionHelper.Core.Types
 module Inventory =
     let fitsRule option rule =
         match option with
-        | Some value -> rule value
         | None -> true
+        | Some value -> rule value
 
     let fitsInSetRule (card: Card) rules =
         fitsRule rules.inSet (Set.contains card.set)
