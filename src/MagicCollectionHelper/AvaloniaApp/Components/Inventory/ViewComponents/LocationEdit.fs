@@ -13,22 +13,6 @@ open MagicCollectionHelper.AvaloniaApp.ViewHelper
 open MagicCollectionHelper.Core.Types
 
 module LocationEdit =
-    let ruleLine text valueControl =
-        StackPanel.create [
-            StackPanel.orientation Orientation.Horizontal
-            StackPanel.spacing 10.
-            StackPanel.children [
-                TextBlock.create [
-                    TextBlock.column 0
-                    TextBlock.row 0
-                    TextBlock.width 120.
-                    TextBlock.text text
-                ]
-                valueControl
-            ]
-        ]
-        :> IView
-
     let inSetLine _ _ inSet =
         let valueControl =
             TextBlock.create [
@@ -40,7 +24,7 @@ module LocationEdit =
                 )
             ]
 
-        ruleLine "In set" valueControl
+        ("In set", valueControl)
 
     let isFoilLine dispatch locationName isFoil =
         let valueControl =
@@ -60,7 +44,19 @@ module LocationEdit =
                 )
             ]
 
-        ruleLine "Is foil" valueControl
+        ("Is foil", valueControl)
+
+    let inLanguageLine dispatch locationName inLanguage =
+        let valueControl =
+            TextBox.create [
+                TextBox.text (string inLanguage)
+                TextBox.onTextChanged
+                    (fun lang ->
+                        UpdateLocationRules(locationName, Rules.withInLanguage (Language lang))
+                        |> dispatch)
+            ]
+
+        ("In language", valueControl)
 
     let limitLine dispatch locationName (limit: uint) =
         let valueControl =
@@ -76,7 +72,7 @@ module LocationEdit =
                 )
             ]
 
-        ruleLine "Limit" valueControl
+        ("Limit", valueControl)
 
     let limitExactLine dispatch locationName (limitExact: uint) =
         let valueControl =
@@ -92,11 +88,27 @@ module LocationEdit =
                 )
             ]
 
-        ruleLine "Limit (exact)" valueControl
+        ("Limit (exact)", valueControl)
 
     let renderRule dispatch locationName filterLine (option: 'a option) =
         match option with
-        | Some value -> filterLine dispatch locationName value
+        | Some value ->
+            let (title, control) = filterLine dispatch locationName value
+
+            StackPanel.create [
+                StackPanel.orientation Orientation.Horizontal
+                StackPanel.spacing 10.
+                StackPanel.children [
+                    TextBlock.create [
+                        TextBlock.column 0
+                        TextBlock.row 0
+                        TextBlock.width 120.
+                        TextBlock.text title
+                    ]
+                    control
+                ]
+            ]
+            :> IView
         | None -> TextBlock.create [] :> IView
 
     let renderLocationLine (location: CustomLocation) (dispatch: Dispatch) : IView =
@@ -120,6 +132,7 @@ module LocationEdit =
                         ]
                         renderRule inSetLine rules.inSet
                         renderRule isFoilLine rules.isFoil
+                        renderRule inLanguageLine rules.inLanguage
                         renderRule limitLine rules.limit
                         renderRule limitExactLine rules.limitExact
                     ]
