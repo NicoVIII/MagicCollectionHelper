@@ -27,21 +27,26 @@ type DeckStatsCardEntry =
       set: MagicSet option }
 
 module DeckStatsCardEntry =
+    let toEntry (entry: DeckStatsCardEntry) =
+        match entry.set, entry.number, entry.language with
+        | Some set, Some number, Some lang ->
+            { CardEntry.amount = entry.amount
+              card =
+                  { foil = entry.foil
+                    set = set
+                    number = number
+                    language = lang } }
+            |> Some
+        | _ -> None
+
     let listToEntries (entries: DeckStatsCardEntry list) =
         entries
         // We only take entries with enough info
         |> List.fold
             (fun lst (entry: DeckStatsCardEntry) ->
-                match entry.set, entry.number, entry.language with
-                | Some set, Some number, Some lang ->
-                    { CardEntry.amount = entry.amount
-                      card =
-                          { foil = entry.foil
-                            set = set
-                            number = number
-                            language = lang } }
-                    :: lst
-                | _ -> lst)
+                match toEntry entry with
+                | Some entry -> entry :: lst
+                | None -> lst)
             []
         |> List.rev
 

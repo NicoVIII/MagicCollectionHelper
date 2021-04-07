@@ -57,12 +57,14 @@ let sideBar (state: State) (dispatch: Dispatch) : IView =
     :> IView
 
 let content (state: State) (dispatch: Dispatch) : IView =
+    let infoMap = getl StateLenses.infoMap state
+
     match getl StateLenses.viewMode state with
     | Collection ->
         let entries = getl StateLenses.entries state
         let dispatch = CollectionMsg >> dispatch
 
-        Components.Collection.View.render entries state.collection dispatch
+        Components.Collection.View.render entries infoMap state.collection dispatch
     | ViewMode.Analyse -> AnalyseView.render state dispatch
     | Inventory ->
         let entries =

@@ -12,6 +12,7 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 open MagicCollectionHelper.AvaloniaApp.Elements
+open Avalonia.Media
 
 let topBar entries (state: State) (dispatch: Dispatch) : IView =
     let loadInProgress = getl StateLenses.loadInProgress state
@@ -27,33 +28,58 @@ let topBar entries (state: State) (dispatch: Dispatch) : IView =
               action = (fun _ -> ()) }
     ]
 
-let renderText entries (state: State) (dispatch: Dispatch) : IView =
+let renderText entries infoMap (state: State) (dispatch: Dispatch) : IView =
     let loadInProgress = getl StateLenses.loadInProgress state
 
-    TextBlock.create [
-        match loadInProgress, List.isEmpty entries with
-        | true, _ -> TextBlock.text "Loading..."
-        | false, true -> TextBlock.text "Your collection is empty. Import it first."
-        | false, false ->
-            let cardAmount =
-                List.sumBy (fun (entry: DeckStatsCardEntry) -> entry.amount) entries
+    let inventoryableAmount =
+        if not (Map.isEmpty infoMap) then
+            List.sumBy
+                (fun (entry: DeckStatsCardEntry) ->
+                    let entry = DeckStatsCardEntry.toEntry entry
 
-            TextBlock.text $"You have %i{cardAmount} cards in your collection."
+                    match entry with
+                    | Some entry when Map.containsKey (entry.card.set, entry.card.number) infoMap -> entry.amount
+                    | Some _
+                    | None -> 0u)
+                entries
+            |> Some
+        else
+            None
+
+    let cardAmount =
+        List.sumBy (fun (entry: DeckStatsCardEntry) -> entry.amount) entries
+
+    TextBlock.create [
+        TextBlock.textWrapping TextWrapping.Wrap
+        TextBlock.text (
+            match loadInProgress, List.isEmpty entries, inventoryableAmount with
+            | true, _, _ -> "Loading..."
+            | false, true, _ -> "Your collection is empty. Import it first."
+            | false, false, None -> $"You have %i{cardAmount} cards in your collection."
+            | false, false, Some inventoryableAmount ->
+                let percent =
+                    (double inventoryableAmount) / (double cardAmount)
+                    * 100.
+
+                $"You have %i{cardAmount} cards in your collection.\n\n"
+                + $"From those you can use {inventoryableAmount} (%.1f{percent}%%) for inventory."
+                + " If you need more, please extend the info in your collection. Especially important are set and collector number."
+        )
     ]
     :> IView
 
-let content entries (state: State) (dispatch: Dispatch) : IView =
+let content entries infoMap (state: State) (dispatch: Dispatch) : IView =
     Border.create [
         Border.padding 10.
-        Border.child (renderText entries state dispatch)
+        Border.child (renderText entries infoMap state dispatch)
     ]
     :> IView
 
-let render entries (state: State) (dispatch: Dispatch) : IView =
+let render entries infoMap (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             topBar entries state dispatch
-            content entries state dispatch
+            content entries infoMap state dispatch
         ]
     ]
     :> IView
