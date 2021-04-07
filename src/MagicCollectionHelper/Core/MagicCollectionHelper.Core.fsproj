@@ -7,6 +7,9 @@
     <Compile Include="Config.fs" />
     <Compile Include="Types/Lenses.fs" />
     <Compile Include="Types/Cards.fs" />
+    <Compile Include="Types/Cards.Generated.fs">
+      <MyriadFile>Types/Cards.fs</MyriadFile>
+    </Compile>
     <Compile Include="Types/Domain.fs" />
     <Compile Include="Types/Domain.Generated.fs">
       <MyriadFile>Types/Domain.fs</MyriadFile>

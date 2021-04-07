@@ -1,5 +1,7 @@
 namespace MagicCollectionHelper.Core.Types
 
+open Myriad.Plugins
+
 /// All colors which are important in Magic
 type Color =
     | White
@@ -83,6 +85,13 @@ module MagicSet =
 
 type ColorIdentity = Set<Color>
 
+[<Generator.DuCases("cards")>]
+type Rarity =
+    | Common
+    | Uncommon
+    | Rare
+    | Mythic
+
 /// Additional info for a card
 type CardInfo =
     { name: string
@@ -90,7 +99,8 @@ type CardInfo =
       collectorNumber: CollectorNumber
       colors: Set<Color>
       colorIdentity: ColorIdentity
-      oracleId: string }
+      oracleId: string
+      rarity: Rarity }
 
 type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 

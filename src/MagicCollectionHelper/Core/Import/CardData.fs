@@ -3,10 +3,12 @@ namespace MagicCollectionHelper.Core
 [<RequireQualifiedAccess>]
 module CardDataImport =
     open Newtonsoft.Json.Linq
+    open System
     open System.IO
 
     open MagicCollectionHelper.Core.TryParser
     open MagicCollectionHelper.Core.Types
+    open MagicCollectionHelper.Core.Types.Generated
 
     let private tokenToColorSet (jToken: JToken) =
         match jToken with
@@ -41,12 +43,23 @@ module CardDataImport =
 
             match collectorNumber with
             | Some collectorNumber ->
-                { name = jObject.["name"].ToString()
-                  set = jObject.["set"].ToString() |> MagicSet.create
+                { name = jObject.["name"] |> string
+                  set = jObject.["set"] |> string |> MagicSet.create
                   collectorNumber = collectorNumber
                   colors = jObject.["colors"] |> tokenToColorSet
                   colorIdentity = jObject.["color_identity"] |> tokenToColorSet
-                  oracleId = jObject.["oracle_id"].ToString() }
+                  oracleId = jObject.["oracle_id"] |> string
+                  rarity =
+                      jObject.["rarity"]
+                      |> string
+                      |> (Seq.mapi
+                              (fun i c ->
+                                  match i with
+                                  | 0 -> Char.ToUpper(c)
+                                  | _ -> c)
+                          >> String.Concat)
+                      |> Rarity.fromString
+                      |> Option.get }
                 |> Some
             | None -> None
 
