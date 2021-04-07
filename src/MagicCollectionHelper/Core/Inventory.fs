@@ -74,12 +74,7 @@ module Inventory =
 
     let determineLocation locCardMap locations card =
         locations
-        |> Map.tryPick
-            (fun _ location ->
-                if fitsInLocation locCardMap card location then
-                    Some location
-                else
-                    None)
+        |> List.tryFind (fitsInLocation locCardMap card)
 
     let newEntryForCard (card: Card) : CardEntry = { amount = 1u; card = card }
 
@@ -103,11 +98,14 @@ module Inventory =
         entryList
 
     let take (infoMap: CardInfoMap) locations entries =
+        // We have to sort locations first
+        let locations = CustomLocation.mapToSortedList locations
+
         let mutable locCardMap =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
 
-            for KeyValue (_, location) in locations do
+            for location in locations do
                 map <- Map.add (Custom location) [] map
 
             map

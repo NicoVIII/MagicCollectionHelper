@@ -125,6 +125,12 @@ module CustomLocation =
           sortBy = raw.sortBy
           position = pos }
 
+    let mapToSortedList map =
+        map
+        |> Map.toList
+        |> List.map snd
+        |> List.sortBy (fun location -> location.position)
+
 /// Location, where a part of the collection is
 type InventoryLocation =
     | Custom of CustomLocation
