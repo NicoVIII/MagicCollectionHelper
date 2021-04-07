@@ -14,19 +14,18 @@ open MagicCollectionHelper.AvaloniaApp.Components.Main
 open MagicCollectionHelper.AvaloniaApp.Elements
 
 module AnalyseView =
-    let topBar (state: State) (dispatch: Dispatch): IView =
-        let entries = getl StateL.entries state
+    let topBar (state: State) (dispatch: Dispatch) : IView =
+        let entries = getl StateLenses.entries state
 
         ActionButtonBar.create [
-            ActionButton.create {
-                text = "Analyse"
-                isEnabled = (not entries.IsEmpty)
-                action = (fun _ -> Analyse |> dispatch)
-            }
+            ActionButton.create
+                { text = "Analyse"
+                  isEnabled = (not entries.IsEmpty)
+                  action = (fun _ -> Analyse |> dispatch) }
         ]
 
-    let content (state: State) (dispatch: Dispatch): IView =
-        let analyseText = getl StateL.analyseText state
+    let content (state: State) (dispatch: Dispatch) : IView =
+        let analyseText = getl StateLenses.analyseText state
 
         Border.create [
             Border.background "black"
@@ -42,13 +41,16 @@ module AnalyseView =
                             TextBlock.text analyseText
                         ]
                     )
-                ])
-        ]:> IView
+                ]
+            )
+        ]
+        :> IView
 
-    let render (state: State) (dispatch: Dispatch): IView =
+    let render (state: State) (dispatch: Dispatch) : IView =
         DockPanel.create [
             DockPanel.children [
                 topBar state dispatch
                 content state dispatch
             ]
-        ]:> IView
+        ]
+        :> IView

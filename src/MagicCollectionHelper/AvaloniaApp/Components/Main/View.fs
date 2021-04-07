@@ -24,7 +24,7 @@ let sideBarButton currentViewMode (label: string) viewMode (dispatch: Dispatch) 
 
 let sideBar (state: State) (dispatch: Dispatch) : IView =
     let sideBarButton =
-        sideBarButton (getl StateL.viewMode state)
+        sideBarButton (getl StateLenses.viewMode state)
 
     Border.create [
         Border.dock Dock.Left
@@ -57,21 +57,25 @@ let sideBar (state: State) (dispatch: Dispatch) : IView =
     :> IView
 
 let content (state: State) (dispatch: Dispatch) : IView =
-    match getl StateL.viewMode state with
-    | Collection -> CollectionView.render state dispatch
+    match getl StateLenses.viewMode state with
+    | Collection ->
+        let entries = getl StateLenses.entries state
+        let dispatch = CollectionMsg >> dispatch
+
+        Components.Collection.View.render entries state.collection dispatch
     | ViewMode.Analyse -> AnalyseView.render state dispatch
     | Inventory ->
         let entries =
-            getl StateL.entries state
+            getl StateLenses.entries state
             |> DeckStatsCardEntry.listToEntries
 
-        let infoMap = getl StateL.infoMap state
+        let infoMap = getl StateLenses.infoMap state
         let dispatch = InventoryMsg >> dispatch
         Components.Inventory.View.render infoMap entries state.inventory dispatch
     | Preferences -> PreferenceView.render state dispatch
 
 let leftBottomBar (state: State) (dispatch: Dispatch) : IView =
-    let entries = getl StateL.entries state
+    let entries = getl StateLenses.entries state
 
     StackPanel.create [
         StackPanel.dock Dock.Left

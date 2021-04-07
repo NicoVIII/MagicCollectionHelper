@@ -9,6 +9,14 @@
     <Compile Include="ViewHelper.fs" />
     <!-- Elements -->
     <Compile Include="Elements/Elements.fs" />
+    <!-- Collection component -->
+    <Compile Include="Components/Collection/Model.fs" />
+    <Compile Include="Components/Collection/Model.Generated.fs">
+      <MyriadFile>Components/Collection/Model.fs</MyriadFile>
+    </Compile>
+    <Compile Include="Components/Collection/ViewComponents/*.fs" />
+    <Compile Include="Components/Collection/View.fs" />
+    <Compile Include="Components/Collection/Update.fs" />
     <!-- Inventory component -->
     <Compile Include="Components/Inventory/Model.fs" />
     <Compile Include="Components/Inventory/Model.Generated.fs">

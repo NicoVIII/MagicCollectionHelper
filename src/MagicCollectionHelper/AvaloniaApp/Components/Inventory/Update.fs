@@ -7,6 +7,7 @@ open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
+open MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 
 let perform (infoMap: CardInfoMap) (entries: CardEntry list) (msg: Msg) (state: State) =
     match msg with
