@@ -1,4 +1,4 @@
-module MagicCollectionHelper.AvaloniaApp.Components.Main.View
+module MagicCollectionHelper.AvaloniaApp.Main.View
 
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
@@ -10,7 +10,7 @@ open Avalonia.Media
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp
-open MagicCollectionHelper.AvaloniaApp.Components.Main.ViewComponents
+open MagicCollectionHelper.AvaloniaApp.Main.ViewComponents
 
 let sideBarButton currentViewMode (label: string) viewMode (dispatch: Dispatch) =
     let isActive = currentViewMode = viewMode

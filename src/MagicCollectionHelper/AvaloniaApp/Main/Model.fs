@@ -1,4 +1,4 @@
-namespace MagicCollectionHelper.AvaloniaApp.Components.Main
+namespace MagicCollectionHelper.AvaloniaApp.Main
 
 open Myriad.Plugins
 open System
@@ -9,7 +9,7 @@ type ViewMode =
     | Inventory
     | Preferences
 
-[<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
+[<Generator.Lenses("main", "MagicCollectionHelper.Core.Types.Lens")>]
 type CommonState =
     { analyseText: string
       entries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
@@ -18,7 +18,7 @@ type CommonState =
       setData: MagicCollectionHelper.Core.Types.SetDataMap
       viewMode: ViewMode }
 
-[<Generator.Lenses("components-main", "MagicCollectionHelper.Core.Types.Lens")>]
+[<Generator.Lenses("main", "MagicCollectionHelper.Core.Types.Lens")>]
 type State =
     { common: CommonState
       collection: MagicCollectionHelper.AvaloniaApp.Components.Collection.State

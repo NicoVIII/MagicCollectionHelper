@@ -1,4 +1,4 @@
-namespace MagicCollectionHelper.AvaloniaApp.Components.Main.ViewComponents
+namespace MagicCollectionHelper.AvaloniaApp.Main.ViewComponents
 
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
@@ -10,8 +10,8 @@ open Avalonia.Media
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp
-open MagicCollectionHelper.AvaloniaApp.Components.Main
 open MagicCollectionHelper.AvaloniaApp.Elements
+open MagicCollectionHelper.AvaloniaApp.Main
 
 module AnalyseView =
     let topBar (state: State) (dispatch: Dispatch) : IView =

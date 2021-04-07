@@ -1,4 +1,4 @@
-module MagicCollectionHelper.AvaloniaApp.Components.Main.Update
+module MagicCollectionHelper.AvaloniaApp.Main.Update
 
 open Elmish
 open System
@@ -7,8 +7,8 @@ open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp.Components
-open MagicCollectionHelper.AvaloniaApp.Components.Main
-open MagicCollectionHelper.AvaloniaApp.Components.Main.Generated
+open MagicCollectionHelper.AvaloniaApp.Main
+open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
 let perform (msg: Msg) (state: State) =
     match msg with

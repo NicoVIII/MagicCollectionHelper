@@ -1,11 +1,11 @@
-namespace MagicCollectionHelper.AvaloniaApp.Components.Main
+namespace MagicCollectionHelper.AvaloniaApp.Main
 
 open Myriad.Plugins
 open System
 
 open MagicCollectionHelper.Core.Types
 
-open MagicCollectionHelper.AvaloniaApp.Components.Main.Generated
+open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
 module StateLenses =
     let analyseText =

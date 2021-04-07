@@ -25,15 +25,15 @@
     <Compile Include="Components/Inventory/ViewComponents/*.fs" />
     <Compile Include="Components/Inventory/View.fs" />
     <Compile Include="Components/Inventory/Update.fs" />
-    <!-- Main component -->
-    <Compile Include="Components/Main/Model.fs" />
-    <Compile Include="Components/Main/Model.Generated.fs">
-      <MyriadFile>Components/Main/Model.fs</MyriadFile>
+    <!-- Main -->
+    <Compile Include="Main/Model.fs" />
+    <Compile Include="Main/Model.Generated.fs">
+      <MyriadFile>Main/Model.fs</MyriadFile>
     </Compile>
-    <Compile Include="Components/Main/Model.Lenses.fs" />
-    <Compile Include="Components/Main/ViewComponents/*.fs" />
-    <Compile Include="Components/Main/View.fs" />
-    <Compile Include="Components/Main/Update.fs" />
+    <Compile Include="Main/Model.Lenses.fs" />
+    <Compile Include="Main/ViewComponents/*.fs" />
+    <Compile Include="Main/View.fs" />
+    <Compile Include="Main/Update.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
