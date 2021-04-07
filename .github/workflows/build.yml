@@ -24,3 +24,5 @@ jobs:
         run: dotnet restore
       - name: Run build
         run: dotnet build
+      - name: Run tests
+        run: dotnet fsi ./scripts/run_tests.fsx

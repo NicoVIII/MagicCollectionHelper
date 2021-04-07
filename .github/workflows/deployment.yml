@@ -26,7 +26,7 @@ jobs:
       - name: Build for debug before releasing
         run: dotnet build
       - name: Bundle releases
-        run: dotnet fsi bundle.fsx
+        run: dotnet fsi ./scripts/bundle.fsx
       # For now I simply make a continuous build
       - name: Release files
         uses: marvinpinto/action-automatic-releases@latest
