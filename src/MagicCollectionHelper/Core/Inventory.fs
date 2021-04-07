@@ -1,6 +1,7 @@
 namespace MagicCollectionHelper.Core
 
 open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core.Types.Generated
 
 [<RequireQualifiedAccess>]
 module Inventory =
@@ -18,28 +19,18 @@ module Inventory =
     let fitsIsFoil (card: Card) rules =
         fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
 
-    let fitsRarity (info: CardInfo option) rules =
-        let rule rarity =
-            match info with
-            | None -> false
-            | Some info -> Set.contains info.rarity rarity
+    let fitsRarity (info: CardInfo) rules =
+        fitsRule rules.rarity (fun rarity -> Set.contains info.rarity rarity)
 
-        fitsRule rules.rarity rule
+    let fitsColorIdentity (info: CardInfo) rules =
+        fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains info.colorIdentity colorIdentities)
 
-    let fitsColorIdentity (info: CardInfo option) rules =
-        let rule colorIdentities =
-            match info with
-            | None -> false
-            | Some info -> Set.contains info.colorIdentity colorIdentities
-
-        fitsRule rules.colorIdentity rule
-
-    let fitsLimit infoMap cardsInLoc (card: Card) rules =
+    let fitsLimit cardsInLoc (card: CardWithInfo) rules =
         let rule limit =
             let sum =
                 List.sumBy
                     (fun c ->
-                        if Card.isSame infoMap c card then
+                        if CardWithInfo.isSame c card then
                             1
                         else
                             0)
@@ -49,12 +40,12 @@ module Inventory =
 
         fitsRule rules.limit rule
 
-    let fitsLimitExact cardsInLoc (card: Card) rules =
+    let fitsLimitExact cardsInLoc (card: CardWithInfo) rules =
         let rule limitExact =
             let sum =
                 List.sumBy
-                    (fun (c: Card) ->
-                        if c.set = card.set && c.number = card.number then
+                    (fun c ->
+                        if CardWithInfo.isExactSame c card then
                             1
                         else
                             0)
@@ -64,30 +55,28 @@ module Inventory =
 
         fitsRule rules.limitExact rule
 
-    let fitsRules (infoMap: CardInfoMap) cardsInLoc (card: Card) rules =
-        let info = infoMap.TryFind(card.set, card.number)
-
-        [ fitsInSetRule card
-          fitsInLanguageRule card
-          fitsIsFoil card
-          fitsColorIdentity info
-          fitsRarity info
-          fitsLimit infoMap cardsInLoc card
-          fitsLimitExact cardsInLoc card ]
+    let fitsRules cardsInLoc (cardWithInfo: CardWithInfo) rules =
+        [ fitsInSetRule cardWithInfo.card
+          fitsInLanguageRule cardWithInfo.card
+          fitsIsFoil cardWithInfo.card
+          fitsColorIdentity cardWithInfo.info
+          fitsRarity cardWithInfo.info
+          fitsLimit cardsInLoc cardWithInfo
+          fitsLimitExact cardsInLoc cardWithInfo ]
         // Evaluate functions
         |> List.map (fun fnc -> fnc rules)
         |> List.forall id
 
-    let fitsInLocation (infoMap: CardInfoMap) (locCardMap: Map<InventoryLocation, Card list>) card location =
+    let fitsInLocation (locCardMap: Map<InventoryLocation, CardWithInfo list>) card location =
         let cardList = locCardMap.Item(Custom location)
 
-        fitsRules infoMap cardList card location.rules
+        fitsRules cardList card location.rules
 
-    let determineLocation (infoMap: CardInfoMap) locCardMap locations card =
+    let determineLocation locCardMap locations card =
         locations
         |> Map.tryPick
             (fun _ location ->
-                if fitsInLocation infoMap locCardMap card location then
+                if fitsInLocation locCardMap card location then
                     Some location
                 else
                     None)
@@ -128,17 +117,31 @@ module Inventory =
             List.sortBy (fun (entry: CardEntry) -> if entry.card.foil then 0 else 1) entries
 
         for entry in entries do
-            for _ = 1 to (int) entry.amount do
-                let location =
-                    determineLocation infoMap locCardMap locations entry.card
+            let cardInfo =
+                Map.tryFind (entry.card.set, entry.card.number) infoMap
 
-                match location with
-                | Some location ->
-                    locCardMap <- Map.change (Custom location) (fun (Some l) -> entry.card :: l |> Some) locCardMap
-                | None -> locCardMap <- Map.change Fallback (fun (Some l) -> entry.card :: l |> Some) locCardMap
+            // We can consider a card only for inventory, if we have the info
+            match cardInfo with
+            | Some cardInfo ->
+                let cardWithInfo = { card = entry.card; info = cardInfo }
+
+                for _ = 1 to (int) entry.amount do
+                    let location =
+                        determineLocation locCardMap locations cardWithInfo
+
+                    match location with
+                    | Some location ->
+                        locCardMap <- Map.change (Custom location) (Option.map (fun l -> cardWithInfo :: l)) locCardMap
+                    | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> cardWithInfo :: l)) locCardMap
+            | None -> ()
 
         // Collapse into entries again
-        Map.map (fun _ cardList -> cardToEntryList cardList) locCardMap
+        Map.map
+            (fun _ cardList ->
+                cardList
+                |> List.map CardWithInfo.card
+                |> cardToEntryList)
+            locCardMap
 
     // Because this process can take some time, we provide an async version
     let takeAsync infoMap locations entries =

@@ -4,6 +4,17 @@
 //------------------------------------------------------------------------------
 namespace rec MagicCollectionHelper.Core.Types.Generated
 
+module CardWithInfo =
+    open MagicCollectionHelper.Core.Types
+    let card (x: CardWithInfo) = x.card
+    let info (x: CardWithInfo) = x.info
+    let create (card: Card) (info: CardInfo): CardWithInfo = { card = card; info = info }
+    let map (mapcard: Card -> Card) (mapinfo: CardInfo -> CardInfo) (record': CardWithInfo) =
+        { record' with
+              card = mapcard record'.card
+              info = mapinfo record'.info }
+namespace rec MagicCollectionHelper.Core.Types.Generated
+
 module Rarity =
     open MagicCollectionHelper.Core.Types
     let toString (x: Rarity) =

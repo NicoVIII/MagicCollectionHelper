@@ -112,22 +112,19 @@ type Card =
       set: MagicSet }
 
 module Card =
+    let isExactSame (card1: Card) (card2: Card) =
+        card1.set = card2.set
+        && card1.number = card2.number
+
+[<Generator.Fields("cards")>]
+type CardWithInfo = { card: Card; info: CardInfo }
+
+module CardWithInfo =
     /// Checks if those two cards are rulewise the same. They do not have to be from the same set
-    let isSame (infoMap: CardInfoMap) (card1: Card) (card2: Card) =
-        let info1 = infoMap.TryFind(card1.set, card1.number)
-        let info2 = infoMap.TryFind(card2.set, card2.number)
+    let isSame (card1: CardWithInfo) (card2: CardWithInfo) =
+        card1.info.oracleId = card2.info.oracleId
 
-        match info1, info2 with
-        | Some info1, Some info2 -> info1.oracleId = info2.oracleId
-        | _ ->
-            printfn
-                "Warning: Didn't had enough Cardinfo to compare: %s-%i and %s-%i"
-                card1.set.Value
-                card1.number.Value
-                card2.set.Value
-                card2.number.Value
-
-            false
+    let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) = Card.isExactSame card1.card card2.card
 
 /// A card entry, which is used to condense multiple cards into one card object and an amount
 type CardEntry = { card: Card; amount: uint }
