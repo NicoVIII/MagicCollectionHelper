@@ -50,3 +50,8 @@ module Numbers =
             Display.number config (byte precision) (decimal number)
         else
             String.Format($"{{0:F{precision}}}", number)
+
+module Tuple2 =
+    let mapFst f (x, y) = f x, y
+
+    let mapSnd f (x, y) = x, f y

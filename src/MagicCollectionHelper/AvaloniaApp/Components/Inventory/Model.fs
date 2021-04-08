@@ -146,13 +146,22 @@ module Model =
                     |> Rules.withLimitExact 1u
                     |> Rules.withIsFoil true
                     |> Rules.withTypeContains ([ "Basic Land" ] |> Set.ofList) }
-              { name = "Lookup Rare Lands"
+              { name = "Lookup 1 (Lands)"
                 sortBy = [ ByColorIdentity ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withTypeContains ([ "Land" ] |> Set.ofList)
-                    |> Rules.withRarity ([ Rare ] |> Set.ofList) }
+                    |> Rules.withTypeNotContains ([ "Basic Land" ] |> Set.ofList)
+                    |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList) }
+              { name = "Lookup 2 (Lands)"
+                sortBy = [ ByColorIdentity; ByName ]
+                rules =
+                    Rules.empty
+                    |> Rules.withLimit 1u
+                    |> Rules.withTypeContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withTypeNotContains ([ "Basic Land" ] |> Set.ofList)
+                    |> Rules.withRarity ([ Common; Uncommon ] |> Set.ofList) }
               { name = "Lookup 1 (Colorless)"
                 sortBy = [ typeSortDefault; ByCmc ]
                 rules =
@@ -162,7 +171,7 @@ module Model =
                     |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList)
                     |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList) }
               { name = "Lookup 2 (Colorless)"
-                sortBy = [ typeSortDefault; ByCmc ]
+                sortBy = [ typeSortDefault; ByCmc; ByName ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u

@@ -76,6 +76,8 @@ module MagicSet =
         | "7E" -> "7ED" // Seventh Edition
         | "AP" -> "APC" // Apocalypse
         | "OD" -> "ODY" // Odyssey
+        // Deckstats has strange abbreviations I fix here
+        | "GU" -> "ULG" // Urza's Legacy
         | set -> set
 
     let create =
@@ -189,6 +191,7 @@ type Rarity =
     | Mythic
 
 /// Additional info for a card
+[<Generator.Fields("cards")>]
 type CardInfo =
     { name: string
       set: MagicSet
@@ -203,6 +206,7 @@ type CardInfo =
 type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 
 /// A card identified by as few properties as possible
+[<Generator.Fields("cards")>]
 type Card =
     { number: CollectorNumber
       foil: bool
@@ -215,7 +219,8 @@ module Card =
         && card1.number = card2.number
 
 /// A card entry, which is used to condense multiple cards into one card object and an amount
-type CardEntry = { card: Card; amount: uint }
+[<Generator.Fields("cards")>]
+type CardEntry = { amount: uint; card: Card }
 
 module CardEntry =
     let collapseCardList cardList =

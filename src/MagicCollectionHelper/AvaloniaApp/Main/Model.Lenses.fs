@@ -12,6 +12,9 @@ module StateLenses =
         StateLenses.common
         << CommonStateLenses.analyseText
 
+    let dsEntries =
+        StateLenses.common << CommonStateLenses.dsEntries
+
     let entries =
         StateLenses.common << CommonStateLenses.entries
 

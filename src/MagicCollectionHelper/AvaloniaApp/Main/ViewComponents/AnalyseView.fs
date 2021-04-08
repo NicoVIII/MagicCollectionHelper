@@ -15,7 +15,7 @@ open MagicCollectionHelper.AvaloniaApp.Main
 
 module AnalyseView =
     let topBar (state: State) (dispatch: Dispatch) : IView =
-        let entries = getl StateLenses.entries state
+        let entries = getl StateLenses.dsEntries state
 
         ActionButtonBar.create [
             ActionButton.create

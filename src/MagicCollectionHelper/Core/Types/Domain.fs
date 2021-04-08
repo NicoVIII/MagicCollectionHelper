@@ -2,6 +2,8 @@ namespace MagicCollectionHelper.Core.Types
 
 open Myriad.Plugins
 
+open MagicCollectionHelper.Core.Types.Generated
+
 /// Type which holds user preferences so the user can customize some behaviors
 [<Generator.Lenses("types", "Lens")>]
 type Prefs =
@@ -21,34 +23,56 @@ module Prefs =
 // TODO: added
 type DeckStatsCardEntry =
     { amount: uint
+      name: string
       number: CollectorNumber option
       foil: bool
       language: Language option
       set: MagicSet option }
 
 module DeckStatsCardEntry =
-    let toEntry (entry: DeckStatsCardEntry) =
+    let toEntry cardInfoMap (entry: DeckStatsCardEntry) =
         match entry.set, entry.number, entry.language with
         | Some set, Some number, Some lang ->
-            { CardEntry.amount = entry.amount
-              card =
-                  { foil = entry.foil
-                    set = set
-                    number = number
-                    language = lang } }
+            Card.create number entry.foil lang set
+            |> CardEntry.create entry.amount
             |> Some
+        // We try to determine the number with name and set
+        | Some set, None, Some lang ->
+            cardInfoMap
+            |> Map.tryFind (entry.name, set)
+            |> Option.map
+                (fun info ->
+                    Card.create info.collectorNumber entry.foil lang set
+                    |> CardEntry.create entry.amount)
         | _ -> None
 
-    let listToEntries (entries: DeckStatsCardEntry list) =
+    let listToEntries cardInfoMap (entries: DeckStatsCardEntry list) =
+        // We change the map to improve lookup perf
+        let cardInfoMap =
+            cardInfoMap
+            |> Map.toList
+            |> List.map snd
+            |> List.groupBy (fun (info: CardInfo) -> (info.name, info.set))
+            |> List.choose
+                (fun (key, infoList) ->
+                    match infoList with
+                    | [ info ] -> (key, info) |> Some
+                    // Kein (eindeutiges) Ergebnis gefunden
+                    | _ -> None)
+            |> Map.ofList
+
         entries
         // We only take entries with enough info
         |> List.fold
             (fun lst (entry: DeckStatsCardEntry) ->
-                match toEntry entry with
+                match toEntry cardInfoMap entry with
                 | Some entry -> entry :: lst
                 | None -> lst)
             []
         |> List.rev
+
+    let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =
+        async { return listToEntries cardInfoMap entries }
 
 type SetData =
     { date: string

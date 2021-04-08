@@ -10,13 +10,41 @@ open MagicCollectionHelper.AvaloniaApp.Components
 open MagicCollectionHelper.AvaloniaApp.Main
 open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
+let processCollectionIntent intent stateCmd =
+    match intent with
+    | Collection.Intent.SaveEntries entries ->
+        stateCmd
+        |> Tuple2.mapFst
+            (fun state ->
+                match entries with
+                | Some entries -> setl StateLenses.dsEntries (Seq.toList entries) state
+                | None -> state)
+        |> Tuple2.mapSnd (fun cmd -> Cmd.batch [ cmd; Cmd.ofMsg CalcEntries ])
+    | Collection.Intent.DoNothing -> stateCmd // We don't need to mutate the state
+
 let perform (msg: Msg) (state: State) =
     match msg with
+    | AsyncError x -> raise x
+    | CalcEntries ->
+        let infoMap = getl StateLenses.infoMap state
+        let entries = getl StateLenses.dsEntries state
+
+        let fnc () =
+            DeckStatsCardEntry.listToEntriesAsync infoMap entries
+
+        let cmd =
+            Cmd.OfAsync.either fnc () SaveEntries AsyncError
+
+        (state, cmd)
+    | SaveEntries entries ->
+        let state = setl StateLenses.entries entries state
+
+        (state, Cmd.none)
     | ImportCardInfo ->
         let fnc = CardDataImport.performAsync
 
         let cmd =
-            Cmd.OfAsync.either fnc () SaveCardInfo (fun x -> raise x)
+            Cmd.OfAsync.either fnc () SaveCardInfo AsyncError
 
         state, cmd
     | SaveCardInfo import ->
@@ -29,7 +57,7 @@ let perform (msg: Msg) (state: State) =
     | Analyse ->
         let prefs = getl StateLenses.prefs state
         let setData = getl StateLenses.setData state
-        let entries = getl StateLenses.entries state
+        let entries = getl StateLenses.dsEntries state
 
         let state =
             Analyser.analyse setData prefs (entries |> Seq.ofList)
@@ -46,29 +74,16 @@ let perform (msg: Msg) (state: State) =
 
         state, Cmd.none
     | CollectionMsg msg ->
-        let processIntent intent state =
-            match intent with
-            | Collection.Intent.SaveEntries entries ->
-                match entries with
-                | Some entries -> setl StateLenses.entries (Seq.toList entries) state
-                | None -> state
-            | Collection.Intent.DoNothing -> state // We don't need to mutate the state
-
         let (iState, iCmd, intent) =
             Collection.Update.perform msg state.collection
 
-        let state =
-            state
-            |> setl StateLenses.collection iState
-            |> processIntent intent
-
-        let cmd = iCmd |> Cmd.map CollectionMsg
-
-        (state, cmd)
+        (state, iCmd |> Cmd.map CollectionMsg)
+        |> Tuple2.mapFst (setl StateLenses.collection iState)
+        |> processCollectionIntent intent
     | InventoryMsg msg ->
-        let entries =
-            getl StateLenses.entries state
-            |> DeckStatsCardEntry.listToEntries
+        let infoMap = getl StateLenses.infoMap state
+
+        let entries = getl StateLenses.entries state
 
         let infoMap = getl StateLenses.infoMap state
 

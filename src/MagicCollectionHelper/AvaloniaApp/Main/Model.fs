@@ -12,7 +12,8 @@ type ViewMode =
 [<Generator.Lenses("main", "MagicCollectionHelper.Core.Types.Lens")>]
 type CommonState =
     { analyseText: string
-      entries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
+      dsEntries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
+      entries: MagicCollectionHelper.Core.Types.CardEntry list
       infoMap: MagicCollectionHelper.Core.Types.CardInfoMap
       prefs: MagicCollectionHelper.Core.Types.Prefs
       setData: MagicCollectionHelper.Core.Types.SetDataMap
@@ -29,6 +30,9 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components
 
 type Msg =
+    | AsyncError of exn
+    | CalcEntries
+    | SaveEntries of CardEntry list
     | ImportCardInfo
     | SaveCardInfo of CardInfoMap option
     | Analyse
@@ -55,6 +59,7 @@ module Model =
 
     let initCommon () : CommonState =
         { analyseText = arrow
+          dsEntries = []
           entries = []
           infoMap = Map.empty
           prefs = Prefs.create false Config.missingPercentDefault false
@@ -64,7 +69,7 @@ module Model =
     let init () =
         let state : State =
             { common = initCommon ()
-              collection = Components.Collection.Model.init ()
+              collection = Collection.Model.init ()
               inventory = Inventory.Model.init () }
 
         let cmd = Cmd.ofMsg ImportCardInfo

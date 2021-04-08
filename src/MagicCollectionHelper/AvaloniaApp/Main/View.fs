@@ -61,16 +61,14 @@ let content (state: State) (dispatch: Dispatch) : IView =
 
     match getl StateLenses.viewMode state with
     | Collection ->
+        let dsEntries = getl StateLenses.dsEntries state
         let entries = getl StateLenses.entries state
         let dispatch = CollectionMsg >> dispatch
 
-        Components.Collection.View.render entries infoMap state.collection dispatch
+        Components.Collection.View.render dsEntries entries infoMap state.collection dispatch
     | ViewMode.Analyse -> AnalyseView.render state dispatch
     | Inventory ->
-        let entries =
-            getl StateLenses.entries state
-            |> DeckStatsCardEntry.listToEntries
-
+        let entries = getl StateLenses.entries state
         let setData = getl StateLenses.setData state
         let infoMap = getl StateLenses.infoMap state
         let dispatch = InventoryMsg >> dispatch
@@ -78,7 +76,7 @@ let content (state: State) (dispatch: Dispatch) : IView =
     | Preferences -> PreferenceView.render state dispatch
 
 let leftBottomBar (state: State) (dispatch: Dispatch) : IView =
-    let entries = getl StateLenses.entries state
+    let entries = getl StateLenses.dsEntries state
 
     StackPanel.create [
         StackPanel.dock Dock.Left

@@ -10,8 +10,9 @@ module CollectionImport =
 
     type Collection = CsvProvider<"./example.csv">
 
-    let private rowToEntry (row: Collection.Row): DeckStatsCardEntry =
+    let private rowToEntry (row: Collection.Row) : DeckStatsCardEntry =
         { amount = row.Amount |> uint
+          name = row.Card_name
           number =
               row.Collector_number
               |> parseUint
@@ -47,7 +48,4 @@ module CollectionImport =
         searchImportFile >> Option.map (parseCsv)
 
     // Because import could become an expensive task, we provide an async version
-    let performAsync () =
-        async {
-            return perform ()
-        }
+    let performAsync () = async { return perform () }

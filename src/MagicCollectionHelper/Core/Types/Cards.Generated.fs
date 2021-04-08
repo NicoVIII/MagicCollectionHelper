@@ -4,6 +4,96 @@
 //------------------------------------------------------------------------------
 namespace rec MagicCollectionHelper.Core.Types.Generated
 
+module CardInfo =
+    open MagicCollectionHelper.Core.Types
+    let name (x: CardInfo) = x.name
+    let set (x: CardInfo) = x.set
+    let collectorNumber (x: CardInfo) = x.collectorNumber
+    let colors (x: CardInfo) = x.colors
+    let colorIdentity (x: CardInfo) = x.colorIdentity
+    let oracleId (x: CardInfo) = x.oracleId
+    let rarity (x: CardInfo) = x.rarity
+    let typeLine (x: CardInfo) = x.typeLine
+    let cmc (x: CardInfo) = x.cmc
+    let create (name: string)
+               (set: MagicSet)
+               (collectorNumber: CollectorNumber)
+               (colors: Set<Color>)
+               (colorIdentity: ColorIdentity)
+               (oracleId: string)
+               (rarity: Rarity)
+               (typeLine: string)
+               (cmc: uint)
+               : CardInfo =
+        { name = name
+          set = set
+          collectorNumber = collectorNumber
+          colors = colors
+          colorIdentity = colorIdentity
+          oracleId = oracleId
+          rarity = rarity
+          typeLine = typeLine
+          cmc = cmc }
+
+    let map (mapname: string -> string)
+            (mapset: MagicSet -> MagicSet)
+            (mapcollectorNumber: CollectorNumber -> CollectorNumber)
+            (mapcolors: Set<Color> -> Set<Color>)
+            (mapcolorIdentity: ColorIdentity -> ColorIdentity)
+            (maporacleId: string -> string)
+            (maprarity: Rarity -> Rarity)
+            (maptypeLine: string -> string)
+            (mapcmc: uint -> uint)
+            (record': CardInfo)
+            =
+        { record' with
+              name = mapname record'.name
+              set = mapset record'.set
+              collectorNumber = mapcollectorNumber record'.collectorNumber
+              colors = mapcolors record'.colors
+              colorIdentity = mapcolorIdentity record'.colorIdentity
+              oracleId = maporacleId record'.oracleId
+              rarity = maprarity record'.rarity
+              typeLine = maptypeLine record'.typeLine
+              cmc = mapcmc record'.cmc }
+namespace rec MagicCollectionHelper.Core.Types.Generated
+
+module Card =
+    open MagicCollectionHelper.Core.Types
+    let number (x: Card) = x.number
+    let foil (x: Card) = x.foil
+    let language (x: Card) = x.language
+    let set (x: Card) = x.set
+    let create (number: CollectorNumber) (foil: bool) (language: Language) (set: MagicSet): Card =
+        { number = number
+          foil = foil
+          language = language
+          set = set }
+
+    let map (mapnumber: CollectorNumber -> CollectorNumber)
+            (mapfoil: bool -> bool)
+            (maplanguage: Language -> Language)
+            (mapset: MagicSet -> MagicSet)
+            (record': Card)
+            =
+        { record' with
+              number = mapnumber record'.number
+              foil = mapfoil record'.foil
+              language = maplanguage record'.language
+              set = mapset record'.set }
+namespace rec MagicCollectionHelper.Core.Types.Generated
+
+module CardEntry =
+    open MagicCollectionHelper.Core.Types
+    let amount (x: CardEntry) = x.amount
+    let card (x: CardEntry) = x.card
+    let create (amount: uint) (card: Card): CardEntry = { amount = amount; card = card }
+    let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': CardEntry) =
+        { record' with
+              amount = mapamount record'.amount
+              card = mapcard record'.card }
+namespace rec MagicCollectionHelper.Core.Types.Generated
+
 module CardWithInfo =
     open MagicCollectionHelper.Core.Types
     let card (x: CardWithInfo) = x.card

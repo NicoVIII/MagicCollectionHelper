@@ -12,10 +12,17 @@ module CommonStateLenses =
             (fun (x: CommonState) (value: string) -> { x with analyseText = value })
         )
 
+    let dsEntries =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.dsEntries),
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list) ->
+                { x with dsEntries = value })
+        )
+
     let entries =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: CommonState) -> x.entries),
-            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list) ->
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.CardEntry list) ->
                 { x with entries = value })
         )
 
