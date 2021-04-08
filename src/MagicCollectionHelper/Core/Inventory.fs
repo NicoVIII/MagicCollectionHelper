@@ -19,6 +19,9 @@ module Inventory =
     let fitsIsFoil (card: Card) rules =
         fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
 
+    let fitsIsToken (card: Card) rules =
+        fitsRule rules.isToken (fun shouldBeToken -> shouldBeToken = Card.isToken card)
+
     let fitsTypeContains (info: CardInfo) rules =
         fitsRule rules.typeContains (Set.forall info.typeLine.Contains)
 
@@ -65,6 +68,7 @@ module Inventory =
         [ fitsInSetRule cardWithInfo.card
           fitsInLanguageRule cardWithInfo.card
           fitsIsFoil cardWithInfo.card
+          fitsIsToken cardWithInfo.card
           fitsTypeContains cardWithInfo.info
           fitsTypeNotContains cardWithInfo.info
           fitsColorIdentity cardWithInfo.info

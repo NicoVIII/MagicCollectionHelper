@@ -84,6 +84,17 @@ let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
                     (false, strng + "9"))
             (false, "")
         |> snd
+    | ByRarity rarities ->
+        rarities
+        |> List.indexed
+        |> List.tryPick
+            (fun (index, raritySet) ->
+                if Set.contains info.rarity raritySet then
+                    Some index
+                else
+                    None)
+        |> Option.defaultValue (List.length rarities)
+        |> string
 
 let sortEntries setData location (entries: CardEntryWithInfo list) =
     let random = Random()

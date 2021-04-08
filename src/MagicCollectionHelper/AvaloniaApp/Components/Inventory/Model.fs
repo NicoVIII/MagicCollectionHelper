@@ -37,6 +37,13 @@ module Model =
           "Planeswalker" ]
         |> ByTypeContains
 
+    let raritySortDefault =
+        [ [ Common ]
+          [ Uncommon ]
+          [ Rare; Mythic ] ]
+        |> List.map Set.ofList
+        |> ByRarity
+
     let init () : State =
         // Test Locations
         let locations =
@@ -147,13 +154,22 @@ module Model =
                     |> Rules.withIsFoil true
                     |> Rules.withTypeContains ([ "Basic Land" ] |> Set.ofList) }
               { name = "Lookup 1 (Lands)"
-                sortBy = [ ByColorIdentity ]
+                sortBy = [ ByColorIdentity; BySet ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withTypeContains ([ "Land" ] |> Set.ofList)
                     |> Rules.withTypeNotContains ([ "Basic Land" ] |> Set.ofList)
                     |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList) }
+              { name = "Lookup 1 (Colorless)"
+                sortBy = [ typeSortDefault; ByCmc; BySet ]
+                rules =
+                    Rules.empty
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
+                    |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList)
+                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withIsToken false }
               { name = "Lookup 2 (Lands)"
                 sortBy = [ ByColorIdentity; ByName ]
                 rules =
@@ -162,35 +178,37 @@ module Model =
                     |> Rules.withTypeContains ([ "Land" ] |> Set.ofList)
                     |> Rules.withTypeNotContains ([ "Basic Land" ] |> Set.ofList)
                     |> Rules.withRarity ([ Common; Uncommon ] |> Set.ofList) }
-              { name = "Lookup 1 (Colorless)"
-                sortBy = [ typeSortDefault; ByCmc ]
-                rules =
-                    Rules.empty
-                    |> Rules.withLimit 1u
-                    |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList)
-                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList) }
               { name = "Lookup 2 (Colorless)"
                 sortBy = [ typeSortDefault; ByCmc; ByName ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Common; Uncommon ] |> Set.ofList) }
+                    |> Rules.withRarity ([ Common; Uncommon ] |> Set.ofList)
+                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withIsToken false }
               { name = "Lookup 1 (White)"
-                sortBy = [ typeSortDefault; ByCmc ]
+                sortBy =
+                    [ typeSortDefault
+                      ByCmc
+                      raritySortDefault
+                      BySet ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList) }
+                    |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList)
+                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withIsToken false }
               { name = "Lookup 2 (White)"
-                sortBy = [ typeSortDefault; ByCmc ]
+                sortBy = [ typeSortDefault; ByCmc; ByName ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Common ] |> Set.ofList) }
+                    |> Rules.withRarity ([ Common ] |> Set.ofList)
+                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withIsToken false }
               { name = "Lookup (Blue)"
                 sortBy = [ typeSortDefault; ByCmc ]
                 rules =

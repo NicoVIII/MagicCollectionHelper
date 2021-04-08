@@ -101,6 +101,7 @@ type SortRule =
     | ByName
     | ByCmc
     | ByTypeContains of string list
+    | ByRarity of Set<Rarity> list
 
 type SortRules = SortRule list
 
@@ -110,6 +111,7 @@ type Rules =
     { inSet: Set<MagicSet> option
       inLanguage: Language option
       isFoil: bool option
+      isToken: bool option
       typeContains: Set<string> option
       typeNotContains: Set<string> option
       limit: uint option
@@ -122,6 +124,7 @@ module Rules =
         { inSet = None
           inLanguage = None
           isFoil = None
+          isToken = None
           typeContains = None
           typeNotContains = None
           limit = None
@@ -132,6 +135,7 @@ module Rules =
     let withInSet v rules = { rules with inSet = Some v }
     let withInLanguage v rules = { rules with inLanguage = Some v }
     let withIsFoil v rules = { rules with isFoil = Some v }
+    let withIsToken v rules = { rules with isToken = Some v }
     let withTypeContains v rules = { rules with typeContains = Some v }
     let withTypeNotContains v rules = { rules with typeNotContains = Some v }
     let withLimit v rules = { rules with limit = Some v }

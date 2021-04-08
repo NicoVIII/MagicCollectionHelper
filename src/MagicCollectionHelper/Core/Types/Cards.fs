@@ -218,6 +218,10 @@ module Card =
         card1.set = card2.set
         && card1.number = card2.number
 
+    let isToken (card: Card) =
+        let setValue = card.set.Value
+        setValue.Length = 4 && setValue.StartsWith "T"
+
 /// A card entry, which is used to condense multiple cards into one card object and an amount
 [<Generator.Fields("cards")>]
 type CardEntry = { amount: uint; card: Card }
