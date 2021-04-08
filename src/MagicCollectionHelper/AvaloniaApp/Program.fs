@@ -29,17 +29,7 @@ type MainWindow() as this =
         Program.mkProgram Main.Model.init Main.Update.perform Main.View.render
         |> Program.withHost this
 #if DEBUG
-        |> Program.withTrace
-            (fun msg state ->
-                printfn "Got message: %A" msg
-
-                match msg with
-                | Main.InventoryMsg (Inventory.UpdateLocationRules (locationName, _)) ->
-                    let location =
-                        Map.find locationName state.inventory.locations
-
-                    printfn "Updated location rules: %A" location.rules
-                | _ -> ())
+        //|> Program.withTrace (fun msg state -> printfn "Got message: %A" msg)
 #endif
         |> Program.run
 

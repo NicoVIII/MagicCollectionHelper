@@ -160,14 +160,14 @@ module Model =
                     |> Rules.withLimit 1u
                     |> Rules.withTypeContains ([ "Land" ] |> Set.ofList)
                     |> Rules.withTypeNotContains ([ "Basic Land" ] |> Set.ofList)
-                    |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList) }
+                    |> Rules.withRarity ([ Rare; Mythic; Special; Bonus ] |> Set.ofList) }
               { name = "Lookup 1 (Colorless)"
                 sortBy = [ typeSortDefault; ByCmc; BySet ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Rare; Mythic ] |> Set.ofList)
+                    |> Rules.withRarity ([ Rare; Mythic; Special; Bonus ] |> Set.ofList)
                     |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
                     |> Rules.withIsToken false }
               { name = "Lookup 2 (Lands)"
@@ -197,7 +197,14 @@ module Model =
                     Rules.empty
                     |> Rules.withLimit 1u
                     |> Rules.withColorIdentity ([ [ White ] ] |> Set.ofListList)
-                    |> Rules.withRarity ([ Uncommon; Rare; Mythic ] |> Set.ofList)
+                    |> Rules.withRarity (
+                        [ Uncommon
+                          Rare
+                          Mythic
+                          Special
+                          Bonus ]
+                        |> Set.ofList
+                    )
                     |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
                     |> Rules.withIsToken false }
               { name = "Lookup 2 (White)"
@@ -209,12 +216,35 @@ module Model =
                     |> Rules.withRarity ([ Common ] |> Set.ofList)
                     |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
                     |> Rules.withIsToken false }
-              { name = "Lookup (Blue)"
-                sortBy = [ typeSortDefault; ByCmc ]
+              { name = "Lookup 1 (Blue)"
+                sortBy =
+                    [ typeSortDefault
+                      ByCmc
+                      raritySortDefault
+                      BySet ]
                 rules =
                     Rules.empty
                     |> Rules.withLimit 1u
-                    |> Rules.withColorIdentity ([ [ Blue ] ] |> Set.ofListList) }
+                    |> Rules.withColorIdentity ([ [ Blue ] ] |> Set.ofListList)
+                    |> Rules.withRarity (
+                        [ Uncommon
+                          Rare
+                          Mythic
+                          Special
+                          Bonus ]
+                        |> Set.ofList
+                    )
+                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withIsToken false }
+              { name = "Lookup 2 (Blue)"
+                sortBy = [ typeSortDefault; ByCmc; ByName ]
+                rules =
+                    Rules.empty
+                    |> Rules.withLimit 1u
+                    |> Rules.withColorIdentity ([ [ Blue ] ] |> Set.ofListList)
+                    |> Rules.withRarity ([ Common ] |> Set.ofList)
+                    |> Rules.withTypeNotContains ([ "Land" ] |> Set.ofList)
+                    |> Rules.withIsToken false }
               { name = "Lookup (Black)"
                 sortBy = [ typeSortDefault; ByCmc ]
                 rules =

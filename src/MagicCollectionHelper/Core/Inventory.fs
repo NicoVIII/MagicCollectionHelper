@@ -92,7 +92,7 @@ module Inventory =
 
     let newEntryForCard (card: Card) : CardEntry = { amount = 1u; card = card }
 
-    let take (infoMap: CardInfoMap) locations entries =
+    let take (infoMap: CardInfoMap) locations (entries: CardEntry list) =
         // We have to sort locations first
         let locations = CustomLocation.mapToSortedList locations
 
