@@ -43,7 +43,10 @@ let cardItem (entryWithInfo: CardEntryWithInfo) =
 
     CheckBox.create [
         CheckBox.fontFamily Config.monospaceFont
-        CheckBox.content $"{star}[%5s{set.Value}-%03i{number.Value}] %2i{entry.amount} {name}"
+        CheckBox.content (
+            $"{star}[%5s{set.Value}-%s{number.Value.PadLeft(3, '0')}]-{entry.card.language.Value}"
+            + $" %2i{entry.amount} {name}"
+        )
     ]
 
 let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
@@ -70,7 +73,7 @@ let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
             | set -> set + "A"
 
         $"{date}{extension}"
-    | ByCollectorNumber -> sprintf "%03i" entry.card.number.Value
+    | ByCollectorNumber -> sprintf "%s" (entry.card.number.Value.PadLeft(3, '0'))
     | ByCmc -> sprintf "%02i" info.cmc
     | ByTypeContains typeContains ->
         typeContains

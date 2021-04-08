@@ -76,7 +76,7 @@ module DeckStatsCardEntry =
 
 type SetData =
     { date: string
-      max: CollectorNumber
+      max: uint
       name: string }
 
 type SetDataMap = Map<MagicSet, SetData>

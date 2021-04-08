@@ -1,5 +1,7 @@
 namespace MagicCollectionHelper.Core
 
+open System
+
 open MagicCollectionHelper.Core.Types
 open MagicCollectionHelper.Core.Types.Generated
 
@@ -103,28 +105,45 @@ module Inventory =
 
             map
 
-        // Foils at first
-        let entries =
-            List.sortBy (fun (entry: CardEntry) -> if entry.card.foil then 0 else 1) entries
+        // We sort the cards before trying to put them into locations
+        let random = Random()
 
-        for entry in entries do
-            let cardInfo =
-                Map.tryFind (entry.card.set, entry.card.number) infoMap
-
+        let entriesWithInfo =
+            entries
             // We can consider a card only for inventory, if we have the info
-            match cardInfo with
-            | Some cardInfo ->
-                let cardWithInfo = { card = entry.card; info = cardInfo }
+            |> List.choose
+                (fun (entry: CardEntry) ->
+                    Map.tryFind (entry.card.set, entry.card.number) infoMap
+                    |> Option.map (fun info -> { entry = entry; info = info }))
+            // TODO: generalize and make configurable
+            |> List.sortBy
+                (fun entryWithInfo ->
+                    [
+                      // Language
+                      match entryWithInfo.entry.card.language.Value with
+                      | "en" -> 0
+                      | "de" -> 1
+                      | _ -> 2
+                      // Foil
+                      if entryWithInfo.entry.card.foil then
+                          0
+                      else
+                          1
+                      // Random
+                      random.Next(0, 10000) ])
 
-                for _ = 1 to (int) entry.amount do
-                    let location =
-                        determineLocation locCardMap locations cardWithInfo
+        for entryWithInfo in entriesWithInfo do
+            let cardWithInfo =
+                CardWithInfo.create entryWithInfo.entry.card entryWithInfo.info
 
-                    match location with
-                    | Some location ->
-                        locCardMap <- Map.change (Custom location) (Option.map (fun l -> cardWithInfo :: l)) locCardMap
-                    | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> cardWithInfo :: l)) locCardMap
-            | None -> ()
+            for _ = 1 to (int) entryWithInfo.entry.amount do
+                let location =
+                    determineLocation locCardMap locations cardWithInfo
+
+                match location with
+                | Some location ->
+                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> cardWithInfo :: l)) locCardMap
+                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> cardWithInfo :: l)) locCardMap
 
         // Collapse into entries again
         Map.map

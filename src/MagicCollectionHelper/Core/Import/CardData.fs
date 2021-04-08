@@ -40,8 +40,10 @@ module CardDataImport =
                 jObject.["collector_number"]
                 |> string
                 |> function
-                | Uint number -> number |> CollectorNumber |> Some
-                | _ -> None
+                // There are "dead" entries in the json from scryfall. We don't want them
+                | nr when nr.EndsWith "†" -> None
+                | "" -> None
+                | nr -> nr |> CollectorNumber |> Some
 
             match collectorNumber with
             | Some collectorNumber ->
@@ -61,7 +63,11 @@ module CardDataImport =
                                   | _ -> c)
                           >> String.Concat)
                       |> Rarity.fromString
-                      |> Option.get
+                      |> function
+                      | Some rarity -> rarity
+                      | None ->
+                          let rarity = jObject.["rarity"] |> string
+                          failwith $"{rarity} is no valid rarity for now..."
                   typeLine = jObject.["type_line"] |> string
                   cmc = jObject.["cmc"] |> uint }
                 |> Some

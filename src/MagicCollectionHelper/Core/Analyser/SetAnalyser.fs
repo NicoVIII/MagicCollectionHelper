@@ -2,6 +2,7 @@ namespace MagicCollectionHelper.Core
 
 open System.Text
 
+open MagicCollectionHelper.Core.TryParser
 open MagicCollectionHelper.Core.Types
 
 module SetAnalyser =
@@ -9,7 +10,7 @@ module SetAnalyser =
         { collected: uint32
           missing: Set<CollectorNumber>
           name: string
-          max: CollectorNumber
+          max: uint
           percent: float }
 
     type ResultValue =
@@ -25,9 +26,9 @@ module SetAnalyser =
           dozenalize: bool
           withFoils: bool }
 
-    let private createEmpty (): CollectType = Map.empty
+    let private createEmpty () : CollectType = Map.empty
 
-    let private collect settings (data: CollectType) (entry: DeckStatsCardEntry): CollectType =
+    let private collect settings (data: CollectType) (entry: DeckStatsCardEntry) : CollectType =
         // We skip cards without set
         match entry.set, entry.number with
         | Some mtgSet, Some number ->
@@ -50,19 +51,22 @@ module SetAnalyser =
             let setData =
                 setData.TryFind set
                 |> Option.map
-                    (fun { name = name
-                           max = max } ->
+                    (fun { name = name; max = max } ->
                         let collected =
                             numberSet
                             // We have to remove cards outside of the normal number range from the collected number
-                            |> Set.filter (fun number -> number.Value > 0u && number.Value <= max.Value)
+                            |> Set.filter
+                                (fun number ->
+                                    match number.Value with
+                                    | Uint number -> number > 0u && number <= max
+                                    | _ -> false)
                             |> Set.count
                             |> uint32
 
                         // Missing Cards for complete collection
                         let missing =
-                            seq { 1u .. max.Value }
-                            |> Seq.map CollectorNumber
+                            seq { 1u .. max }
+                            |> Seq.map (string >> CollectorNumber)
                             |> Set.ofSeq
                             |> Set.filter (fun x -> Set.contains x numberSet |> not)
 
@@ -70,11 +74,11 @@ module SetAnalyser =
                           name = name
                           collected = collected
                           max = max
-                          percent = calcPercent collected max.Value })
+                          percent = calcPercent collected max })
 
             { cards = numberSet; setData = setData }
 
-    let private postprocess (cardData: SetDataMap) (data: CollectType): Result =
+    let private postprocess (cardData: SetDataMap) (data: CollectType) : Result =
         data
         |> Map.map (Postprocess.transformSet cardData)
 
@@ -90,7 +94,7 @@ module SetAnalyser =
                 "%5s - %3s/%3s (%s%s) - %s"
                 set.Value
                 (Numbers.print dozenalize 0 (int collectionData.collected))
-                (Numbers.print dozenalize 0 (collectionData.max.Value |> int))
+                (Numbers.print dozenalize 0 (collectionData.max |> int))
                 (Numbers.print dozenalize 1 percent)
                 (if dozenalize then "pg" else "%")
                 collectionData.name
@@ -134,8 +138,7 @@ module SetAnalyser =
                     let setData = value.setData
 
                     match setData with
-                    | Some ({ missing = missing
-                              percent = percent } as setData) when
+                    | Some ({ missing = missing; percent = percent } as setData) when
                         percent > settings.missingPercent
                         && missing.Count > 0 -> Some(set, setData)
                     | _ -> None)

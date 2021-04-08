@@ -15,8 +15,9 @@ module CollectionImport =
           name = row.Card_name
           number =
               row.Collector_number
-              |> parseUint
-              |> Option.map (CollectorNumber)
+              |> function
+              | "" -> None
+              | nr -> nr |> CollectorNumber |> Some
           foil = row.Is_foil.GetValueOrDefault() = 1
           language =
               row.Language

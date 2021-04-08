@@ -5,23 +5,20 @@ open System
 open MagicCollectionHelper.Core.Types
 
 module CardData =
-    let private add (set, max, date: string, tokenMax, name: string): SetDataMap -> SetDataMap =
+    let private add (set, max, date: string, tokenMax, name: string) : SetDataMap -> SetDataMap =
         let addCardSet =
-            Map.add
-                (MagicSet.create set)
-                { date = date
-                  max = max |> CollectorNumber
-                  name = name }
+            Map.add (MagicSet.create set) { date = date; max = max; name = name }
+
         let addTokenSet =
             match tokenMax with
             | Some max ->
                 Map.add
                     (MagicSet.create $"T{set}")
                     { date = date
-                      max = max |> CollectorNumber
+                      max = max
                       name = $"{name} Token" }
-            | None ->
-                id
+            | None -> id
+
         addCardSet >> addTokenSet
 
     // Data mostly from https://mtg.gamepedia.com/Set#List_of_Magic_expansions_and_sets

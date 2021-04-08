@@ -9,7 +9,7 @@ open MagicCollectionHelper.Core.Types
 let cardInfo =
     { name = "Animal Sanctuary"
       set = MagicSet.create "M21"
-      collectorNumber = CollectorNumber 242u
+      collectorNumber = CollectorNumber "242"
       colors = [] |> Set.ofList
       colorIdentity = [] |> Set.ofList
       oracleId = "f3c40943-1d7c-4ea2-b34f-8df8b6775701"
@@ -18,7 +18,7 @@ let cardInfo =
       cmc = 0u }
 
 let card =
-    { number = CollectorNumber 242u
+    { number = CollectorNumber "242"
       foil = true
       language = Language "en"
       set = MagicSet.create "M21" }

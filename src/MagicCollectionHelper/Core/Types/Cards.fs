@@ -19,7 +19,7 @@ type Language =
 
 /// The number for collectors of a card inside a given set
 type CollectorNumber =
-    | CollectorNumber of uint32
+    | CollectorNumber of string
     static member unwrap(CollectorNumber x) = x
     member this.Value = CollectorNumber.unwrap this
 
@@ -189,6 +189,8 @@ type Rarity =
     | Uncommon
     | Rare
     | Mythic
+    | Special
+    | Bonus
 
 /// Additional info for a card
 [<Generator.Fields("cards")>]

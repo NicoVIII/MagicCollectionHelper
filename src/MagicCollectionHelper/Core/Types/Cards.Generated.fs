@@ -124,6 +124,8 @@ module Rarity =
         | Uncommon -> "Uncommon"
         | Rare -> "Rare"
         | Mythic -> "Mythic"
+        | Special -> "Special"
+        | Bonus -> "Bonus"
 
     let fromString (x: string) =
         match x with
@@ -131,6 +133,8 @@ module Rarity =
         | "Uncommon" -> Some Uncommon
         | "Rare" -> Some Rare
         | "Mythic" -> Some Mythic
+        | "Special" -> Some Special
+        | "Bonus" -> Some Bonus
         | _ -> None
 
     let toTag (x: Rarity) =
@@ -139,6 +143,8 @@ module Rarity =
         | Uncommon -> 1
         | Rare -> 2
         | Mythic -> 3
+        | Special -> 4
+        | Bonus -> 5
 
     let isCommon (x: Rarity) =
         match x with
@@ -158,4 +164,14 @@ module Rarity =
     let isMythic (x: Rarity) =
         match x with
         | Mythic -> true
+        | _ -> false
+
+    let isSpecial (x: Rarity) =
+        match x with
+        | Special -> true
+        | _ -> false
+
+    let isBonus (x: Rarity) =
+        match x with
+        | Bonus -> true
         | _ -> false
