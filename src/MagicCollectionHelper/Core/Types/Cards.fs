@@ -78,6 +78,7 @@ module MagicSet =
         | "OD" -> "ODY" // Odyssey
         // Deckstats has strange abbreviations I fix here
         | "GU" -> "ULG" // Urza's Legacy
+        | "10ED" -> "10E" // Tenth Edition
         | set -> set
 
     let create =
