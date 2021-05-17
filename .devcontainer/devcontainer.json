@@ -7,9 +7,13 @@
             "VARIANT": "5.0",
         }
     },
-    // Set container specific defaults for F# in .NET Core 2.1+
     "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash",
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.profiles.linux": {
+            "bash": {
+                "path": "/bin/bash"
+            },
+        },
         "FSharp.fsacRuntime": "netcore",
         "FSharp.useSdkScripts": true
     },
@@ -39,5 +43,8 @@
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "dotnet tool restore && dotnet restore",
     // Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
-    "remoteUser": "vscode"
+    "remoteUser": "vscode",
+    "mounts": [
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.local/share/magic-collection-helper,target=/home/vscode/.local/share/magic-collection-helper,type=bind,consistency=cached",
+    ]
 }

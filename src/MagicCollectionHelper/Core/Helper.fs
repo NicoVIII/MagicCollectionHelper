@@ -55,3 +55,35 @@ module Tuple2 =
     let mapFst f (x, y) = f x, y
 
     let mapSnd f (x, y) = x, f y
+
+[<RequireQualifiedAccess>]
+module Path =
+    open System.IO
+
+    let inline combine parts =
+        List.fold (fun path part -> Path.Combine(path, part)) "" parts
+
+[<RequireQualifiedAccess>]
+module File =
+    open System.IO
+
+    let inline readAllText filePath =
+        if File.Exists filePath then
+            async {
+                let! text = File.ReadAllTextAsync(filePath) |> Async.AwaitTask
+                return text |> Some
+            }
+        else
+            None |> async.Return
+
+    let inline writeAllText (filePath: string) text =
+        let folder = Path.GetDirectoryName filePath
+        // Create folder, if it does not exist
+        if not (Directory.Exists folder) then
+            Directory.CreateDirectory folder |> ignore
+
+        async {
+            do!
+                File.WriteAllTextAsync(filePath, text)
+                |> Async.AwaitTask
+        }

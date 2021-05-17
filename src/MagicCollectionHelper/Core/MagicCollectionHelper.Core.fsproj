@@ -15,6 +15,8 @@
       <MyriadFile>Types/Domain.fs</MyriadFile>
     </Compile>
     <Compile Include="Helper.fs" />
+    <Compile Include="SystemInfo.fs" />
+    <Compile Include="Persistence/RawCustomLocation.fs" />
     <Compile Include="CardData.fs" />
     <Compile Include="Import/CardData.fs" />
     <Compile Include="Import/Collection.fs" />

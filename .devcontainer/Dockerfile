@@ -7,3 +7,6 @@ FROM mcr.microsoft.com/vscode/devcontainers/dotnet:${VERSION}-${VARIANT}
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     # Provide dependencies for gui application
     && apt-get -y install xorg
+
+# We have to create this folder by ourselfes, otherwise the permissions are wrong
+RUN sudo -u vscode mkdir -p /home/vscode/.local/share

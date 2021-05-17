@@ -15,16 +15,17 @@ module CardInfo =
     let rarity (x: CardInfo) = x.rarity
     let typeLine (x: CardInfo) = x.typeLine
     let cmc (x: CardInfo) = x.cmc
-    let create (name: string)
-               (set: MagicSet)
-               (collectorNumber: CollectorNumber)
-               (colors: Set<Color>)
-               (colorIdentity: ColorIdentity)
-               (oracleId: string)
-               (rarity: Rarity)
-               (typeLine: string)
-               (cmc: uint)
-               : CardInfo =
+    let create
+        (name: string)
+        (set: MagicSet)
+        (collectorNumber: CollectorNumber)
+        (colors: Set<Color>)
+        (colorIdentity: ColorIdentity)
+        (oracleId: string)
+        (rarity: Rarity)
+        (typeLine: string)
+        (cmc: uint)
+        : CardInfo =
         { name = name
           set = set
           collectorNumber = collectorNumber
@@ -35,17 +36,18 @@ module CardInfo =
           typeLine = typeLine
           cmc = cmc }
 
-    let map (mapname: string -> string)
-            (mapset: MagicSet -> MagicSet)
-            (mapcollectorNumber: CollectorNumber -> CollectorNumber)
-            (mapcolors: Set<Color> -> Set<Color>)
-            (mapcolorIdentity: ColorIdentity -> ColorIdentity)
-            (maporacleId: string -> string)
-            (maprarity: Rarity -> Rarity)
-            (maptypeLine: string -> string)
-            (mapcmc: uint -> uint)
-            (record': CardInfo)
-            =
+    let map
+        (mapname: string -> string)
+        (mapset: MagicSet -> MagicSet)
+        (mapcollectorNumber: CollectorNumber -> CollectorNumber)
+        (mapcolors: Set<Color> -> Set<Color>)
+        (mapcolorIdentity: ColorIdentity -> ColorIdentity)
+        (maporacleId: string -> string)
+        (maprarity: Rarity -> Rarity)
+        (maptypeLine: string -> string)
+        (mapcmc: uint -> uint)
+        (record': CardInfo)
+        =
         { record' with
               name = mapname record'.name
               set = mapset record'.set
@@ -64,18 +66,19 @@ module Card =
     let foil (x: Card) = x.foil
     let language (x: Card) = x.language
     let set (x: Card) = x.set
-    let create (number: CollectorNumber) (foil: bool) (language: Language) (set: MagicSet): Card =
+    let create (number: CollectorNumber) (foil: bool) (language: Language) (set: MagicSet) : Card =
         { number = number
           foil = foil
           language = language
           set = set }
 
-    let map (mapnumber: CollectorNumber -> CollectorNumber)
-            (mapfoil: bool -> bool)
-            (maplanguage: Language -> Language)
-            (mapset: MagicSet -> MagicSet)
-            (record': Card)
-            =
+    let map
+        (mapnumber: CollectorNumber -> CollectorNumber)
+        (mapfoil: bool -> bool)
+        (maplanguage: Language -> Language)
+        (mapset: MagicSet -> MagicSet)
+        (record': Card)
+        =
         { record' with
               number = mapnumber record'.number
               foil = mapfoil record'.foil
@@ -87,7 +90,7 @@ module CardEntry =
     open MagicCollectionHelper.Core.Types
     let amount (x: CardEntry) = x.amount
     let card (x: CardEntry) = x.card
-    let create (amount: uint) (card: Card): CardEntry = { amount = amount; card = card }
+    let create (amount: uint) (card: Card) : CardEntry = { amount = amount; card = card }
     let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': CardEntry) =
         { record' with
               amount = mapamount record'.amount
@@ -98,7 +101,7 @@ module CardWithInfo =
     open MagicCollectionHelper.Core.Types
     let card (x: CardWithInfo) = x.card
     let info (x: CardWithInfo) = x.info
-    let create (card: Card) (info: CardInfo): CardWithInfo = { card = card; info = info }
+    let create (card: Card) (info: CardInfo) : CardWithInfo = { card = card; info = info }
     let map (mapcard: Card -> Card) (mapinfo: CardInfo -> CardInfo) (record': CardWithInfo) =
         { record' with
               card = mapcard record'.card
@@ -109,7 +112,7 @@ module CardEntryWithInfo =
     open MagicCollectionHelper.Core.Types
     let entry (x: CardEntryWithInfo) = x.entry
     let info (x: CardEntryWithInfo) = x.info
-    let create (entry: CardEntry) (info: CardInfo): CardEntryWithInfo = { entry = entry; info = info }
+    let create (entry: CardEntry) (info: CardInfo) : CardEntryWithInfo = { entry = entry; info = info }
     let map (mapentry: CardEntry -> CardEntry) (mapinfo: CardInfo -> CardInfo) (record': CardEntryWithInfo) =
         { record' with
               entry = mapentry record'.entry

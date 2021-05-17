@@ -27,7 +27,6 @@ type CollectorNumber =
 // TODO: So a user could add it, if it is missing in the application itself
 /// The identifier of a magic set
 type MagicSet =
-    private
     | MagicSet of string
     member this.Value =
         let (MagicSet value) = this
