@@ -194,7 +194,7 @@ let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: Stat
     DockPanel.create [
         DockPanel.children [
             topBar infoMap entries state dispatch
-            Button.create [
+            (*Button.create [
                 Button.dock Dock.Top
                 Button.content (
                     if state.editLocations then
@@ -211,7 +211,7 @@ let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: Stat
                         |> dispatch),
                     Always
                 )
-            ]
+            ]*)
             ScrollViewer.create [
                 ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
                 ScrollViewer.content (content infoMap setData state dispatch)
