@@ -38,6 +38,7 @@ type Msg =
     | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
+    | SavePrefs of Prefs
     | InventoryMsg of Inventory.Msg
     | CollectionMsg of Collection.Msg
 
@@ -58,11 +59,15 @@ module Model =
         |> String.concat Environment.NewLine
 
     let initCommon () : CommonState =
+        let prefs =
+            Persistence.Prefs.load ()
+            |> Option.defaultValue (Prefs.create false Config.missingPercentDefault false)
+
         { analyseText = arrow
           dsEntries = []
           entries = []
           infoMap = Map.empty
-          prefs = Prefs.create false Config.missingPercentDefault false
+          prefs = prefs
           setData = CardData.createSetData ()
           viewMode = Collection }
 

@@ -5,6 +5,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Config.fs" />
+
+    <!-- Types -->
     <Compile Include="Types/Lenses.fs" />
     <Compile Include="Types/Cards.fs" />
     <Compile Include="Types/Cards.Generated.fs">
@@ -14,9 +16,14 @@
     <Compile Include="Types/Domain.Generated.fs">
       <MyriadFile>Types/Domain.fs</MyriadFile>
     </Compile>
+
     <Compile Include="Helper.fs" />
     <Compile Include="SystemInfo.fs" />
+
+    <!-- Persistence layer -->
+    <Compile Include="Persistence/Prefs.fs" />
     <Compile Include="Persistence/RawCustomLocation.fs" />
+
     <Compile Include="CardData.fs" />
     <Compile Include="Import/CardData.fs" />
     <Compile Include="Import/Collection.fs" />

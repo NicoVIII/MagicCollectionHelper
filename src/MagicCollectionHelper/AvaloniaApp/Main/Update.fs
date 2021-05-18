@@ -72,6 +72,10 @@ let perform (msg: Msg) (state: State) =
     | ChangePrefs prefs ->
         let state = setl StateLenses.prefs prefs state
 
+        state, Cmd.ofMsg (SavePrefs prefs)
+    | SavePrefs prefs ->
+        Persistence.Prefs.save prefs
+
         state, Cmd.none
     | CollectionMsg msg ->
         let (iState, iCmd, intent) =
