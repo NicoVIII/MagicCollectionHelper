@@ -5,13 +5,13 @@ framework: auto-detect
 
 nuget FSharp.Core ~> 5.0
 nuget FSharp.Data ~> 3.3
-nuget NicoVIII.TypedPersistence.Json 0.6.0-alpha.6
+nuget NicoVIII.TypedPersistence.Json 0.6.0-alpha.7
 nuget Avalonia 0.10.0
 nuget Avalonia.Diagnostics 0.10.0
-#nuget FSharp.Compiler.Service ~> 38.0
-#nuget JaggerJo.Avalonia.FuncUI ~> 0.5.0-beta
-#nuget JaggerJo.Avalonia.FuncUI.DSL ~> 0.5.0-beta
-#nuget JaggerJo.Avalonia.FuncUI.Elmish ~> 0.5.0-beta
+nuget FSharp.Compiler.Service ~> 38.0
+nuget JaggerJo.Avalonia.FuncUI ~> 0.5.0-beta
+nuget JaggerJo.Avalonia.FuncUI.DSL ~> 0.5.0-beta
+nuget JaggerJo.Avalonia.FuncUI.Elmish ~> 0.5.0-beta
 nuget Myriad.Core ~> 0.5.0
 nuget Myriad.Sdk ~> 0.5.0
 nuget Myriad.Plugins ~> 0.5.0
