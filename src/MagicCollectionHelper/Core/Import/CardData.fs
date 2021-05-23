@@ -2,6 +2,10 @@ namespace MagicCollectionHelper.Core
 
 [<RequireQualifiedAccess>]
 module CardDataImport =
+    open FsHttp
+    open FsHttp.DslCE
+    open FSharp.Data
+    open FSharp.Json
     open Newtonsoft.Json.Linq
     open System
     open System.IO
@@ -9,6 +13,26 @@ module CardDataImport =
     open MagicCollectionHelper.Core.TryParser
     open MagicCollectionHelper.Core.Types
     open MagicCollectionHelper.Core.Types.Generated
+
+    type BulkDataDefaultCardsResponse = { download_uri: string }
+
+    let fetchBulkData filePath =
+        async {
+            let! rawResponse = httpAsync { GET "https://api.scryfall.com/bulk-data/default_cards" }
+
+            let response =
+                Response.toText rawResponse
+                |> Json.deserialize<BulkDataDefaultCardsResponse>
+
+            let! fileRequest = Http.AsyncRequestStream(response.download_uri)
+
+            use outputFile =
+                new FileStream(filePath, FileMode.Create)
+
+            do!
+                fileRequest.ResponseStream.CopyToAsync(outputFile)
+                |> Async.AwaitTask
+        }
 
     let private tokenToColorSet (jToken: JToken) =
         match jToken with
@@ -80,18 +104,24 @@ module CardDataImport =
         |> Seq.map (fun l -> l.Value)
         |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
 
-    let private searchImportFile () =
-        Directory.EnumerateFiles "."
-        |> Seq.sortDescending
-        |> Seq.tryFind (
-            Path.GetFileName
-            >> (fun (s: string) -> s.StartsWith "default-cards")
-        )
-        // Convert to absolute path
-        |> Option.map (Path.GetFullPath)
+    let private getImportFile () =
+        async {
+            let path =
+                [ SystemInfo.savePath
+                  "default-cards.json" ]
+                |> Path.combine
 
-    let perform =
-        searchImportFile >> Option.map (parseJson)
+            // If we have a file we use it only for a week
+            if not (File.Exists path)
+               || File.GetCreationTime path > (File.GetCreationTime path).AddDays 7. then
+                printfn "Download default card data..."
+                do! fetchBulkData path
 
-    // Because import could become an expensive task, we provide an async version
-    let performAsync () = async { return perform () }
+            return path
+        }
+
+    let perform () =
+        async {
+            let! filePath = getImportFile ()
+            return parseJson filePath
+        }

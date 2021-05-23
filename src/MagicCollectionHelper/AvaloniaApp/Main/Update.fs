@@ -41,7 +41,7 @@ let perform (msg: Msg) (state: State) =
 
         (state, Cmd.none)
     | ImportCardInfo ->
-        let fnc = CardDataImport.performAsync
+        let fnc = CardDataImport.perform
 
         let cmd =
             Cmd.OfAsync.either fnc () SaveCardInfo AsyncError
@@ -49,9 +49,7 @@ let perform (msg: Msg) (state: State) =
         state, cmd
     | SaveCardInfo import ->
         let state =
-            match import with
-            | Some import -> import |> setlr StateLenses.infoMap state
-            | None -> state
+            import |> setlr StateLenses.infoMap state
 
         state, Cmd.none
     | Analyse ->

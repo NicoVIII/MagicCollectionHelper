@@ -34,7 +34,7 @@ type Msg =
     | CalcEntries
     | SaveEntries of CardEntry list
     | ImportCardInfo
-    | SaveCardInfo of CardInfoMap option
+    | SaveCardInfo of CardInfoMap
     | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
