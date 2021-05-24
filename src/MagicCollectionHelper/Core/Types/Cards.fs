@@ -110,16 +110,16 @@ module ColorIdentity =
     let simic = [ Green; Blue ] |> Set.ofList
 
     // Three colors - shards of alara + div.
-    let jund = [ Red; Green; Black ] |> Set.ofList
     let bant = [ Green; White; Blue ] |> Set.ofList
-    let grixis = [ Blue; Black; Red ] |> Set.ofList
-    let naya = [ Red; Green; White ] |> Set.ofList
     let esper = [ White; Blue; Black ] |> Set.ofList
-    let jeskai = [ Blue; Red; White ] |> Set.ofList
-    let mardu = [ Red; White; Black ] |> Set.ofList
-    let sultai = [ Black; Green; Blue ] |> Set.ofList
-    let temur = [ Green; Blue; Red ] |> Set.ofList
+    let grixis = [ Blue; Black; Red ] |> Set.ofList
+    let jund = [ Red; Green; Black ] |> Set.ofList
+    let naya = [ Red; Green; White ] |> Set.ofList
     let abzan = [ White; Black; Green ] |> Set.ofList
+    let jeskai = [ Blue; Red; White ] |> Set.ofList
+    let sultai = [ Black; Green; Blue ] |> Set.ofList
+    let mardu = [ Red; White; Black ] |> Set.ofList
+    let temur = [ Green; Blue; Red ] |> Set.ofList
 
     // Four colors - shards of alara + div.
     let nonWhite =
@@ -158,16 +158,16 @@ module ColorIdentity =
           golgari
           boros
           simic
-          jund
           bant
-          grixis
-          naya
           esper
-          jeskai
-          mardu
-          sultai
-          temur
+          grixis
+          jund
+          naya
           abzan
+          jeskai
+          sultai
+          mardu
+          temur
           nonWhite
           nonBlue
           nonBlack
