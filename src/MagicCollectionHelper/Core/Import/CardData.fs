@@ -16,8 +16,12 @@ module CardDataImport =
 
     type BulkDataDefaultCardsResponse = { download_uri: string }
 
-    let fetchBulkData filePath =
+    let fetchBulkData (filePath: string) =
         async {
+            // Create directory, if it doesn't exist
+            Directory.CreateDirectory(Path.GetDirectoryName(filePath))
+            |> ignore
+
             let! rawResponse = httpAsync { GET "https://api.scryfall.com/bulk-data/default_cards" }
 
             let response =
