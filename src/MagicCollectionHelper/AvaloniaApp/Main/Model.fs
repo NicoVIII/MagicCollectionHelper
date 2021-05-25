@@ -35,6 +35,8 @@ type Msg =
     | SaveEntries of CardEntry list
     | ImportCardInfo
     | SaveCardInfo of CardInfoMap
+    | ImportSetData
+    | SaveSetData of SetDataMap
     | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
@@ -58,25 +60,35 @@ module Model =
           "   ;;;;;" ]
         |> String.concat Environment.NewLine
 
-    let initCommon () : CommonState =
+    let initCommon () : CommonState * Cmd<Msg> =
         let prefs =
             Persistence.Prefs.load ()
             |> Option.defaultValue (Prefs.create false Config.missingPercentDefault false)
 
-        { analyseText = arrow
-          dsEntries = []
-          entries = []
-          infoMap = Map.empty
-          prefs = prefs
-          setData = CardData.createSetData ()
-          viewMode = Collection }
+        let state =
+            { analyseText = arrow
+              dsEntries = []
+              entries = []
+              infoMap = Map.empty
+              prefs = prefs
+              setData = Map.empty
+              viewMode = Collection }
+
+        let cmd =
+            [ Cmd.ofMsg ImportSetData
+              Cmd.ofMsg ImportCardInfo ]
+            |> Cmd.batch
+
+        state, cmd
 
     let init () =
+        let commonState, commonCmd = initCommon ()
+
         let state : State =
-            { common = initCommon ()
+            { common = commonState
               collection = Collection.Model.init ()
               inventory = Inventory.Model.init () }
 
-        let cmd = Cmd.ofMsg ImportCardInfo
+        let cmd = [ commonCmd ] |> Cmd.batch
 
         state, cmd

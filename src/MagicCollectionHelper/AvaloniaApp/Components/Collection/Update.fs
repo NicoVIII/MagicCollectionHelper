@@ -3,6 +3,7 @@ module MagicCollectionHelper.AvaloniaApp.Components.Collection.Update
 open Elmish
 
 open MagicCollectionHelper.Core
+open MagicCollectionHelper.Core.Import
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
@@ -14,7 +15,7 @@ let perform (msg: Msg) (state: State) =
         let state =
             setl StateLenses.loadInProgress true state
 
-        let fnc = CollectionImport.performAsync
+        let fnc = Collection.importAsync
 
         let cmd =
             Cmd.OfAsync.perform fnc () SaveCollection

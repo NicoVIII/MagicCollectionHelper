@@ -24,9 +24,11 @@
     <Compile Include="Persistence/Prefs.fs" />
     <Compile Include="Persistence/RawCustomLocation.fs" />
 
-    <Compile Include="CardData.fs" />
+    <!-- Imports -->
     <Compile Include="Import/CardData.fs" />
     <Compile Include="Import/Collection.fs" />
+    <Compile Include="Import/SetData.fs" />
+
     <Compile Include="Analyser/*.fs" />
     <Compile Include="Analyser.fs" />
     <Compile Include="Inventory.fs" />

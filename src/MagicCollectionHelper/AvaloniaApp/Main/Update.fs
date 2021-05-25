@@ -4,6 +4,7 @@ open Elmish
 open System
 
 open MagicCollectionHelper.Core
+open MagicCollectionHelper.Core.Import
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp.Components
@@ -41,7 +42,7 @@ let perform (msg: Msg) (state: State) =
 
         (state, Cmd.none)
     | ImportCardInfo ->
-        let fnc = CardDataImport.perform
+        let fnc = CardData.import
 
         let cmd =
             Cmd.OfAsync.either fnc () SaveCardInfo AsyncError
@@ -50,6 +51,18 @@ let perform (msg: Msg) (state: State) =
     | SaveCardInfo import ->
         let state =
             import |> setlr StateLenses.infoMap state
+
+        state, Cmd.none
+    | ImportSetData ->
+        let fnc = SetData.import
+
+        let cmd =
+            Cmd.OfAsync.either fnc () SaveSetData AsyncError
+
+        state, cmd
+    | SaveSetData import ->
+        let state =
+            import |> setlr StateLenses.setData state
 
         state, Cmd.none
     | Analyse ->

@@ -1,11 +1,10 @@
-namespace MagicCollectionHelper.Core
+namespace MagicCollectionHelper.Core.Import
 
 [<RequireQualifiedAccess>]
-module CollectionImport =
+module Collection =
     open FSharp.Data
     open System.IO
 
-    open MagicCollectionHelper.Core.TryParser
     open MagicCollectionHelper.Core.Types
 
     type Collection = CsvProvider<"./example.csv">
@@ -45,8 +44,8 @@ module CollectionImport =
         // Convert to absolute path
         |> Option.map (Path.GetFullPath)
 
-    let perform =
+    let import =
         searchImportFile >> Option.map (parseCsv)
 
     // Because import could become an expensive task, we provide an async version
-    let performAsync () = async { return perform () }
+    let importAsync () = async { return import () }

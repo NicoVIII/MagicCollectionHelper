@@ -1,7 +1,7 @@
-namespace MagicCollectionHelper.Core
+namespace MagicCollectionHelper.Core.Import
 
 [<RequireQualifiedAccess>]
-module CardDataImport =
+module CardData =
     open FsHttp
     open FsHttp.DslCE
     open FSharp.Data
@@ -10,7 +10,7 @@ module CardDataImport =
     open System
     open System.IO
 
-    open MagicCollectionHelper.Core.TryParser
+    open MagicCollectionHelper.Core
     open MagicCollectionHelper.Core.Types
     open MagicCollectionHelper.Core.Types.Generated
 
@@ -124,7 +124,7 @@ module CardDataImport =
             return path
         }
 
-    let perform () =
+    let import () =
         async {
             let! filePath = getImportFile ()
             return parseJson filePath
