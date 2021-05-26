@@ -19,15 +19,16 @@
     },
     // Add the IDs of extensions you want installed when the container is created.
     "extensions": [
+        "editorconfig.editorconfig",
         "ionide.ionide-fsharp",
         "ionide.ionide-fake",
         "ionide.ionide-paket",
         "ms-dotnettools.csharp",
-        "editorconfig.editorconfig",
+        "eamodio.gitlens",
+        "ybaumes.highlight-trailing-white-spaces",
         "aaron-bond.better-comments",
         "gruntfuggly.todo-tree",
-        "ybaumes.highlight-trailing-white-spaces",
-        "me-dutour-mathieu.vscode-github-actions"
+        "me-dutour-mathieu.vscode-github-actions",
     ],
     // To run the application we need to expose XServer to the container
     "runArgs": [
