@@ -12,3 +12,6 @@ indent_size = 2
 [*.fs]
 fsharp_single_argument_web_mode = true
 indent_size = 4
+
+[*.xaml]
+indent_size = 2

@@ -5,7 +5,11 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Styles.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Config.fs" />
+    <Compile Include="Icons.fs" />
     <Compile Include="ViewHelper.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="Types.Generated.fs">

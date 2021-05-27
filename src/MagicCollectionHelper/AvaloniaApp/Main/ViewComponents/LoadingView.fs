@@ -11,37 +11,45 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Main
 
 module LoadingView =
-    let loadingTextBlock text =
-        TextBlock.create [
-            TextBlock.fontSize 24.
-            TextBlock.text text
+    let loadingLine (icon: IView<Canvas>) text =
+        StackPanel.create [
+            StackPanel.orientation Orientation.Horizontal
+            StackPanel.spacing 5.
+            StackPanel.children [
+                icon
+                TextBlock.create [
+                    TextBlock.fontSize 24.
+                    TextBlock.text text
+                ]
+            ]
         ]
 
     let loadSetData state =
         let loadingState = getl StateLenses.setDataState state
 
         match loadingState with
-        | Prepare -> "Preparing set data import..."
-        | Download -> "Downloading set data..."
-        | Import -> "Importing set data..."
-        | Ready -> "Set data ready!"
-        |> loadingTextBlock
+        | Prepare -> Icons.sync, "Preparing set data import..."
+        | Download -> Icons.sync, "Downloading set data..."
+        | Import -> Icons.sync, "Importing set data..."
+        | Ready -> Icons.check, "Set data ready!"
+        ||> loadingLine
 
     let loadCardInfo state =
         let loadingState = getl StateLenses.cardInfoState state
 
         match loadingState with
-        | Prepare -> "Preparing card info import..."
-        | Download -> "Downloading card info..."
-        | Import -> "Importing card info..."
-        | Ready -> "Card info ready!"
-        |> loadingTextBlock
+        | Prepare -> Icons.sync, "Preparing card info import..."
+        | Download -> Icons.sync, "Downloading card info..."
+        | Import -> Icons.sync, "Importing card info..."
+        | Ready -> Icons.check, "Card info ready!"
+        ||> loadingLine
 
     let render (state: State) (dispatch: Dispatch) : IView =
         StackPanel.create [
             StackPanel.horizontalAlignment HorizontalAlignment.Center
-            StackPanel.verticalAlignment VerticalAlignment.Center
+            StackPanel.minWidth 280.
             StackPanel.spacing 25.
+            StackPanel.verticalAlignment VerticalAlignment.Center
             StackPanel.children [
                 loadSetData state
                 loadCardInfo state
