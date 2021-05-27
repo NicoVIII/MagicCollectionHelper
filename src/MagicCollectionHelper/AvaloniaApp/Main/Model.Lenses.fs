@@ -1,10 +1,8 @@
 namespace MagicCollectionHelper.AvaloniaApp.Main
 
-open Myriad.Plugins
-open System
-
 open MagicCollectionHelper.Core.Types
 
+open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
 module StateLenses =
@@ -12,20 +10,34 @@ module StateLenses =
         StateLenses.common
         << CommonStateLenses.analyseText
 
+    let cardInfo =
+        StateLenses.common
+        << CommonStateLenses.cardInfo
+        << LoadableLenses.data
+
+    let cardInfoState =
+        StateLenses.common
+        << CommonStateLenses.cardInfo
+        << LoadableLenses.state
+
     let dsEntries =
         StateLenses.common << CommonStateLenses.dsEntries
 
     let entries =
         StateLenses.common << CommonStateLenses.entries
 
-    let infoMap =
-        StateLenses.common << CommonStateLenses.infoMap
-
     let prefs =
         StateLenses.common << CommonStateLenses.prefs
 
     let setData =
-        StateLenses.common << CommonStateLenses.setData
+        StateLenses.common
+        << CommonStateLenses.setData
+        << LoadableLenses.data
+
+    let setDataState =
+        StateLenses.common
+        << CommonStateLenses.setData
+        << LoadableLenses.state
 
     let viewMode =
         StateLenses.common << CommonStateLenses.viewMode

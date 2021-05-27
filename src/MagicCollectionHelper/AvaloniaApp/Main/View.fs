@@ -57,22 +57,23 @@ let sideBar (state: State) (dispatch: Dispatch) : IView =
     :> IView
 
 let content (state: State) (dispatch: Dispatch) : IView =
-    let infoMap = getl StateLenses.infoMap state
+    let cardInfo = getl StateLenses.cardInfo state
 
     match getl StateLenses.viewMode state with
+    | Loading -> LoadingView.render state dispatch
     | Collection ->
         let dsEntries = getl StateLenses.dsEntries state
         let entries = getl StateLenses.entries state
         let dispatch = CollectionMsg >> dispatch
 
-        Components.Collection.View.render dsEntries entries infoMap state.collection dispatch
+        Components.Collection.View.render dsEntries entries cardInfo state.collection dispatch
     | ViewMode.Analyse -> AnalyseView.render state dispatch
     | Inventory ->
         let entries = getl StateLenses.entries state
         let setData = getl StateLenses.setData state
-        let infoMap = getl StateLenses.infoMap state
+        let cardInfo = getl StateLenses.cardInfo state
         let dispatch = InventoryMsg >> dispatch
-        Components.Inventory.View.render infoMap setData entries state.inventory dispatch
+        Components.Inventory.View.render cardInfo setData entries state.inventory dispatch
     | Preferences -> PreferenceView.render state dispatch
 
 let leftBottomBar (state: State) (dispatch: Dispatch) : IView =
@@ -89,32 +90,13 @@ let leftBottomBar (state: State) (dispatch: Dispatch) : IView =
     ]
     :> IView
 
-let bottomBar (state: State) (dispatch: Dispatch) : IView =
-    Border.create [
-        Border.dock Dock.Bottom
-        Border.borderBrush Config.lineColor
-        Border.borderThickness (0., 1., 0., 0.)
-        Border.child (
-            DockPanel.create [
-                DockPanel.margin 5.0
-                DockPanel.children [
-                    leftBottomBar state dispatch
-                    StackPanel.create [
-                        StackPanel.dock Dock.Right
-                        StackPanel.orientation Orientation.Horizontal
-                        StackPanel.children []
-                    ]
-                ]
-            ]
-        )
-    ]
-    :> IView
-
 let render (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
-            // bottomBar state dispatch
-            sideBar state dispatch
+            // Sidebar not in loading view
+            match getl StateLenses.viewMode state with
+            | Loading -> ()
+            | _ -> sideBar state dispatch
             content state dispatch
         ]
     ]

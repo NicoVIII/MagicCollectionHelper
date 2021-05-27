@@ -4,6 +4,7 @@ open Myriad.Plugins
 open System
 
 type ViewMode =
+    | Loading
     | Analyse
     | Collection
     | Inventory
@@ -12,11 +13,11 @@ type ViewMode =
 [<Generator.Lenses("main", "MagicCollectionHelper.Core.Types.Lens")>]
 type CommonState =
     { analyseText: string
+      cardInfo: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.CardInfoMap>
       dsEntries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
       entries: MagicCollectionHelper.Core.Types.CardEntry list
-      infoMap: MagicCollectionHelper.Core.Types.CardInfoMap
       prefs: MagicCollectionHelper.Core.Types.Prefs
-      setData: MagicCollectionHelper.Core.Types.SetDataMap
+      setData: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.SetDataMap>
       viewMode: ViewMode }
 
 [<Generator.Lenses("main", "MagicCollectionHelper.Core.Types.Lens")>]
@@ -31,12 +32,16 @@ open MagicCollectionHelper.AvaloniaApp.Components
 
 type Msg =
     | AsyncError of exn
+    | StartUp
+    | PrepareCardInfo
+    | ImportCardInfo of string
+    | SaveCardInfo of CardInfoMap
+    | PrepareSetData
+    | ImportSetData of string
+    | SaveSetData of SetDataMap
+    | CheckLoadingState
     | CalcEntries
     | SaveEntries of CardEntry list
-    | ImportCardInfo
-    | SaveCardInfo of CardInfoMap
-    | ImportSetData
-    | SaveSetData of SetDataMap
     | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
@@ -67,19 +72,14 @@ module Model =
 
         let state =
             { analyseText = arrow
+              cardInfo = Map.empty |> Loadable.create
               dsEntries = []
               entries = []
-              infoMap = Map.empty
               prefs = prefs
-              setData = Map.empty
-              viewMode = Collection }
+              setData = Map.empty |> Loadable.create
+              viewMode = Loading }
 
-        let cmd =
-            [ Cmd.ofMsg ImportSetData
-              Cmd.ofMsg ImportCardInfo ]
-            |> Cmd.batch
-
-        state, cmd
+        state, Cmd.ofMsg StartUp
 
     let init () =
         let commonState, commonCmd = initCommon ()

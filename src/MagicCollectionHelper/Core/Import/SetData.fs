@@ -1,7 +1,5 @@
 namespace MagicCollectionHelper.Core.Import
 
-open FsHttp
-open FsHttp.DslCE
 open FSharp.Data
 open FSharp.Json
 open System.IO
@@ -18,7 +16,7 @@ module SetData =
 
     type SetDataListCSV = { data: SetDataCSV list }
 
-    let private fetchSetData (filePath: string) =
+    let fetchSetData (filePath: string) =
         async {
             // Create directory, if it doesn't exist
             Directory.CreateDirectory(Path.GetDirectoryName(filePath))
@@ -32,42 +30,45 @@ module SetData =
             do!
                 fileRequest.ResponseStream.CopyToAsync(outputFile)
                 |> Async.AwaitTask
+
+            return filePath
         }
 
-    let private getImportFile () =
+    let prepareImportFile () =
+        let filePath =
+            [ SystemInfo.savePath; "setdata.json" ]
+            |> Path.combine
+
+        let fileExists = File.Exists filePath
+
+        let fileOutdated =
+            fileExists
+            && File.GetCreationTime filePath > (File.GetCreationTime filePath).AddDays 7.
+
+        // If we have a file we use it only for a week
+        if not fileExists || fileOutdated then
+            fetchSetData filePath |> DownloadFile
+        else
+            filePath |> FileExists
+
+    let importFile filePath =
         async {
-            let path =
-                [ SystemInfo.savePath; "setdata.json" ]
-                |> Path.combine
+            let! text = File.ReadAllTextAsync(filePath) |> Async.AwaitTask
 
-            // If we have a file we use it only for a week
-            if not (File.Exists path)
-               || File.GetCreationTime path > (File.GetCreationTime path).AddDays 7. then
-                printfn "Download set data..."
-                do! fetchSetData path
+            return
+                text
+                |> Json.deserialize<SetDataListCSV>
+                |> (fun data -> data.data)
+                |> List.map
+                    (fun setData ->
+                        let setCode =
+                            setData.code.ToUpper() |> MagicSet.create
 
-            return path
-        }
+                        let setData =
+                            { SetData.name = setData.name
+                              date = setData.released_at
+                              max = setData.card_count }
 
-    let private parseJson filePath =
-        File.ReadAllText(filePath)
-        |> Json.deserialize<SetDataListCSV>
-        |> (fun data -> data.data)
-        |> List.map
-            (fun setData ->
-                let setCode =
-                    setData.code.ToUpper() |> MagicSet.create
-
-                let setData =
-                    { SetData.name = setData.name
-                      date = setData.released_at
-                      max = setData.card_count }
-
-                setCode, setData)
-        |> Map.ofList
-
-    let import () =
-        async {
-            let! filePath = getImportFile ()
-            return parseJson filePath
+                        setCode, setData)
+                |> Map.ofList
         }

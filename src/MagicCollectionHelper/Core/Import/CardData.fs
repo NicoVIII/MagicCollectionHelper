@@ -36,6 +36,8 @@ module CardData =
             do!
                 fileRequest.ResponseStream.CopyToAsync(outputFile)
                 |> Async.AwaitTask
+
+            return filePath
         }
 
     let private tokenToColorSet (jToken: JToken) =
@@ -101,31 +103,30 @@ module CardData =
                 |> Some
             | None -> None
 
-    let private parseJson (filePath: string) =
-        File.ReadLines(filePath)
-        |> Seq.map (lineToInfo)
-        |> Seq.filter (fun l -> l.IsSome)
-        |> Seq.map (fun l -> l.Value)
-        |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
+    let prepareImportFile () =
+        let filePath =
+            [ SystemInfo.savePath
+              "default-cards.json" ]
+            |> Path.combine
 
-    let private getImportFile () =
+        let fileExists = File.Exists filePath
+
+        let fileOutdated =
+            fileExists
+            && File.GetCreationTime filePath > (File.GetCreationTime filePath).AddDays 7.
+
+        // If we have a file we use it only for a week
+        if not fileExists || fileOutdated then
+            fetchBulkData filePath |> DownloadFile
+        else
+            filePath |> FileExists
+
+    let importFile (filePath: string) =
         async {
-            let path =
-                [ SystemInfo.savePath
-                  "default-cards.json" ]
-                |> Path.combine
-
-            // If we have a file we use it only for a week
-            if not (File.Exists path)
-               || File.GetCreationTime path > (File.GetCreationTime path).AddDays 7. then
-                printfn "Download default card data..."
-                do! fetchBulkData path
-
-            return path
-        }
-
-    let import () =
-        async {
-            let! filePath = getImportFile ()
-            return parseJson filePath
+            return
+                File.ReadLines(filePath)
+                |> Seq.map (lineToInfo)
+                |> Seq.filter (fun l -> l.IsSome)
+                |> Seq.map (fun l -> l.Value)
+                |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
         }

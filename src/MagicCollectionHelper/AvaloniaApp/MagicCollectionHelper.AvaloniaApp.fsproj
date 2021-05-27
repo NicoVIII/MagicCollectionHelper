@@ -7,8 +7,14 @@
   <ItemGroup>
     <Compile Include="Config.fs" />
     <Compile Include="ViewHelper.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="Types.Generated.fs">
+      <MyriadFile>Types.fs</MyriadFile>
+    </Compile>
+
     <!-- Elements -->
     <Compile Include="Elements/Elements.fs" />
+
     <!-- Collection component -->
     <Compile Include="Components/Collection/Model.fs" />
     <Compile Include="Components/Collection/Model.Generated.fs">
@@ -17,6 +23,7 @@
     <Compile Include="Components/Collection/ViewComponents/*.fs" />
     <Compile Include="Components/Collection/View.fs" />
     <Compile Include="Components/Collection/Update.fs" />
+
     <!-- Inventory component -->
     <Compile Include="Components/Inventory/Model.fs" />
     <Compile Include="Components/Inventory/Model.Generated.fs">
@@ -25,6 +32,7 @@
     <Compile Include="Components/Inventory/ViewComponents/*.fs" />
     <Compile Include="Components/Inventory/View.fs" />
     <Compile Include="Components/Inventory/Update.fs" />
+
     <!-- Main -->
     <Compile Include="Main/Model.fs" />
     <Compile Include="Main/Model.Generated.fs">
@@ -34,6 +42,7 @@
     <Compile Include="Main/ViewComponents/*.fs" />
     <Compile Include="Main/View.fs" />
     <Compile Include="Main/Update.fs" />
+
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,13 @@ module CommonStateLenses =
             (fun (x: CommonState) (value: string) -> { x with analyseText = value })
         )
 
+    let cardInfo =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: CommonState) -> x.cardInfo),
+            (fun (x: CommonState) (value: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.CardInfoMap>) ->
+                { x with cardInfo = value })
+        )
+
     let dsEntries =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: CommonState) -> x.dsEntries),
@@ -26,12 +33,6 @@ module CommonStateLenses =
                 { x with entries = value })
         )
 
-    let infoMap =
-        MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: CommonState) -> x.infoMap),
-            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.CardInfoMap) -> { x with infoMap = value })
-        )
-
     let prefs =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: CommonState) -> x.prefs),
@@ -41,7 +42,8 @@ module CommonStateLenses =
     let setData =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: CommonState) -> x.setData),
-            (fun (x: CommonState) (value: MagicCollectionHelper.Core.Types.SetDataMap) -> { x with setData = value })
+            (fun (x: CommonState) (value: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.SetDataMap>) ->
+                { x with setData = value })
         )
 
     let viewMode =

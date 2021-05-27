@@ -6,3 +6,6 @@ namespace = "MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated"
 
 ["main"]
 namespace = "MagicCollectionHelper.AvaloniaApp.Main.Generated"
+
+["root"]
+namespace = "MagicCollectionHelper.AvaloniaApp.Generated"

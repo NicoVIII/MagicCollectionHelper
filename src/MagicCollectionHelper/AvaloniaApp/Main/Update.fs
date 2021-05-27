@@ -7,7 +7,9 @@ open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Import
 open MagicCollectionHelper.Core.Types
 
+open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components
+open MagicCollectionHelper.AvaloniaApp.Generated
 open MagicCollectionHelper.AvaloniaApp.Main
 open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
@@ -26,12 +28,97 @@ let processCollectionIntent intent stateCmd =
 let perform (msg: Msg) (state: State) =
     match msg with
     | AsyncError x -> raise x
+    | StartUp ->
+        let cmd =
+            [ PrepareCardInfo; PrepareSetData ]
+            |> List.map Cmd.ofMsg
+            |> Cmd.batch
+
+        state, cmd
+    | PrepareCardInfo ->
+        CardData.prepareImportFile ()
+        |> function
+        | FileExists path -> state, ImportCardInfo path |> Cmd.ofMsg
+        | DownloadFile job ->
+            let state =
+                state |> setl StateLenses.cardInfoState Download
+
+            let fnc () = job
+
+            let cmd =
+                Cmd.OfAsync.either fnc () ImportCardInfo AsyncError
+
+            state, cmd
+    | ImportCardInfo filePath ->
+        let state =
+            state |> setl StateLenses.cardInfoState Import
+
+        let fnc () = CardData.importFile filePath
+
+        let cmd =
+            Cmd.OfAsync.either fnc () SaveCardInfo AsyncError
+
+        state, cmd
+    | SaveCardInfo import ->
+        let state =
+            state
+            |> setl StateLenses.cardInfo import
+            |> setl StateLenses.cardInfoState Ready
+
+        state, Cmd.ofMsg CheckLoadingState
+    | PrepareSetData ->
+        SetData.prepareImportFile ()
+        |> function
+        | FileExists path -> state, ImportSetData path |> Cmd.ofMsg
+        | DownloadFile job ->
+            let state =
+                state |> setl StateLenses.setDataState Download
+
+            let fnc () = job
+
+            let cmd =
+                Cmd.OfAsync.either fnc () ImportSetData AsyncError
+
+            state, cmd
+    | ImportSetData filePath ->
+        let state =
+            state |> setl StateLenses.setDataState Import
+
+        let fnc () = SetData.importFile filePath
+
+        let cmd =
+            Cmd.OfAsync.either fnc () SaveSetData AsyncError
+
+        state, cmd
+    | SaveSetData import ->
+        let state =
+            state
+            |> setl StateLenses.setData import
+            |> setl StateLenses.setDataState Ready
+
+        state, Cmd.ofMsg CheckLoadingState
+    | CheckLoadingState ->
+        // Check if everything is loaded and change viewmode if that is the case
+        let setDataState = getl StateLenses.setDataState state
+        let cardInfoState = getl StateLenses.cardInfoState state
+
+        let allReady =
+            [ setDataState; cardInfoState ]
+            |> List.forall LoadingState.isReady
+
+        let state =
+            if allReady then
+                setl StateLenses.viewMode Collection state
+            else
+                state
+
+        state, Cmd.none
     | CalcEntries ->
-        let infoMap = getl StateLenses.infoMap state
+        let cardInfo = getl StateLenses.cardInfo state
         let entries = getl StateLenses.dsEntries state
 
         let fnc () =
-            DeckStatsCardEntry.listToEntriesAsync infoMap entries
+            DeckStatsCardEntry.listToEntriesAsync cardInfo entries
 
         let cmd =
             Cmd.OfAsync.either fnc () SaveEntries AsyncError
@@ -41,30 +128,6 @@ let perform (msg: Msg) (state: State) =
         let state = setl StateLenses.entries entries state
 
         (state, Cmd.none)
-    | ImportCardInfo ->
-        let fnc = CardData.import
-
-        let cmd =
-            Cmd.OfAsync.either fnc () SaveCardInfo AsyncError
-
-        state, cmd
-    | SaveCardInfo import ->
-        let state =
-            import |> setlr StateLenses.infoMap state
-
-        state, Cmd.none
-    | ImportSetData ->
-        let fnc = SetData.import
-
-        let cmd =
-            Cmd.OfAsync.either fnc () SaveSetData AsyncError
-
-        state, cmd
-    | SaveSetData import ->
-        let state =
-            import |> setlr StateLenses.setData state
-
-        state, Cmd.none
     | Analyse ->
         let prefs = getl StateLenses.prefs state
         let setData = getl StateLenses.setData state
@@ -96,11 +159,11 @@ let perform (msg: Msg) (state: State) =
         |> Tuple2.mapFst (setl StateLenses.collection iState)
         |> processCollectionIntent intent
     | InventoryMsg msg ->
-        let infoMap = getl StateLenses.infoMap state
+        let infoMap = getl StateLenses.cardInfo state
 
         let entries = getl StateLenses.entries state
 
-        let infoMap = getl StateLenses.infoMap state
+        let infoMap = getl StateLenses.cardInfo state
 
         let (iState, iCmd) =
             Inventory.Update.perform infoMap entries msg state.inventory
