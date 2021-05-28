@@ -7,12 +7,24 @@ open Avalonia.Diagnostics
 open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.FuncUI.Components.Hosts
-
-open MagicCollectionHelper.AvaloniaApp.Components
 open Avalonia.Input
+
+open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
+
+module CollectionMsg = Msg
+
+open MagicCollectionHelper.AvaloniaApp.Main
+open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
 type MainWindow() as this =
     inherit HostWindow()
+
+#if DEBUG
+    let msgToString msg =
+        match msg with
+        | CollectionMsg cMsg -> $"{Msg.toString msg}: {CollectionMsg.toString cMsg}"
+        | msg -> Msg.toString msg
+#endif
 
     do
         base.Title <- "MagicCollectionHelper"
@@ -29,7 +41,7 @@ type MainWindow() as this =
         Program.mkProgram Main.Model.init Main.Update.perform Main.View.render
         |> Program.withHost this
 #if DEBUG
-        |> Program.withTrace (fun msg state -> printfn "Got message: %A" msg)
+        |> Program.withTrace (fun msg _ -> printfn "Got message: %s" (msgToString msg))
 #endif
         |> Program.run
 

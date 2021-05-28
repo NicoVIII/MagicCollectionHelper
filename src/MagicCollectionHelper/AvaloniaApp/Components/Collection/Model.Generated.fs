@@ -11,3 +11,54 @@ module StateLenses =
             (fun (x: State) -> x.loadInProgress),
             (fun (x: State) (value: bool) -> { x with loadInProgress = value })
         )
+namespace rec MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
+
+module Msg =
+    open MagicCollectionHelper.AvaloniaApp.Components.Collection
+    let toString (x: Msg) =
+        match x with
+        | StartUp -> "StartUp"
+        | LoadCollection -> "LoadCollection"
+        | ImportCollection -> "ImportCollection"
+        | WriteCollection _ -> "WriteCollection"
+        | SaveCollection _ -> "SaveCollection"
+
+    let fromString (x: string) =
+        match x with
+        | "StartUp" -> Some StartUp
+        | "LoadCollection" -> Some LoadCollection
+        | "ImportCollection" -> Some ImportCollection
+        | _ -> None
+
+    let toTag (x: Msg) =
+        match x with
+        | StartUp -> 0
+        | LoadCollection -> 1
+        | ImportCollection -> 2
+        | WriteCollection _ -> 3
+        | SaveCollection _ -> 4
+
+    let isStartUp (x: Msg) =
+        match x with
+        | StartUp -> true
+        | _ -> false
+
+    let isLoadCollection (x: Msg) =
+        match x with
+        | LoadCollection -> true
+        | _ -> false
+
+    let isImportCollection (x: Msg) =
+        match x with
+        | ImportCollection -> true
+        | _ -> false
+
+    let isWriteCollection (x: Msg) =
+        match x with
+        | WriteCollection _ -> true
+        | _ -> false
+
+    let isSaveCollection (x: Msg) =
+        match x with
+        | SaveCollection _ -> true
+        | _ -> false

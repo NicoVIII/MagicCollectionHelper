@@ -44,6 +44,26 @@ module LoadingView =
         | Ready -> Icons.check, "Card info ready!"
         ||> loadingLine
 
+    let loadCollection state =
+        let loadingState = getl StateLenses.dsEntriesState state
+
+        match loadingState with
+        | Prepare -> Icons.sync, "Preparing collection import..."
+        | Import -> Icons.sync, "Importing collection..."
+        | Ready -> Icons.check, "Collection imported!"
+        | Download -> failwith "Invalid state"
+        ||> loadingLine
+
+    let processEntries state =
+        let loadingState = getl StateLenses.entriesState state
+
+        match loadingState with
+        | Prepare -> Icons.reloadAlert, "Waiting..."
+        | Import -> Icons.reload, "Process collection..."
+        | Ready -> Icons.check, "Collection ready!"
+        | Download -> failwith "Invalid state"
+        ||> loadingLine
+
     let render (state: State) (dispatch: Dispatch) : IView =
         StackPanel.create [
             StackPanel.horizontalAlignment HorizontalAlignment.Center
@@ -53,6 +73,8 @@ module LoadingView =
             StackPanel.children [
                 loadSetData state
                 loadCardInfo state
+                loadCollection state
+                processEntries state
             ]
         ]
         :> IView

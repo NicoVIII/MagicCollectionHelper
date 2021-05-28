@@ -1,34 +1,24 @@
 module MagicCollectionHelper.AvaloniaApp.Components.Collection.View
 
 open Avalonia.Controls
-open Avalonia.Controls.Primitives
-open Avalonia.FuncUI.Components
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 
 open MagicCollectionHelper.Core.Types
 
-open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 open MagicCollectionHelper.AvaloniaApp.Elements
 open Avalonia.Media
 
-let topBar entries infoMap (state: State) (dispatch: Dispatch) : IView =
+let topBar (state: State) (dispatch: Dispatch) : IView =
     let loadInProgress = getl StateLenses.loadInProgress state
 
     ActionButtonBar.create [
         ActionButton.create
             { text = "Import collection"
-              isEnabled =
-                  List.isEmpty entries
-                  && not (loadInProgress)
-                  && not (Map.isEmpty infoMap)
+              isEnabled = not loadInProgress
               action = (fun _ -> ImportCollection |> dispatch) }
-        ActionButton.create
-            { text = "Import decks"
-              isEnabled = false
-              action = (fun _ -> ()) }
     ]
 
 let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
@@ -57,7 +47,7 @@ let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : I
 
                 $"You have %i{cardAmount} cards in your collection.\n\n"
                 + $"From those you can use {inventoryableAmount} (%.1f{percent}%%) for inventory."
-                + " If you need more, please extend the info in your collection. Especially important are set and collector number."
+                + " If you need more, please extend the info in your collection. Especially important are set, collector number and language."
         )
     ]
     :> IView
@@ -72,7 +62,7 @@ let content dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IVie
 let render dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
-            topBar entries infoMap state dispatch
+            topBar state dispatch
             content dsEntries entries infoMap state dispatch
         ]
     ]

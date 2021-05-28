@@ -14,8 +14,8 @@ type ViewMode =
 type CommonState =
     { analyseText: string
       cardInfo: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.CardInfoMap>
-      dsEntries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
-      entries: MagicCollectionHelper.Core.Types.CardEntry list
+      dsEntries: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.DeckStatsCardEntry list>
+      entries: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.CardEntry list>
       prefs: MagicCollectionHelper.Core.Types.Prefs
       setData: MagicCollectionHelper.AvaloniaApp.Loadable<MagicCollectionHelper.Core.Types.SetDataMap>
       viewMode: ViewMode }
@@ -30,6 +30,7 @@ open MagicCollectionHelper.Core.Types
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components
 
+[<Generator.DuCases("main")>]
 type Msg =
     | AsyncError of exn
     | StartUp
@@ -73,8 +74,8 @@ module Model =
         let state =
             { analyseText = arrow
               cardInfo = Map.empty |> Loadable.create
-              dsEntries = []
-              entries = []
+              dsEntries = [] |> Loadable.create
+              entries = [] |> Loadable.create
               prefs = prefs
               setData = Map.empty |> Loadable.create
               viewMode = Loading }
@@ -84,11 +85,16 @@ module Model =
     let init () =
         let commonState, commonCmd = initCommon ()
 
+        let collectionState, collectionCmd = Collection.Model.init ()
+
         let state : State =
             { common = commonState
-              collection = Collection.Model.init ()
+              collection = collectionState
               inventory = Inventory.Model.init () }
 
-        let cmd = [ commonCmd ] |> Cmd.batch
+        let cmd =
+            [ commonCmd
+              collectionCmd |> Cmd.map CollectionMsg ]
+            |> Cmd.batch
 
         state, cmd

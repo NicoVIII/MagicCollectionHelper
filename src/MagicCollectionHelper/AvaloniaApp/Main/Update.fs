@@ -13,17 +13,28 @@ open MagicCollectionHelper.AvaloniaApp.Generated
 open MagicCollectionHelper.AvaloniaApp.Main
 open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
-let processCollectionIntent intent stateCmd =
+let processCollectionIntent intent (state, cmd) =
     match intent with
     | Collection.Intent.SaveEntries entries ->
-        stateCmd
-        |> Tuple2.mapFst
-            (fun state ->
-                match entries with
-                | Some entries -> setl StateLenses.dsEntries (Seq.toList entries) state
-                | None -> state)
-        |> Tuple2.mapSnd (fun cmd -> Cmd.batch [ cmd; Cmd.ofMsg CalcEntries ])
-    | Collection.Intent.DoNothing -> stateCmd // We don't need to mutate the state
+        let state =
+            state
+            |> setl StateLenses.dsEntries entries
+            |> setl StateLenses.dsEntriesState Ready
+
+        let cmd =
+            Cmd.batch [
+                cmd
+                Cmd.ofMsg CheckLoadingState
+            ]
+
+        state, cmd
+    | Collection.Intent.ChangeEntryState loadingState ->
+        let state =
+            state
+            |> setl StateLenses.dsEntriesState loadingState
+
+        state, cmd
+    | Collection.Intent.DoNothing -> state, cmd // We don't need to mutate the state
 
 let perform (msg: Msg) (state: State) =
     match msg with
@@ -101,21 +112,27 @@ let perform (msg: Msg) (state: State) =
         // Check if everything is loaded and change viewmode if that is the case
         let setDataState = getl StateLenses.setDataState state
         let cardInfoState = getl StateLenses.cardInfoState state
+        let dsEntriesState = getl StateLenses.dsEntriesState state
 
         let allReady =
-            [ setDataState; cardInfoState ]
+            [ setDataState
+              cardInfoState
+              dsEntriesState ]
             |> List.forall LoadingState.isReady
 
-        let state =
+        let cmd =
             if allReady then
-                setl StateLenses.viewMode Collection state
+                Cmd.ofMsg CalcEntries
             else
-                state
+                Cmd.none
 
-        state, Cmd.none
+        state, cmd
     | CalcEntries ->
         let cardInfo = getl StateLenses.cardInfo state
         let entries = getl StateLenses.dsEntries state
+
+        let state =
+            state |> setl StateLenses.entriesState Import
 
         let fnc () =
             DeckStatsCardEntry.listToEntriesAsync cardInfo entries
@@ -123,11 +140,14 @@ let perform (msg: Msg) (state: State) =
         let cmd =
             Cmd.OfAsync.either fnc () SaveEntries AsyncError
 
-        (state, cmd)
+        state, cmd
     | SaveEntries entries ->
-        let state = setl StateLenses.entries entries state
+        let state =
+            state
+            |> setl StateLenses.entries entries
+            |> setl StateLenses.entriesState Ready
 
-        (state, Cmd.none)
+        state, Cmd.ofMsg (ChangeViewMode Collection)
     | Analyse ->
         let prefs = getl StateLenses.prefs state
         let setData = getl StateLenses.setData state
@@ -159,14 +179,12 @@ let perform (msg: Msg) (state: State) =
         |> Tuple2.mapFst (setl StateLenses.collection iState)
         |> processCollectionIntent intent
     | InventoryMsg msg ->
-        let infoMap = getl StateLenses.cardInfo state
+        let cardInfo = getl StateLenses.cardInfo state
 
         let entries = getl StateLenses.entries state
 
-        let infoMap = getl StateLenses.cardInfo state
-
         let (iState, iCmd) =
-            Inventory.Update.perform infoMap entries msg state.inventory
+            Inventory.Update.perform cardInfo entries msg state.inventory
 
         let state = setl StateLenses.inventory iState state
         let cmd = iCmd |> Cmd.map InventoryMsg

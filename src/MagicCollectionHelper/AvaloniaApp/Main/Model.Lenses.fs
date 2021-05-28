@@ -21,10 +21,24 @@ module StateLenses =
         << LoadableLenses.state
 
     let dsEntries =
-        StateLenses.common << CommonStateLenses.dsEntries
+        StateLenses.common
+        << CommonStateLenses.dsEntries
+        << LoadableLenses.data
+
+    let dsEntriesState =
+        StateLenses.common
+        << CommonStateLenses.dsEntries
+        << LoadableLenses.state
 
     let entries =
-        StateLenses.common << CommonStateLenses.entries
+        StateLenses.common
+        << CommonStateLenses.entries
+        << LoadableLenses.data
+
+    let entriesState =
+        StateLenses.common
+        << CommonStateLenses.entries
+        << LoadableLenses.state
 
     let prefs =
         StateLenses.common << CommonStateLenses.prefs

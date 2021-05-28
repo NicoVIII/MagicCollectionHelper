@@ -6,6 +6,19 @@
       <Setter Property="Fill" Value="White"/>
     </Style>
 
+    <Style Selector="Canvas.icon.rotatingCW">
+      <Style.Animations>
+        <Animation Duration="0:0:2" IterationCount="Infinite">
+          <KeyFrame Cue="0%">
+            <Setter Property="RotateTransform.Angle" Value="0"/>
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="RotateTransform.Angle" Value="360"/>
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+
     <Style Selector="Canvas.icon.rotatingCCW">
       <Style.Animations>
         <Animation Duration="0:0:2" IterationCount="Infinite">

@@ -21,6 +21,7 @@
     <Compile Include="SystemInfo.fs" />
 
     <!-- Persistence layer -->
+    <Compile Include="Persistence/DeckStatsCardEntry.fs" />
     <Compile Include="Persistence/Prefs.fs" />
     <Compile Include="Persistence/RawCustomLocation.fs" />
 

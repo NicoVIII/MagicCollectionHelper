@@ -1,23 +1,34 @@
 namespace MagicCollectionHelper.AvaloniaApp.Components.Collection
 
+open Elmish
 open Myriad.Plugins
+
+open MagicCollectionHelper.Core.Types
+
+open MagicCollectionHelper.AvaloniaApp
 
 [<Generator.Lenses("components-collection", "MagicCollectionHelper.Core.Types.Lens")>]
 type State = { loadInProgress: bool }
 
-open MagicCollectionHelper.Core.Types
-
+[<Generator.DuCases("components-collection")>]
 type Msg =
+    | StartUp
+    | LoadCollection
     | ImportCollection
-    | SaveCollection of DeckStatsCardEntry seq option
+    | WriteCollection of DeckStatsCardEntry seq option
+    | SaveCollection of DeckStatsCardEntry list option
 
 type Intent =
     | DoNothing
-    | SaveEntries of DeckStatsCardEntry seq option
+    | ChangeEntryState of LoadingState
+    | SaveEntries of DeckStatsCardEntry list
 
 type Dispatch = Msg -> unit
 
 module Model =
-    open MagicCollectionHelper.Core
+    let init () : State * Cmd<Msg> =
+        let state = { loadInProgress = false }
 
-    let init () : State = { loadInProgress = false }
+        let cmd = Cmd.ofMsg StartUp
+
+        state, cmd
