@@ -102,6 +102,7 @@ type SortRule =
     | ByCmc
     | ByTypeContains of string list
     | ByRarity of Set<Rarity> list
+    | ByLanguage of Language list
 
 type SortRules = SortRule list
 

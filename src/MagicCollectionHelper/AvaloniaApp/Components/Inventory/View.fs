@@ -98,6 +98,17 @@ let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
                     None)
         |> Option.defaultValue (List.length rarities)
         |> string
+    | ByLanguage language ->
+        language
+        |> List.indexed
+        |> List.tryPick
+            (fun (index, language) ->
+                if language = entry.card.language then
+                    Some index
+                else
+                    None)
+        |> Option.defaultValue (List.length language)
+        |> string
 
 let sortEntries setData location (entries: CardEntryWithInfo list) =
     let random = Random()
