@@ -72,8 +72,8 @@ module LoadingView =
             StackPanel.verticalAlignment VerticalAlignment.Center
             StackPanel.children [
                 loadSetData state
-                loadCardInfo state
                 loadCollection state
+                loadCardInfo state
                 processEntries state
             ]
         ]
