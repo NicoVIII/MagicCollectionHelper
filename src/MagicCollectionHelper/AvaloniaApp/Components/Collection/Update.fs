@@ -37,25 +37,17 @@ let perform (msg: Msg) (state: State) =
 
         state, cmd, ChangeEntryState Import
     | WriteCollection import ->
-        let cmd =
-            match import with
-            | Some import ->
-                let entryList = List.ofSeq import
+        let entryList = Option.map List.ofSeq import
 
-                // And now we save the file
-                Persistence.DeckStatsCardEntry.save entryList
+        match entryList with
+        | Some entryList ->
+            // And now we save the file
+            Persistence.DeckStatsCardEntry.save entryList
+        | None -> ()
 
-                Cmd.ofMsg (Some entryList |> SaveCollection)
-            | None -> Cmd.none
-
-        state, cmd, DoNothing
+        state, Cmd.ofMsg (SaveCollection entryList), DoNothing
     | SaveCollection import ->
         let state =
             setl StateLenses.loadInProgress false state
 
-        let intent =
-            match import with
-            | Some import -> SaveEntries import
-            | None -> DoNothing
-
-        state, Cmd.none, intent
+        state, Cmd.none, SaveEntries import

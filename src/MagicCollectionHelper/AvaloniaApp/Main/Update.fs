@@ -18,8 +18,10 @@ let processCollectionIntent intent (state, cmd) =
     | Collection.Intent.SaveEntries entries ->
         let state =
             state
-            |> setl StateLenses.dsEntries entries
             |> setl StateLenses.dsEntriesState Ready
+            |> match entries with
+               | Some entries -> setl StateLenses.dsEntries entries
+               | None -> id
 
         let cmd =
             Cmd.batch [

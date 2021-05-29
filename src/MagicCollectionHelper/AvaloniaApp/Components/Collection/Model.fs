@@ -21,7 +21,7 @@ type Msg =
 type Intent =
     | DoNothing
     | ChangeEntryState of LoadingState
-    | SaveEntries of DeckStatsCardEntry list
+    | SaveEntries of DeckStatsCardEntry list option
 
 type Dispatch = Msg -> unit
 
