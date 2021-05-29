@@ -92,7 +92,7 @@ module Inventory =
 
     let newEntryForCard (card: Card) : CardEntry = { amount = 1u; card = card }
 
-    let take (infoMap: CardInfoMap) locations (entries: CardEntry list) =
+    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: CardEntry list) =
         // We have to sort locations first
         let locations = CustomLocation.mapToSortedList locations
 
@@ -121,16 +121,20 @@ module Inventory =
                     [
                       // Language
                       match entryWithInfo.entry.card.language.Value with
-                      | "en" -> 0
-                      | "de" -> 1
-                      | _ -> 2
+                      | "en" -> "0"
+                      | "de" -> "1"
+                      | _ -> "2"
                       // Foil
                       if entryWithInfo.entry.card.foil then
-                          0
+                          "0"
                       else
-                          1
+                          "1"
+                      // Set
+                      (Map.find entryWithInfo.entry.card.set setData)
+                          .date
+                      entryWithInfo.entry.card.number.Value
                       // Random
-                      random.Next(0, 10000) ])
+                      random.Next(0, 10000) |> string ])
 
         for entryWithInfo in entriesWithInfo do
             let cardWithInfo =
@@ -154,5 +158,5 @@ module Inventory =
             locCardMap
 
     // Because this process can take some time, we provide an async version
-    let takeAsync infoMap locations entries =
-        async { return take infoMap locations entries }
+    let takeAsync setData infoMap locations entries =
+        async { return take setData infoMap locations entries }

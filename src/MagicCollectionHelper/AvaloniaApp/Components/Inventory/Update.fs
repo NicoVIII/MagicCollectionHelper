@@ -9,14 +9,14 @@ open MagicCollectionHelper.Core.Types
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 
-let perform (infoMap: CardInfoMap) (entries: CardEntry list) (msg: Msg) (state: State) =
+let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry list) (msg: Msg) (state: State) =
     match msg with
     | TakeInventory ->
         let state =
             setl StateLenses.loadInProgress true state
 
         let fnc () =
-            Inventory.takeAsync infoMap state.locations entries
+            Inventory.takeAsync setData infoMap state.locations entries
 
         let cmd = Cmd.OfAsync.perform fnc () SaveInventory
 
