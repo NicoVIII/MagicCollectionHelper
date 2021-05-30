@@ -13,7 +13,7 @@ open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
 
-let topBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
+let actionBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     ActionButtonBar.create [
         ActionButton.create
             { text = "Take inventory"
@@ -131,22 +131,33 @@ let locationItem setData (location: InventoryLocation) entries =
 
     let entries = sortEntries setData location entries
 
-    Expander.create [
-        Expander.header (
+    TabItem.create [
+        TabItem.header (
             match location with
             | Custom location -> $"{location.name} ({amount})"
             | Fallback -> $"Leftover ({amount})"
         )
-        Expander.content (
+        TabItem.content (
             Border.create [
-                Border.padding (20., 10.)
+                Border.borderThickness (1., 0., 0., 0.)
+                Border.borderBrush Config.lineColor
                 Border.child (
-                    StackPanel.create [
-                        StackPanel.spacing 4.
-                        StackPanel.children [
-                            for entry in entries do
-                                cardItem entry
-                        ]
+                    ScrollViewer.create [
+                        ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
+                        ScrollViewer.content (
+                            Border.create [
+                                Border.padding (20., 10.)
+                                Border.child (
+                                    StackPanel.create [
+                                        StackPanel.spacing 4.
+                                        StackPanel.children [
+                                            for entry in entries do
+                                                cardItem entry
+                                        ]
+                                    ]
+                                )
+                            ]
+                        )
                     ]
                 )
             ]
@@ -192,8 +203,10 @@ let content (infoMap: CardInfoMap) setData (state: State) (dispatch: Dispatch) :
 
                     (location, cards))
 
-        StackPanel.create [
-            StackPanel.children [
+        TabControl.create [
+            TabControl.verticalScrollBarVisibility ScrollBarVisibility.Auto
+            TabControl.tabStripPlacement Dock.Left
+            TabControl.viewItems [
                 for (location, cards) in locations do
                     locationItem setData location cards
             ]
@@ -203,7 +216,7 @@ let content (infoMap: CardInfoMap) setData (state: State) (dispatch: Dispatch) :
 let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
-            topBar infoMap entries state dispatch
+            actionBar infoMap entries state dispatch
             (*Button.create [
                 Button.dock Dock.Top
                 Button.content (
@@ -222,10 +235,7 @@ let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: Stat
                     Always
                 )
             ]*)
-            ScrollViewer.create [
-                ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-                ScrollViewer.content (content infoMap setData state dispatch)
-            ]
+            content infoMap setData state dispatch
         ]
     ]
     :> IView
