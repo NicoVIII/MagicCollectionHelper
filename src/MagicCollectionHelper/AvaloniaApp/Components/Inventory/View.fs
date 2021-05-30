@@ -2,7 +2,6 @@ module MagicCollectionHelper.AvaloniaApp.Components.Inventory.View
 
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
-open Avalonia.FuncUI.Components
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open System

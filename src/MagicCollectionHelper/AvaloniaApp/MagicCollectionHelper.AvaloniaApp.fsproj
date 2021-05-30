@@ -11,10 +11,6 @@
     <Compile Include="Config.fs" />
     <Compile Include="Icons.fs" />
     <Compile Include="ViewHelper.fs" />
-    <Compile Include="Types.fs" />
-    <Compile Include="Types.Generated.fs">
-      <MyriadFile>Types.fs</MyriadFile>
-    </Compile>
 
     <!-- Elements -->
     <Compile Include="Elements/Elements.fs" />
@@ -37,15 +33,29 @@
     <Compile Include="Components/Inventory/View.fs" />
     <Compile Include="Components/Inventory/Update.fs" />
 
-    <!-- Main -->
-    <Compile Include="Main/Model.fs" />
-    <Compile Include="Main/Model.Generated.fs">
-      <MyriadFile>Main/Model.fs</MyriadFile>
+    <!-- Mainview Loading -->
+    <Compile Include="Main/Loading/Model.fs" />
+    <Compile Include="Main/Loading/Model.Generated.fs">
+      <MyriadFile>Main/Loading/Model.fs</MyriadFile>
     </Compile>
-    <Compile Include="Main/Model.Lenses.fs" />
-    <Compile Include="Main/ViewComponents/*.fs" />
-    <Compile Include="Main/View.fs" />
-    <Compile Include="Main/Update.fs" />
+    <Compile Include="Main/Loading/ViewComponents/*.fs" />
+    <Compile Include="Main/Loading/View.fs" />
+    <Compile Include="Main/Loading/Update.fs" />
+
+    <!-- Mainview Ready -->
+    <Compile Include="Main/Ready/Model.fs" />
+    <Compile Include="Main/Ready/Model.Generated.fs">
+      <MyriadFile>Main/Ready/Model.fs</MyriadFile>
+    </Compile>
+    <Compile Include="Main/Ready/Model.Lenses.fs" />
+    <Compile Include="Main/Ready/ViewComponents/*.fs" />
+    <Compile Include="Main/Ready/View.fs" />
+    <Compile Include="Main/Ready/Update.fs" />
+
+    <Compile Include="Main.fs" />
+    <Compile Include="Main.Generated.fs">
+      <MyriadFile>Main.fs</MyriadFile>
+    </Compile>
 
     <Compile Include="Program.fs" />
   </ItemGroup>

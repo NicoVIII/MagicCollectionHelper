@@ -1,7 +1,6 @@
 namespace MagicCollectionHelper.AvaloniaApp.Components.Inventory
 
 open Myriad.Plugins
-open System
 
 type LocationCardMap =
     Map<MagicCollectionHelper.Core.Types.InventoryLocation, MagicCollectionHelper.Core.Types.CardEntry list>

@@ -4,8 +4,11 @@ namespace = "MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated"
 ["components-inventory"]
 namespace = "MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated"
 
+["main.loading"]
+namespace = "MagicCollectionHelper.AvaloniaApp.Main.Loading.Generated"
+
+["main.ready"]
+namespace = "MagicCollectionHelper.AvaloniaApp.Main.Ready.Generated"
+
 ["main"]
 namespace = "MagicCollectionHelper.AvaloniaApp.Main.Generated"
-
-["root"]
-namespace = "MagicCollectionHelper.AvaloniaApp.Generated"

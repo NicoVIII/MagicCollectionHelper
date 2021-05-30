@@ -9,10 +9,6 @@ open Avalonia.FuncUI.Elmish
 open Avalonia.FuncUI.Components.Hosts
 open Avalonia.Input
 
-open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
-
-module CollectionMsg = Msg
-
 open MagicCollectionHelper.AvaloniaApp.Main
 open MagicCollectionHelper.AvaloniaApp.Main.Generated
 
@@ -22,8 +18,8 @@ type MainWindow() as this =
 #if DEBUG
     let msgToString msg =
         match msg with
-        | CollectionMsg cMsg -> $"{Msg.toString msg}: {CollectionMsg.toString cMsg}"
-        | msg -> Msg.toString msg
+        | LoadingMsg subMsg -> $"{Generated.Msg.toString msg}: {Loading.Generated.Msg.toString subMsg}"
+        | ReadyMsg subMsg -> $"{Generated.Msg.toString msg}: {Ready.Generated.Msg.toString subMsg}"
 #endif
 
     do
@@ -38,7 +34,7 @@ type MainWindow() as this =
         |> ignore
 #endif
 
-        Program.mkProgram Main.Model.init Main.Update.perform Main.View.render
+        Program.mkProgram Model.init Update.perform View.render
         |> Program.withHost this
 #if DEBUG
         |> Program.withTrace (fun msg _ -> printfn "Got message: %s" (msgToString msg))

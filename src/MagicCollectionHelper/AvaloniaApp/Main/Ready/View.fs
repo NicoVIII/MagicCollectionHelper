@@ -1,16 +1,15 @@
-module MagicCollectionHelper.AvaloniaApp.Main.View
+module MagicCollectionHelper.AvaloniaApp.Main.Ready.View
 
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Layout
-open Avalonia.Media
 
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp
-open MagicCollectionHelper.AvaloniaApp.Main.ViewComponents
+open MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 let sideBarButton currentViewMode (label: string) viewMode (dispatch: Dispatch) =
     let isActive = currentViewMode = viewMode
@@ -60,7 +59,6 @@ let content (state: State) (dispatch: Dispatch) : IView =
     let cardInfo = getl StateLenses.cardInfo state
 
     match getl StateLenses.viewMode state with
-    | Loading -> LoadingView.render state dispatch
     | Collection ->
         let dsEntries = getl StateLenses.dsEntries state
         let entries = getl StateLenses.entries state
@@ -93,10 +91,7 @@ let leftBottomBar (state: State) (dispatch: Dispatch) : IView =
 let render (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
-            // Sidebar not in loading view
-            match getl StateLenses.viewMode state with
-            | Loading -> ()
-            | _ -> sideBar state dispatch
+            sideBar state dispatch
             content state dispatch
         ]
     ]

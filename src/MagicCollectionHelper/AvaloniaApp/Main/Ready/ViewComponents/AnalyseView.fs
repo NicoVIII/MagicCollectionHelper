@@ -1,17 +1,16 @@
-namespace MagicCollectionHelper.AvaloniaApp.Main.ViewComponents
+namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
-open Avalonia.Layout
 open Avalonia.Media
 
 open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Elements
-open MagicCollectionHelper.AvaloniaApp.Main
+open MagicCollectionHelper.AvaloniaApp.Main.Ready
 
 module AnalyseView =
     let topBar (state: State) (dispatch: Dispatch) : IView =

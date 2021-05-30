@@ -1,15 +1,12 @@
 namespace MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 
 open Avalonia.Controls
-open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Layout
 open Avalonia.Media
-open Microsoft.FSharp.Reflection
 
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
-open MagicCollectionHelper.AvaloniaApp.ViewHelper
 open MagicCollectionHelper.Core.Types
 
 module LocationEdit =

@@ -3,7 +3,6 @@ namespace MagicCollectionHelper.AvaloniaApp
 open Avalonia.Controls
 open Avalonia.Controls.Shapes
 open Avalonia.FuncUI.DSL
-open Avalonia.Media
 
 module Icons =
     let createWithClasses (classes: seq<string>) (data: string) =

@@ -1,16 +1,13 @@
-namespace MagicCollectionHelper.AvaloniaApp.Main.ViewComponents
+namespace MagicCollectionHelper.AvaloniaApp.Main.Loading
 
 open Avalonia.Controls
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Layout
 
-open MagicCollectionHelper.Core.Types
-
 open MagicCollectionHelper.AvaloniaApp
-open MagicCollectionHelper.AvaloniaApp.Main
 
-module LoadingView =
+module View =
     let loadingLine (icon: IView<Canvas>) text =
         StackPanel.create [
             StackPanel.orientation Orientation.Horizontal
@@ -25,42 +22,34 @@ module LoadingView =
         ]
 
     let loadSetData state =
-        let loadingState = getl StateLenses.setDataState state
-
-        match loadingState with
+        match state.setData with
         | Prepare -> Icons.sync, "Preparing set data import..."
         | Download -> Icons.sync, "Downloading set data..."
         | Import -> Icons.sync, "Importing set data..."
-        | Ready -> Icons.check, "Set data ready!"
+        | Ready _ -> Icons.check, "Set data ready!"
         ||> loadingLine
 
     let loadCardInfo state =
-        let loadingState = getl StateLenses.cardInfoState state
-
-        match loadingState with
+        match state.cardInfo with
         | Prepare -> Icons.sync, "Preparing card info import..."
         | Download -> Icons.sync, "Downloading card info..."
         | Import -> Icons.sync, "Importing card info..."
-        | Ready -> Icons.check, "Card info ready!"
+        | Ready _ -> Icons.check, "Card info ready!"
         ||> loadingLine
 
     let loadCollection state =
-        let loadingState = getl StateLenses.dsEntriesState state
-
-        match loadingState with
+        match state.dsEntries with
         | Prepare -> Icons.sync, "Preparing collection import..."
         | Import -> Icons.sync, "Importing collection..."
-        | Ready -> Icons.check, "Collection imported!"
+        | Ready _ -> Icons.check, "Collection imported!"
         | Download -> failwith "Invalid state"
         ||> loadingLine
 
     let processEntries state =
-        let loadingState = getl StateLenses.entriesState state
-
-        match loadingState with
+        match state.entries with
         | Prepare -> Icons.reloadAlert, "Waiting..."
         | Import -> Icons.reload, "Process collection..."
-        | Ready -> Icons.check, "Collection ready!"
+        | Ready _ -> Icons.check, "Collection ready!"
         | Download -> failwith "Invalid state"
         ||> loadingLine
 

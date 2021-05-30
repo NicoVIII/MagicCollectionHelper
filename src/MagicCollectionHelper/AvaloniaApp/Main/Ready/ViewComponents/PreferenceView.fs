@@ -1,11 +1,10 @@
-namespace MagicCollectionHelper.AvaloniaApp.Main.ViewComponents
+namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 open Avalonia.Controls
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
-open Avalonia.Layout
 
-open MagicCollectionHelper.AvaloniaApp.Main
+open MagicCollectionHelper.AvaloniaApp.Main.Ready
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 open MagicCollectionHelper.Core.Types
 
