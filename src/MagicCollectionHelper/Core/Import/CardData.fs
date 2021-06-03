@@ -73,7 +73,7 @@ module CardData =
                 // There are "dead" entries in the json from scryfall. We don't want them
                 | nr when nr.EndsWith "†" -> None
                 | "" -> None
-                | nr -> nr |> CollectorNumber |> Some
+                | nr -> nr |> CollectorNumber.fromString |> Some
 
             match collectorNumber with
             | Some collectorNumber ->

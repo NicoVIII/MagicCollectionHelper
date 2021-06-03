@@ -23,6 +23,11 @@ type CollectorNumber =
     static member unwrap(CollectorNumber x) = x
     member this.Value = CollectorNumber.unwrap this
 
+module CollectorNumber =
+    let fromString (s: string) =
+        // We remove trailing zeros from the string
+        s.TrimStart('0') |> CollectorNumber
+
 // TODO: Provide additional data for set and Language through external file?
 // TODO: So a user could add it, if it is missing in the application itself
 /// The identifier of a magic set
