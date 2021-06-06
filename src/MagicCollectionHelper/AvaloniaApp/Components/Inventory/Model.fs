@@ -5,43 +5,39 @@ open Myriad.Plugins
 type LocationCardMap =
     Map<MagicCollectionHelper.Core.Types.InventoryLocation, MagicCollectionHelper.Core.Types.CardEntry list>
 
-[<Generator.Lenses("components-inventory", "MagicCollectionHelper.Core.Types.Lens")>]
+type ViewMode =
+    | Empty
+    | Edit
+    | Loading
+    | Location of MagicCollectionHelper.Core.Types.InventoryLocation option
+
+[<Generator.Lenses("components.inventory", "MagicCollectionHelper.Core.Types.Lens")>]
 type State =
-    { editLocations: bool
+    { filteredInventory: (MagicCollectionHelper.Core.Types.InventoryLocation * MagicCollectionHelper.Core.Types.CardEntryWithInfo list) list
       inventory: LocationCardMap
-      loadInProgress: bool
-      locations: Map<MagicCollectionHelper.Core.Types.CustomLocationName, MagicCollectionHelper.Core.Types.CustomLocation> }
+      locations: Map<MagicCollectionHelper.Core.Types.CustomLocationName, MagicCollectionHelper.Core.Types.CustomLocation>
+      search: string
+      viewMode: ViewMode }
 
 open MagicCollectionHelper.Core.Types
 
+[<Generator.DuCases("components.inventory")>]
 type Msg =
+    | AsyncError of exn
     | TakeInventory
     | SaveInventory of LocationCardMap
     | OpenLocationEdit
     | CloseLocationEdit
+    | ChangeSearchString of string
+    | Search
+    | FilterInventory of LocationCardMap
+    | ChangeLocation of InventoryLocation
     | UpdateLocationRules of CustomLocationName * (Rules -> Rules)
 
 type Dispatch = Msg -> unit
 
 module Model =
     open MagicCollectionHelper.Core
-
-    let typeSortDefault =
-        [ "Land"
-          "Creature"
-          "Sorcery"
-          "Instant"
-          "Enchantment"
-          "Artifact"
-          "Planeswalker" ]
-        |> ByTypeContains
-
-    let raritySortDefault =
-        [ [ Common ]
-          [ Uncommon ]
-          [ Rare; Mythic; Special; Bonus ] ]
-        |> List.map Set.ofList
-        |> ByRarity
 
     let init () : State =
         // Test Locations
@@ -55,7 +51,8 @@ module Model =
             |> List.map (fun location -> (location.name, location))
             |> Map.ofList
 
-        { editLocations = false
-          inventory = Map.empty
-          loadInProgress = false
-          locations = locations }
+        { inventory = Map.empty
+          filteredInventory = []
+          locations = locations
+          search = ""
+          viewMode = Empty }

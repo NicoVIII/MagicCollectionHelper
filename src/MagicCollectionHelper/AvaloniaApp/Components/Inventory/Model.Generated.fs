@@ -6,10 +6,11 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Inventory
-    let editLocations =
+    let filteredInventory =
         MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.editLocations),
-            (fun (x: State) (value: bool) -> { x with editLocations = value })
+            (fun (x: State) -> x.filteredInventory),
+            (fun (x: State) (value: (MagicCollectionHelper.Core.Types.InventoryLocation * MagicCollectionHelper.Core.Types.CardEntryWithInfo list) list) ->
+                { x with filteredInventory = value })
         )
 
     let inventory =
@@ -18,15 +19,108 @@ module StateLenses =
             (fun (x: State) (value: LocationCardMap) -> { x with inventory = value })
         )
 
-    let loadInProgress =
-        MagicCollectionHelper.Core.Types.Lens(
-            (fun (x: State) -> x.loadInProgress),
-            (fun (x: State) (value: bool) -> { x with loadInProgress = value })
-        )
-
     let locations =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.locations),
             (fun (x: State) (value: Map<MagicCollectionHelper.Core.Types.CustomLocationName, MagicCollectionHelper.Core.Types.CustomLocation>) ->
                 { x with locations = value })
         )
+
+    let search =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.search),
+            (fun (x: State) (value: string) -> { x with search = value })
+        )
+
+    let viewMode =
+        MagicCollectionHelper.Core.Types.Lens(
+            (fun (x: State) -> x.viewMode),
+            (fun (x: State) (value: ViewMode) -> { x with viewMode = value })
+        )
+namespace rec MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
+
+module Msg =
+    open MagicCollectionHelper.AvaloniaApp.Components.Inventory
+    let toString (x: Msg) =
+        match x with
+        | AsyncError _ -> "AsyncError"
+        | TakeInventory -> "TakeInventory"
+        | SaveInventory _ -> "SaveInventory"
+        | OpenLocationEdit -> "OpenLocationEdit"
+        | CloseLocationEdit -> "CloseLocationEdit"
+        | ChangeSearchString _ -> "ChangeSearchString"
+        | Search -> "Search"
+        | FilterInventory _ -> "FilterInventory"
+        | ChangeLocation _ -> "ChangeLocation"
+        | UpdateLocationRules _ -> "UpdateLocationRules"
+
+    let fromString (x: string) =
+        match x with
+        | "TakeInventory" -> Some TakeInventory
+        | "OpenLocationEdit" -> Some OpenLocationEdit
+        | "CloseLocationEdit" -> Some CloseLocationEdit
+        | "Search" -> Some Search
+        | _ -> None
+
+    let toTag (x: Msg) =
+        match x with
+        | AsyncError _ -> 0
+        | TakeInventory -> 1
+        | SaveInventory _ -> 2
+        | OpenLocationEdit -> 3
+        | CloseLocationEdit -> 4
+        | ChangeSearchString _ -> 5
+        | Search -> 6
+        | FilterInventory _ -> 7
+        | ChangeLocation _ -> 8
+        | UpdateLocationRules _ -> 9
+
+    let isAsyncError (x: Msg) =
+        match x with
+        | AsyncError _ -> true
+        | _ -> false
+
+    let isTakeInventory (x: Msg) =
+        match x with
+        | TakeInventory -> true
+        | _ -> false
+
+    let isSaveInventory (x: Msg) =
+        match x with
+        | SaveInventory _ -> true
+        | _ -> false
+
+    let isOpenLocationEdit (x: Msg) =
+        match x with
+        | OpenLocationEdit -> true
+        | _ -> false
+
+    let isCloseLocationEdit (x: Msg) =
+        match x with
+        | CloseLocationEdit -> true
+        | _ -> false
+
+    let isChangeSearchString (x: Msg) =
+        match x with
+        | ChangeSearchString _ -> true
+        | _ -> false
+
+    let isSearch (x: Msg) =
+        match x with
+        | Search -> true
+        | _ -> false
+
+    let isFilterInventory (x: Msg) =
+        match x with
+        | FilterInventory _ -> true
+        | _ -> false
+
+    let isChangeLocation (x: Msg) =
+        match x with
+        | ChangeLocation _ -> true
+        | _ -> false
+
+    let isUpdateLocationRules (x: Msg) =
+        match x with
+        | UpdateLocationRules _ -> true
+        | _ -> false

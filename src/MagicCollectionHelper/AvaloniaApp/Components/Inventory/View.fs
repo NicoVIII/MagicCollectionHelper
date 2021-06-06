@@ -4,6 +4,7 @@ open Avalonia.Controls
 open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
+open Avalonia.Input
 open System
 
 open MagicCollectionHelper.Core.Types
@@ -12,6 +13,7 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
+open MagicCollectionHelper.Core.Types.Generated
 
 let actionBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     ActionButtonBar.create [
@@ -21,7 +23,7 @@ let actionBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (d
                   (not (
                       infoMap.IsEmpty
                       || entries.IsEmpty
-                      || state.loadInProgress
+                      || state.viewMode = Loading
                   ))
               action = (fun _ -> TakeInventory |> dispatch) }
     ]
@@ -125,49 +127,72 @@ let sortEntries setData location (entries: CardEntryWithInfo list) =
 
     List.sortBy sortBy entries
 
-let locationItem setData (location: InventoryLocation) entries =
-    let amount =
-        List.sumBy (fun (e: CardEntryWithInfo) -> e.entry.amount) entries
-
-    let entries = sortEntries setData location entries
-
-    TabItem.create [
-        TabItem.header (
-            match location with
-            | Custom location -> $"{location.name} ({amount})"
-            | Fallback -> $"Leftover ({amount})"
-        )
-        TabItem.content (
+let renderEntryList entries =
+    ScrollViewer.create [
+        ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
+        ScrollViewer.content (
             Border.create [
-                Border.borderThickness (1., 0., 0., 0.)
-                Border.borderBrush Config.lineColor
+                Border.padding (20., 10.)
                 Border.child (
-                    ScrollViewer.create [
-                        ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
-                        ScrollViewer.content (
-                            Border.create [
-                                Border.padding (20., 10.)
-                                Border.child (
-                                    StackPanel.create [
-                                        StackPanel.spacing 4.
-                                        StackPanel.children [
-                                            for entry in entries do
-                                                cardItem entry
-                                        ]
-                                    ]
-                                )
-                            ]
-                        )
+                    StackPanel.create [
+                        StackPanel.spacing 4.
+                        StackPanel.children [
+                            for entry in entries do
+                                cardItem entry
+                        ]
                     ]
                 )
             ]
         )
     ]
 
-let content (infoMap: CardInfoMap) setData (state: State) (dispatch: Dispatch) : IView =
-    match state.editLocations, state.loadInProgress with
-    | true, _ -> LocationEdit.render state dispatch
-    | false, true ->
+let searchBar state dispatch =
+    TextBox.create [
+        TextBox.dock Dock.Top
+        TextBox.text state.search
+        TextBox.onTextChanged (
+            (fun text ->
+                if state.search <> text then
+                    ChangeSearchString text |> dispatch),
+            OnChangeOf state.search
+        )
+        TextBox.onKeyUp
+            (fun args ->
+                if args.Key = Key.Enter then
+                    Search |> dispatch)
+    ]
+
+let locationItem setData state dispatch (location: InventoryLocation) entries =
+    let entries = sortEntries setData location entries
+
+    Border.create [
+        Border.borderThickness (1., 0., 0., 0.)
+        Border.borderBrush Config.lineColor
+        Border.child (
+            DockPanel.create [
+                DockPanel.children [
+                    searchBar state dispatch
+                    renderEntryList entries
+                ]
+            ]
+        )
+    ]
+    :> IView
+
+let content setData (state: State) (dispatch: Dispatch) : IView =
+    match state.viewMode with
+    | Empty ->
+        Border.create [
+            Border.padding 10.
+            Border.child (
+                TextBlock.create [
+                    TextBlock.text "Press 'Take inventory' to start processing."
+                ]
+            )
+        ]
+        :> IView
+    | Edit -> LocationEdit.render state dispatch
+    | Loading ->
         Border.create [
             Border.padding 10.
             Border.child (
@@ -177,65 +202,36 @@ let content (infoMap: CardInfoMap) setData (state: State) (dispatch: Dispatch) :
             )
         ]
         :> IView
-    | false, false ->
-        let locations =
-            state.inventory
-            |> Map.toList
-            |> List.sortBy
-                (fun (location, _) ->
-                    // We sort like our locations are sorted
-                    Map.tryPick
-                        (fun _ l ->
-                            if Custom l = location then
-                                Some l.position
-                            else
-                                None)
-                        state.locations
-                    |> Option.defaultValue 999u)
-            |> List.map
-                (fun (location, entries) ->
-                    let cards =
-                        entries
-                        |> List.choose
-                            (fun entry ->
-                                Map.tryFind (entry.card.set, entry.card.number) infoMap
-                                |> Option.map (CardEntryWithInfo.create entry))
+    | Location location ->
+        let locations = state.filteredInventory
+        let locationMap = locations |> Map.ofList
 
-                    (location, cards))
+        let nameFromLocation map (location: InventoryLocation) =
+            let amount =
+                Map.find location map
+                |> List.sumBy (fun (e: CardEntryWithInfo) -> e.entry.amount)
 
-        TabControl.create [
-            TabControl.verticalScrollBarVisibility ScrollBarVisibility.Auto
-            TabControl.tabStripPlacement Dock.Left
-            TabControl.viewItems [
-                for (location, cards) in locations do
-                    locationItem setData location cards
-            ]
-        ]
-        :> IView
+            match location with
+            | Custom location -> $"{location.name} ({amount})"
+            | Fallback -> $"Leftover ({amount})"
+
+        let current =
+            location
+            |> Option.defaultValue (locations |> List.head |> fst)
+
+        TabView.renderFromMap
+            (nameFromLocation locationMap)
+            (locationItem setData state dispatch)
+            (ChangeLocation >> dispatch)
+            TabView.Left
+            locations
+            current
 
 let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             actionBar infoMap entries state dispatch
-            (*Button.create [
-                Button.dock Dock.Top
-                Button.content (
-                    if state.editLocations then
-                        "Close"
-                    else
-                        "Edit"
-                )
-                Button.onClick (
-                    (fun _ ->
-                        (if state.editLocations then
-                             CloseLocationEdit
-                         else
-                             OpenLocationEdit)
-                        |> dispatch),
-                    Always
-                )
-            ]*)
-            content infoMap setData state dispatch
+            content setData state dispatch
         ]
     ]
     :> IView

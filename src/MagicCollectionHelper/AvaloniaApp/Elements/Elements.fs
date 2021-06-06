@@ -1,6 +1,7 @@
 namespace MagicCollectionHelper.AvaloniaApp.Elements
 
 open Avalonia.Controls
+open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Layout
@@ -36,3 +37,79 @@ module ActionButtonBar =
             )
         ]
         :> IView
+
+module TabView =
+    type TabPlacement =
+        | Top
+        | Left
+        | Right
+        | Bottom
+
+    let render renderTab dispatchMsg placement tabs content current =
+        let tabContainer =
+            let dock =
+                match placement with
+                | Top -> Dock.Top
+                | Left -> Dock.Left
+                | Right -> Dock.Right
+                | Bottom -> Dock.Bottom
+
+            let orientation =
+                match placement with
+                | Left
+                | Right -> Orientation.Vertical
+                | Top
+                | Bottom -> Orientation.Horizontal
+
+            ScrollViewer.create [
+                ScrollViewer.dock dock
+                match placement with
+                | Left
+                | Right -> ScrollViewer.verticalScrollBarVisibility ScrollBarVisibility.Hidden
+                | Top
+                | Bottom -> ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Hidden
+                ScrollViewer.content (
+                    StackPanel.create [
+                        StackPanel.orientation orientation
+                        StackPanel.children [
+                            for tab in tabs do
+                                let tabText : string = renderTab tab
+
+                                ToggleButton.create [
+                                    ToggleButton.content tabText
+                                    ToggleButton.isChecked (tab = current |> Some)
+                                    ToggleButton.onClick ((fun _ -> tab |> dispatchMsg), OnChangeOf current)
+                                ]
+                        ]
+                    ]
+                )
+            ]
+            :> IView
+
+        DockPanel.create [
+            DockPanel.children [
+                tabContainer
+                content
+            ]
+        ]
+        :> IView
+
+    /// Does render a tab view from a map. It has to be provided as list because
+    /// order matters in this context
+    let renderFromMap renderTab renderTabData dispatchMsg placement list current =
+        let tabs, content =
+            List.foldBack
+                (fun (tab, tabData) (tabs, content) ->
+                    let tabs = tab :: tabs
+
+                    let content =
+                        if current = tab then
+                            renderTabData tab tabData |> Some
+                        else
+                            content
+
+                    tabs, content)
+                list
+                ([], None)
+
+        render renderTab dispatchMsg placement tabs content.Value current

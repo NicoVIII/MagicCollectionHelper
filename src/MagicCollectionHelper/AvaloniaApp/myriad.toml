@@ -1,7 +1,7 @@
 ["components-collection"]
 namespace = "MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated"
 
-["components-inventory"]
+["components.inventory"]
 namespace = "MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated"
 
 ["main.loading"]

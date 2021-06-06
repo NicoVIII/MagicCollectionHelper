@@ -10,7 +10,7 @@ open Avalonia.FuncUI.Components.Hosts
 open Avalonia.Input
 
 open MagicCollectionHelper.AvaloniaApp.Main
-open MagicCollectionHelper.AvaloniaApp.Main.Generated
+open MagicCollectionHelper.AvaloniaApp.Components
 
 type MainWindow() as this =
     inherit HostWindow()
@@ -18,8 +18,14 @@ type MainWindow() as this =
 #if DEBUG
     let msgToString msg =
         match msg with
-        | LoadingMsg subMsg -> $"{Generated.Msg.toString msg}: {Loading.Generated.Msg.toString subMsg}"
-        | ReadyMsg subMsg -> $"{Generated.Msg.toString msg}: {Ready.Generated.Msg.toString subMsg}"
+        | LoadingMsg subMsg -> $"{Generated.Msg.toString msg}-{Loading.Generated.Msg.toString subMsg}"
+        | ReadyMsg subMsg ->
+            let subSubMsgString =
+                match subMsg with
+                | Ready.Msg.InventoryMsg subSubMsg -> $"{Inventory.Generated.Msg.toString subSubMsg}"
+                | _ -> "???"
+
+            $"{Generated.Msg.toString msg}-{Ready.Generated.Msg.toString subMsg}-{subSubMsgString}"
 #endif
 
     do

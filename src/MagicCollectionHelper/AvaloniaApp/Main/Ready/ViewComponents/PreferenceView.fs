@@ -31,11 +31,12 @@ module PreferenceView =
                                     NumericUpDown.value (prefs.missingPercent * 100.)
                                     NumericUpDown.onValueChanged (
                                         (fun value ->
-                                            value / 100.
-                                            |> setlr PrefsLenses.missingPercent prefs
-                                            |> ChangePrefs
-                                            |> dispatch),
-                                        Always
+                                            if value <> prefs.missingPercent * 100. then
+                                                value / 100.
+                                                |> setlr PrefsLenses.missingPercent prefs
+                                                |> ChangePrefs
+                                                |> dispatch),
+                                        OnChangeOf prefs
                                     )
                                 ]
                             ]
@@ -48,14 +49,14 @@ module PreferenceView =
                                     setl PrefsLenses.setWithFoils true prefs
                                     |> ChangePrefs
                                     |> dispatch),
-                                Always
+                                OnChangeOf prefs
                             )
                             CheckBox.onUnchecked (
                                 (fun _ ->
                                     setl PrefsLenses.setWithFoils false prefs
                                     |> ChangePrefs
                                     |> dispatch),
-                                Always
+                                OnChangeOf prefs
                             )
                         ]
                         CheckBox.create [
@@ -66,14 +67,14 @@ module PreferenceView =
                                     setl PrefsLenses.dozenalize true prefs
                                     |> ChangePrefs
                                     |> dispatch),
-                                Always
+                                OnChangeOf prefs
                             )
                             CheckBox.onUnchecked (
                                 (fun _ ->
                                     setl PrefsLenses.dozenalize false prefs
                                     |> ChangePrefs
                                     |> dispatch),
-                                Always
+                                OnChangeOf prefs
                             )
                         ]
                     ]
