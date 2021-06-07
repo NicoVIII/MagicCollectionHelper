@@ -82,7 +82,8 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
                                     let info =
                                         Map.find (entry.card.set, entry.card.number) infoMap
 
-                                    info.name.Contains state.search))
+                                    (info.name.ToLower())
+                                        .Contains(state.search.ToLower())))
             }
 
         state, Cmd.OfAsync.either fnc () FilterInventory AsyncError
