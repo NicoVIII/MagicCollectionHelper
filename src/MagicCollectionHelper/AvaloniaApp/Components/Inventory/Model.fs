@@ -29,7 +29,6 @@ type Msg =
     | OpenLocationEdit
     | CloseLocationEdit
     | ChangeSearchString of string
-    | Search
     | FilterInventory of LocationCardMap
     | ChangeLocation of InventoryLocation
     | UpdateLocationRules of CustomLocationName * (Rules -> Rules)

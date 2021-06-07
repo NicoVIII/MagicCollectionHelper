@@ -69,24 +69,6 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
         let state = state |> setl StateLenses.search term
 
         state, Cmd.none
-    | Search ->
-        let fnc () =
-            async {
-                return
-                    state.inventory
-                    |> Map.map
-                        (fun _ entries ->
-                            entries
-                            |> List.filter
-                                (fun entry ->
-                                    let info =
-                                        Map.find (entry.card.set, entry.card.number) infoMap
-
-                                    (info.name.ToLower())
-                                        .Contains(state.search.ToLower())))
-            }
-
-        state, Cmd.OfAsync.either fnc () FilterInventory AsyncError
     | ChangeLocation location ->
         let state =
             state

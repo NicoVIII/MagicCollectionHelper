@@ -12,3 +12,6 @@ module ViewHelper =
             TextBlock.text label
             TextBlock.verticalAlignment VerticalAlignment.Center
         ]
+
+module String =
+    let iContains (s1: string) (s2: string) = (s1.ToLower()).Contains(s2.ToLower())

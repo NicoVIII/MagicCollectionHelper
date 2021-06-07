@@ -49,7 +49,6 @@ module Msg =
         | OpenLocationEdit -> "OpenLocationEdit"
         | CloseLocationEdit -> "CloseLocationEdit"
         | ChangeSearchString _ -> "ChangeSearchString"
-        | Search -> "Search"
         | FilterInventory _ -> "FilterInventory"
         | ChangeLocation _ -> "ChangeLocation"
         | UpdateLocationRules _ -> "UpdateLocationRules"
@@ -59,7 +58,6 @@ module Msg =
         | "TakeInventory" -> Some TakeInventory
         | "OpenLocationEdit" -> Some OpenLocationEdit
         | "CloseLocationEdit" -> Some CloseLocationEdit
-        | "Search" -> Some Search
         | _ -> None
 
     let toTag (x: Msg) =
@@ -70,10 +68,9 @@ module Msg =
         | OpenLocationEdit -> 3
         | CloseLocationEdit -> 4
         | ChangeSearchString _ -> 5
-        | Search -> 6
-        | FilterInventory _ -> 7
-        | ChangeLocation _ -> 8
-        | UpdateLocationRules _ -> 9
+        | FilterInventory _ -> 6
+        | ChangeLocation _ -> 7
+        | UpdateLocationRules _ -> 8
 
     let isAsyncError (x: Msg) =
         match x with
@@ -103,11 +100,6 @@ module Msg =
     let isChangeSearchString (x: Msg) =
         match x with
         | ChangeSearchString _ -> true
-        | _ -> false
-
-    let isSearch (x: Msg) =
-        match x with
-        | Search -> true
         | _ -> false
 
     let isFilterInventory (x: Msg) =

@@ -4,7 +4,7 @@ open Avalonia.Controls
 open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
-open Avalonia.Input
+open Avalonia.Media
 open System
 
 open MagicCollectionHelper.Core.Types
@@ -13,7 +13,6 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
-open MagicCollectionHelper.Core.Types.Generated
 
 let actionBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     ActionButtonBar.create [
@@ -33,7 +32,7 @@ type LocCards =
       amount: uint
       cards: string seq }
 
-let cardItem (entryWithInfo: CardEntryWithInfo) =
+let cardItem (state: State) (entryWithInfo: CardEntryWithInfo) =
     let entry = entryWithInfo.entry
     let info = entryWithInfo.info
     let set = entry.card.set
@@ -42,8 +41,15 @@ let cardItem (entryWithInfo: CardEntryWithInfo) =
 
     let star = if entry.card.foil then "★" else " "
 
+    let brush =
+        if String.iContains name state.search then
+            Brushes.White
+        else
+            Brushes.DarkGray
+
     CheckBox.create [
         CheckBox.fontFamily Config.monospaceFont
+        CheckBox.foreground brush
         CheckBox.content (
             $"{star}[%5s{set.Value}-%s{number.Value.PadLeft(3, '0')}]-{entry.card.language.Value}"
             + $" %2i{entry.amount} {name}"
@@ -127,7 +133,7 @@ let sortEntries setData location (entries: CardEntryWithInfo list) =
 
     List.sortBy sortBy entries
 
-let renderEntryList entries =
+let renderEntryList state entries =
     ScrollViewer.create [
         ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
         ScrollViewer.content (
@@ -138,7 +144,7 @@ let renderEntryList entries =
                         StackPanel.spacing 4.
                         StackPanel.children [
                             for entry in entries do
-                                cardItem entry
+                                cardItem state entry
                         ]
                     ]
                 )
@@ -156,10 +162,6 @@ let searchBar state dispatch =
                     ChangeSearchString text |> dispatch),
             OnChangeOf state.search
         )
-        TextBox.onKeyUp
-            (fun args ->
-                if args.Key = Key.Enter then
-                    Search |> dispatch)
     ]
 
 let locationItem setData state dispatch (location: InventoryLocation) entries =
@@ -172,7 +174,7 @@ let locationItem setData state dispatch (location: InventoryLocation) entries =
             DockPanel.create [
                 DockPanel.children [
                     searchBar state dispatch
-                    renderEntryList entries
+                    renderEntryList state entries
                 ]
             ]
         )
@@ -209,7 +211,12 @@ let content setData (state: State) (dispatch: Dispatch) : IView =
         let nameFromLocation map (location: InventoryLocation) =
             let amount =
                 Map.find location map
-                |> List.sumBy (fun (e: CardEntryWithInfo) -> e.entry.amount)
+                |> List.sumBy
+                    (fun (e: CardEntryWithInfo) ->
+                        if String.iContains e.info.name state.search then
+                            e.entry.amount
+                        else
+                            0u)
 
             match location with
             | Custom location -> $"{location.name} ({amount})"
