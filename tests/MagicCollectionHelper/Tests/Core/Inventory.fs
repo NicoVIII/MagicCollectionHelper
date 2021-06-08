@@ -29,14 +29,14 @@ let cardWithInfo = { card = card; info = cardInfo }
 let inventoryTests = testList "Inventory"
 let fitsRulesTests = testList "fitsRules"
 
-let fitsRules = Inventory.fitsRules [] cardWithInfo
+let fitsRules = Inventory.Rules.fitsAll [] cardWithInfo
 
 [<Tests>]
 let tests =
     inventoryTests [
         fitsRulesTests [
             // We check, if every card fits empty rules
-            testProperty "noRules" (fun cardWithInfo -> Inventory.fitsRules [] cardWithInfo Rules.empty)
+            testProperty "noRules" (fun cardWithInfo -> Inventory.Rules.fitsAll [] cardWithInfo Rules.empty)
             // We check in set rule
             testCase "inSet"
             <| (fun () ->

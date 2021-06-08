@@ -13,6 +13,7 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
+open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 let actionBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
     ActionButtonBar.create [
@@ -24,7 +25,8 @@ let actionBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (d
                       || entries.IsEmpty
                       || state.viewMode = Loading
                   ))
-              action = (fun _ -> TakeInventory |> dispatch) }
+              action = (fun _ -> TakeInventory |> dispatch)
+              subPatch = Never }
     ]
 
 type LocCards =
@@ -56,98 +58,58 @@ let cardItem (state: State) (entryWithInfo: CardEntryWithInfo) =
         )
     ]
 
-let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
-    let entry = entryWithInfo.entry
-    let info = entryWithInfo.info
+let wrapLayer withBorder children =
+    let stack =
+        StackPanel.create [
+            StackPanel.spacing 4.
+            StackPanel.children children
+        ]
+        :> IView
 
-    match sortBy with
-    | ByColorIdentity ->
-        let pos =
-            ColorIdentity.getPosition info.colorIdentity
-
-        sprintf "%02i" pos
-    | ByName -> info.name
-    | BySet ->
-        let date =
-            Map.tryFind entry.card.set setData
-            |> function
-            | Some setData -> setData.date
-            | None -> "0000-00-00"
-
-        let extension =
-            match entry.card.set.Value with
-            | set when set.StartsWith "T" -> set.Substring 1 + "Z"
-            | set -> set + "A"
-
-        $"{date}{extension}"
-    | ByCollectorNumber -> sprintf "%s" (entry.card.number.Value.PadLeft(3, '0'))
-    | ByCmc -> sprintf "%02i" info.cmc
-    | ByTypeContains typeContains ->
-        typeContains
-        |> List.fold
-            (fun (found, strng) typeContains ->
-                if found then
-                    (true, strng + "9")
-                else if info.typeLine.Contains typeContains then
-                    (true, strng + "1")
-                else
-                    (false, strng + "9"))
-            (false, "")
-        |> snd
-    | ByRarity rarities ->
-        rarities
-        |> List.indexed
-        |> List.tryPick
-            (fun (index, raritySet) ->
-                if Set.contains info.rarity raritySet then
-                    Some index
-                else
-                    None)
-        |> Option.defaultValue (List.length rarities)
-        |> string
-    | ByLanguage language ->
-        language
-        |> List.indexed
-        |> List.tryPick
-            (fun (index, language) ->
-                if language = entry.card.language then
-                    Some index
-                else
-                    None)
-        |> Option.defaultValue (List.length language)
-        |> string
-
-let sortEntries setData location (entries: CardEntryWithInfo list) =
-    let random = Random()
-
-    let sortRules =
-        match location with
-        | Custom location -> location.sortBy
-        | Fallback -> [ ByName ]
-
-    let sortBy (e: CardEntryWithInfo) =
-        sortRules
-        |> List.map (getSortByValue setData e)
-        // We add a random factor at the end
-        |> (fun lst -> List.append lst [ random.Next(0, 10000) |> sprintf "%04i" ])
-
-    List.sortBy sortBy entries
+    if withBorder then
+        Border.create [
+            Border.padding (8., 0.)
+            Border.child stack
+        ]
+        :> IView
+    else
+        stack
 
 let renderEntryList state entries =
+    wrapLayer
+        true
+        [ for entry in entries do
+              cardItem state entry ]
+
+let rec renderEntryTree state dispatch first tree =
+    let renderEntryTree = renderEntryTree state dispatch false
+
+    match tree with
+    // If we have only one node, we skip it
+    | Nodes [ (_, child) ] -> renderEntryTree child
+    | Nodes nodes ->
+        wrapLayer
+            (not first)
+            [ for (name: string, child) in nodes do
+                  Expander.create [
+                      Expander.header name
+                      Expander.isExpanded true
+                      Expander.content (renderEntryTree child)
+                  ] ]
+    | Leaf entries -> renderEntryList state entries
+
+let renderEntryTreeForLocation state dispatch (location: InventoryLocation) trees =
+    let sortBy =
+        match location with
+        | Fallback -> []
+        | Custom location -> location.sortBy
+
     ScrollViewer.create [
         ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
         ScrollViewer.content (
             Border.create [
-                Border.padding (20., 10.)
-                Border.child (
-                    StackPanel.create [
-                        StackPanel.spacing 4.
-                        StackPanel.children [
-                            for entry in entries do
-                                cardItem state entry
-                        ]
-                    ]
-                )
+                Border.padding (10., 10.)
+                Border.child (renderEntryTree state dispatch true trees)
             ]
         )
     ]
@@ -164,9 +126,7 @@ let searchBar state dispatch =
         )
     ]
 
-let locationItem setData state dispatch (location: InventoryLocation) entries =
-    let entries = sortEntries setData location entries
-
+let locationItem state dispatch (location: InventoryLocation) tree =
     Border.create [
         Border.borderThickness (1., 0., 0., 0.)
         Border.borderBrush Config.lineColor
@@ -174,14 +134,14 @@ let locationItem setData state dispatch (location: InventoryLocation) entries =
             DockPanel.create [
                 DockPanel.children [
                     searchBar state dispatch
-                    renderEntryList state entries
+                    renderEntryTreeForLocation state dispatch location tree
                 ]
             ]
         )
     ]
     :> IView
 
-let content setData (state: State) (dispatch: Dispatch) : IView =
+let content (state: State) (dispatch: Dispatch) : IView =
     match state.viewMode with
     | Empty ->
         Border.create [
@@ -209,14 +169,12 @@ let content setData (state: State) (dispatch: Dispatch) : IView =
         let locationMap = locations |> Map.ofList
 
         let nameFromLocation map (location: InventoryLocation) =
-            let amount =
-                Map.find location map
-                |> List.sumBy
-                    (fun (e: CardEntryWithInfo) ->
-                        if String.iContains e.info.name state.search then
-                            e.entry.amount
-                        else
-                            0u)
+            let rec sumUpTree tree =
+                match tree with
+                | Nodes nodes -> List.sumBy (snd >> sumUpTree) nodes
+                | Leaf entries -> List.length entries
+
+            let amount = Map.find location map |> sumUpTree
 
             match location with
             | Custom location -> $"{location.name} ({amount})"
@@ -226,9 +184,9 @@ let content setData (state: State) (dispatch: Dispatch) : IView =
             location
             |> Option.defaultValue (locations |> List.head |> fst)
 
-        TabView.renderFromMap
+        TabView.renderFromList
             (nameFromLocation locationMap)
-            (locationItem setData state dispatch)
+            (locationItem state dispatch)
             (ChangeLocation >> dispatch)
             TabView.Left
             locations
@@ -238,7 +196,7 @@ let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: Stat
     DockPanel.create [
         DockPanel.children [
             actionBar infoMap entries state dispatch
-            content setData state dispatch
+            content state dispatch
         ]
     ]
     :> IView

@@ -23,7 +23,7 @@
     <!-- Persistence layer -->
     <Compile Include="Persistence/DeckStatsCardEntry.fs" />
     <Compile Include="Persistence/Prefs.fs" />
-    <Compile Include="Persistence/RawCustomLocation.fs" />
+    <Compile Include="Persistence/CustomLocation.fs" />
 
     <!-- Imports -->
     <Compile Include="Import/Types.fs" />

@@ -5,12 +5,12 @@ open TypedPersistence.Json
 open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Types
 
-module RawCustomLocation =
+module CustomLocation =
     let fileName = "locations.json"
 
     let filePath =
         [ SystemInfo.savePath; fileName ] |> Path.combine
 
-    let save = save<RawCustomLocation list> filePath
+    let save = save<CustomLocation list> filePath
 
-    let load () = load<RawCustomLocation list> filePath
+    let load () = load<CustomLocation list> filePath

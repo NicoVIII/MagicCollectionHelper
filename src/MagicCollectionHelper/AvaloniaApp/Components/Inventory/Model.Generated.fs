@@ -9,20 +9,19 @@ module StateLenses =
     let filteredInventory =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.filteredInventory),
-            (fun (x: State) (value: (MagicCollectionHelper.Core.Types.InventoryLocation * MagicCollectionHelper.Core.Types.CardEntryWithInfo list) list) ->
-                { x with filteredInventory = value })
+            (fun (x: State) (value: LocationWithHungTree list) -> { x with filteredInventory = value })
         )
 
     let inventory =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.inventory),
-            (fun (x: State) (value: LocationCardMap) -> { x with inventory = value })
+            (fun (x: State) (value: MagicCollectionHelper.Core.Types.LocationWithCards) -> { x with inventory = value })
         )
 
     let locations =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.locations),
-            (fun (x: State) (value: Map<MagicCollectionHelper.Core.Types.CustomLocationName, MagicCollectionHelper.Core.Types.CustomLocation>) ->
+            (fun (x: State) (value: MagicCollectionHelper.Core.Types.CustomLocation list) ->
                 { x with locations = value })
         )
 

@@ -144,32 +144,15 @@ module Rules =
     let withRarity v rules : Rules = { rules with rarity = Some v }
     let withColorIdentity v rules : Rules = { rules with colorIdentity = Some v }
 
-type RawCustomLocation =
-    { name: CustomLocationName
-      rules: Rules
-      sortBy: SortRules }
-
 [<Generator.Lenses("types", "Lens")>]
 type CustomLocation =
     { name: CustomLocationName
       rules: Rules
-      sortBy: SortRules
-      position: uint }
-
-module CustomLocation =
-    let createFromRaw pos (raw: RawCustomLocation) =
-        { CustomLocation.name = raw.name
-          rules = raw.rules
-          sortBy = raw.sortBy
-          position = pos }
-
-    let mapToSortedList map =
-        map
-        |> Map.toList
-        |> List.map snd
-        |> List.sortBy (fun location -> location.position)
+      sortBy: SortRules }
 
 /// Location, where a part of the collection is
 type InventoryLocation =
     | Custom of CustomLocation
     | Fallback
+
+type LocationWithCards = (InventoryLocation * CardEntry list) list

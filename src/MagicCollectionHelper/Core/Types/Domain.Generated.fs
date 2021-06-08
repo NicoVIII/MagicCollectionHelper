@@ -32,9 +32,3 @@ module CustomLocationLenses =
             (fun (x: CustomLocation) -> x.sortBy),
             (fun (x: CustomLocation) (value: SortRules) -> { x with sortBy = value })
         )
-
-    let position =
-        Lens(
-            (fun (x: CustomLocation) -> x.position),
-            (fun (x: CustomLocation) (value: uint) -> { x with position = value })
-        )

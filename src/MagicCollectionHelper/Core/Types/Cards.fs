@@ -180,6 +180,42 @@ module ColorIdentity =
           nonGreen
           allColors ]
 
+    let toString (ci: ColorIdentity) =
+        match ci with
+        | _ when ci = colorless -> "Colorless"
+        | _ when ci = white -> "W"
+        | _ when ci = blue -> "U"
+        | _ when ci = black -> "B"
+        | _ when ci = red -> "R"
+        | _ when ci = green -> "G"
+        | _ when ci = azorius -> "WU"
+        | _ when ci = dimir -> "UB"
+        | _ when ci = rakdos -> "BR"
+        | _ when ci = gruul -> "RG"
+        | _ when ci = selesnya -> "GW"
+        | _ when ci = orzhov -> "WB"
+        | _ when ci = izzet -> "UR"
+        | _ when ci = golgari -> "BG"
+        | _ when ci = boros -> "RW"
+        | _ when ci = simic -> "GU"
+        | _ when ci = bant -> "GWU"
+        | _ when ci = esper -> "WUG"
+        | _ when ci = grixis -> "UBR"
+        | _ when ci = jund -> "BRG"
+        | _ when ci = naya -> "RGW"
+        | _ when ci = abzan -> "WBG"
+        | _ when ci = jeskai -> "URW"
+        | _ when ci = sultai -> "BGU"
+        | _ when ci = mardu -> "RWB"
+        | _ when ci = temur -> "GUR"
+        | _ when ci = nonWhite -> "UBRG"
+        | _ when ci = nonBlue -> "BRGW"
+        | _ when ci = nonBlack -> "GWUR"
+        | _ when ci = nonRed -> "RGWU"
+        | _ when ci = nonGreen -> "WUBR"
+        | _ when ci = allColors -> "Five color"
+        | _ -> failwith "Boom"
+
     let private posMap =
         sorted
         |> List.indexed
@@ -234,6 +270,7 @@ module Card =
 type CardEntry = { amount: uint; card: Card }
 
 module CardEntry =
+    /// Takes a list of cards and creates entry out of equal cards
     let collapseCardList cardList =
         cardList
         |> List.fold
@@ -265,3 +302,23 @@ type CardEntryWithInfo = { entry: CardEntry; info: CardInfo }
 
 module CardEntryWithInfo =
     let create entry info = { entry = entry; info = info }
+
+    /// Takes a list of cards and creates entry out of equal cards
+    let collapseCardList (cardList: CardWithInfo list) =
+        cardList
+        |> List.fold
+            (fun cardAmountMap card ->
+                Map.change
+                    card
+                    (function
+                    | Some amount -> amount + 1u |> Some
+                    | None -> Some 1u)
+                    cardAmountMap)
+            Map.empty
+        |> Map.toList
+        |> List.map
+            (fun (cardWithInfo, amount) ->
+                { info = cardWithInfo.info
+                  entry =
+                      { card = cardWithInfo.card
+                        amount = amount } })

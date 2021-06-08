@@ -7,84 +7,85 @@ open MagicCollectionHelper.Core.Types.Generated
 
 [<RequireQualifiedAccess>]
 module Inventory =
-    let fitsRule option rule =
-        match option with
-        | None -> true
-        | Some value -> rule value
+    module Rules =
+        let fitsRule option rule =
+            match option with
+            | None -> true
+            | Some value -> rule value
 
-    let fitsInSetRule (card: Card) rules =
-        fitsRule rules.inSet (Set.contains card.set)
+        let fitsInSetRule (card: Card) rules =
+            fitsRule rules.inSet (Set.contains card.set)
 
-    let fitsInLanguageRule (card: Card) rules =
-        fitsRule rules.inLanguage (fun language -> language = card.language)
+        let fitsInLanguageRule (card: Card) rules =
+            fitsRule rules.inLanguage (fun language -> language = card.language)
 
-    let fitsIsFoil (card: Card) rules =
-        fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
+        let fitsIsFoil (card: Card) rules =
+            fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
 
-    let fitsIsToken (card: Card) rules =
-        fitsRule rules.isToken (fun shouldBeToken -> shouldBeToken = Card.isToken card)
+        let fitsIsToken (card: Card) rules =
+            fitsRule rules.isToken (fun shouldBeToken -> shouldBeToken = Card.isToken card)
 
-    let fitsTypeContains (info: CardInfo) rules =
-        fitsRule rules.typeContains (Set.forall info.typeLine.Contains)
+        let fitsTypeContains (info: CardInfo) rules =
+            fitsRule rules.typeContains (Set.forall info.typeLine.Contains)
 
-    let fitsTypeNotContains (info: CardInfo) rules =
-        fitsRule rules.typeNotContains (Set.forall (info.typeLine.Contains >> not))
+        let fitsTypeNotContains (info: CardInfo) rules =
+            fitsRule rules.typeNotContains (Set.forall (info.typeLine.Contains >> not))
 
-    let fitsRarity (info: CardInfo) rules =
-        fitsRule rules.rarity (fun rarity -> Set.contains info.rarity rarity)
+        let fitsRarity (info: CardInfo) rules =
+            fitsRule rules.rarity (fun rarity -> Set.contains info.rarity rarity)
 
-    let fitsColorIdentity (info: CardInfo) rules =
-        fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains info.colorIdentity colorIdentities)
+        let fitsColorIdentity (info: CardInfo) rules =
+            fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains info.colorIdentity colorIdentities)
 
-    let fitsLimit cardsInLoc (card: CardWithInfo) rules =
-        let rule limit =
-            let sum =
-                List.sumBy
-                    (fun c ->
-                        if CardWithInfo.isSame c card then
-                            1
-                        else
-                            0)
-                    cardsInLoc
+        let fitsLimit cardsInLoc (card: CardWithInfo) rules =
+            let rule limit =
+                let sum =
+                    List.sumBy
+                        (fun c ->
+                            if CardWithInfo.isSame c card then
+                                1
+                            else
+                                0)
+                        cardsInLoc
 
-            (uint) sum < limit
+                (uint) sum < limit
 
-        fitsRule rules.limit rule
+            fitsRule rules.limit rule
 
-    let fitsLimitExact cardsInLoc (card: CardWithInfo) rules =
-        let rule limitExact =
-            let sum =
-                List.sumBy
-                    (fun c ->
-                        if CardWithInfo.isExactSame c card then
-                            1
-                        else
-                            0)
-                    cardsInLoc
+        let fitsLimitExact cardsInLoc (card: CardWithInfo) rules =
+            let rule limitExact =
+                let sum =
+                    List.sumBy
+                        (fun c ->
+                            if CardWithInfo.isExactSame c card then
+                                1
+                            else
+                                0)
+                        cardsInLoc
 
-            (uint) sum < limitExact
+                (uint) sum < limitExact
 
-        fitsRule rules.limitExact rule
+            fitsRule rules.limitExact rule
 
-    let fitsRules cardsInLoc (cardWithInfo: CardWithInfo) rules =
-        [ fitsInSetRule cardWithInfo.card
-          fitsInLanguageRule cardWithInfo.card
-          fitsIsFoil cardWithInfo.card
-          fitsIsToken cardWithInfo.card
-          fitsTypeContains cardWithInfo.info
-          fitsTypeNotContains cardWithInfo.info
-          fitsColorIdentity cardWithInfo.info
-          fitsRarity cardWithInfo.info
-          fitsLimit cardsInLoc cardWithInfo
-          fitsLimitExact cardsInLoc cardWithInfo ]
-        // Evaluate functions
-        |> List.map (fun fnc -> fnc rules)
-        |> List.forall id
+        let fitsAll cardsInLoc (cardWithInfo: CardWithInfo) rules =
+            [ fitsInSetRule cardWithInfo.card
+              fitsInLanguageRule cardWithInfo.card
+              fitsIsFoil cardWithInfo.card
+              fitsIsToken cardWithInfo.card
+              fitsTypeContains cardWithInfo.info
+              fitsTypeNotContains cardWithInfo.info
+              fitsColorIdentity cardWithInfo.info
+              fitsRarity cardWithInfo.info
+              fitsLimit cardsInLoc cardWithInfo
+              fitsLimitExact cardsInLoc cardWithInfo ]
+            // Evaluate functions
+            |> List.map (fun fnc -> fnc rules)
+            |> List.forall id
 
     let fitsInLocation (locCardMap: Map<InventoryLocation, CardWithInfo list>) card location =
         let cardList = locCardMap.Item(Custom location)
 
-        fitsRules cardList card location.rules
+        Rules.fitsAll cardList card location.rules
 
     let determineLocation locCardMap locations card =
         locations
@@ -92,10 +93,84 @@ module Inventory =
 
     let newEntryForCard (card: Card) : CardEntry = { amount = 1u; card = card }
 
-    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: CardEntry list) =
-        // We have to sort locations first
-        let locations = CustomLocation.mapToSortedList locations
+    let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
+        let entry = entryWithInfo.entry
+        let info = entryWithInfo.info
 
+        match sortBy with
+        | ByColorIdentity ->
+            let pos =
+                ColorIdentity.getPosition info.colorIdentity
+
+            sprintf "%02i" pos
+        | ByName -> info.name
+        | BySet ->
+            let date =
+                Map.tryFind entry.card.set setData
+                |> function
+                | Some setData -> setData.date
+                | None -> "0000-00-00"
+
+            let extension =
+                match entry.card.set.Value with
+                | set when set.StartsWith "T" -> set.Substring 1 + "Z"
+                | set -> set + "A"
+
+            $"{date}{extension}"
+        | ByCollectorNumber -> sprintf "%s" (entry.card.number.Value.PadLeft(3, '0'))
+        | ByCmc -> sprintf "%02i" info.cmc
+        | ByTypeContains typeContains ->
+            typeContains
+            |> List.fold
+                (fun (found, strng) typeContains ->
+                    if found then
+                        (true, strng + "9")
+                    else if info.typeLine.Contains typeContains then
+                        (true, strng + "1")
+                    else
+                        (false, strng + "9"))
+                (false, "")
+            |> snd
+        | ByRarity rarities ->
+            rarities
+            |> List.indexed
+            |> List.tryPick
+                (fun (index, raritySet) ->
+                    if Set.contains info.rarity raritySet then
+                        Some index
+                    else
+                        None)
+            |> Option.defaultValue (List.length rarities)
+            |> string
+        | ByLanguage language ->
+            language
+            |> List.indexed
+            |> List.tryPick
+                (fun (index, language) ->
+                    if language = entry.card.language then
+                        Some index
+                    else
+                        None)
+            |> Option.defaultValue (List.length language)
+            |> string
+
+    let sortEntries setData location (entries: CardEntryWithInfo list) =
+        let random = Random()
+
+        let sortRules =
+            match location with
+            | Custom location -> location.sortBy
+            | Fallback -> [ ByName ]
+
+        let sortBy (e: CardEntryWithInfo) =
+            sortRules
+            |> List.map (getSortByValue setData e)
+            // We add a random factor at the end
+            |> (fun lst -> List.append lst [ random.Next(0, 10000) |> sprintf "%04i" ])
+
+        List.sortBy sortBy entries
+
+    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: CardEntry list) =
         let mutable locCardMap =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
@@ -149,13 +224,22 @@ module Inventory =
                     locCardMap <- Map.change (Custom location) (Option.map (fun l -> cardWithInfo :: l)) locCardMap
                 | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> cardWithInfo :: l)) locCardMap
 
-        // Collapse into entries again
-        Map.map
-            (fun _ cardList ->
+        // Collapse into entries again and sort by location rules
+        locCardMap
+        |> Map.map
+            (fun location cardList ->
                 cardList
-                |> List.map CardWithInfo.card
-                |> CardEntry.collapseCardList)
-            locCardMap
+                |> CardEntryWithInfo.collapseCardList
+                |> sortEntries setData location
+                |> List.map CardEntryWithInfo.entry)
+
+        // We now convert the map back into a list (order matters!) and sort it
+        |> Map.toList
+        |> List.sortBy
+            (fun (location, _) ->
+                match location with
+                | Fallback -> 9999
+                | Custom location -> List.findIndex (fun l -> location = l) locations)
 
     // Because this process can take some time, we provide an async version
     let takeAsync setData infoMap locations entries =

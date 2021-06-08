@@ -20,7 +20,8 @@ module AnalyseView =
             ActionButton.create
                 { text = "Analyse"
                   isEnabled = (not entries.IsEmpty)
-                  action = (fun _ -> Analyse |> dispatch) }
+                  action = (fun _ -> Analyse |> dispatch)
+                  subPatch = Never }
         ]
 
     let content (state: State) (dispatch: Dispatch) : IView =

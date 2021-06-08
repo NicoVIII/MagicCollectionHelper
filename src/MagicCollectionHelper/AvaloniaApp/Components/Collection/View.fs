@@ -18,7 +18,8 @@ let topBar (state: State) (dispatch: Dispatch) : IView =
         ActionButton.create
             { text = "Import collection"
               isEnabled = not loadInProgress
-              action = (fun _ -> ImportCollection |> dispatch) }
+              action = (fun _ -> ImportCollection |> dispatch)
+              subPatch = Never }
     ]
 
 let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =

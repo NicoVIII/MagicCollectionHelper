@@ -11,6 +11,7 @@ open MagicCollectionHelper.AvaloniaApp
 type ActionButtonProps =
     { action: Avalonia.Interactivity.RoutedEventArgs -> unit
       isEnabled: bool
+      subPatch: SubPatchOptions
       text: string }
 
 module ActionButton =
@@ -19,7 +20,7 @@ module ActionButton =
             Button.content props.text
             Button.isEnabled props.isEnabled
             Button.padding (20., 7.)
-            Button.onClick props.action
+            Button.onClick (props.action, props.subPatch)
         ]
 
 module ActionButtonBar =
@@ -96,7 +97,7 @@ module TabView =
 
     /// Does render a tab view from a map. It has to be provided as list because
     /// order matters in this context
-    let renderFromMap renderTab renderTabData dispatchMsg placement list current =
+    let renderFromList renderTab renderTabData dispatchMsg placement list current =
         let tabs, content =
             List.foldBack
                 (fun (tab, tabData) (tabs, content) ->

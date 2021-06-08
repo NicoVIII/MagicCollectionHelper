@@ -142,9 +142,9 @@ module LocationEdit =
         StackPanel.create [
             StackPanel.orientation Orientation.Vertical
             StackPanel.children [
-                for KeyValue (name, location) in state.locations do
+                for location in state.locations do
                     Expander.create [
-                        Expander.header name
+                        Expander.header location.name
                         Expander.content (renderLocationLine location dispatch)
                     ]
             ]
