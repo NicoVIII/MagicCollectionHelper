@@ -124,6 +124,14 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
                                     |> Option.defaultValue "Other")
 
                     let rec createTree sortBy entries =
+                        // Check conditions for the recursive call
+                        let createTree lastSortBy sortBy entries =
+                            // Some groupings are only using part of the sorting information
+                            // therefore after them you can't group further without destroying order
+                            match lastSortBy with
+                            | ByName -> Leaf entries
+                            | _ -> createTree sortBy entries
+
                         match sortBy, entries with
                         // The list is so small that further grouping has no benefit
                         | _, entries when List.length entries <= maxSize -> Leaf entries
@@ -135,10 +143,10 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
 
                             match groups with
                             // With just one group, grouping makes no sense
-                            | [ (_, entries) ] -> createTree tail entries
+                            | [ (_, entries) ] -> createTree sortBy tail entries
                             | groups ->
                                 groups
-                                |> List.map (Tuple2.mapSnd (createTree tail))
+                                |> List.map (Tuple2.mapSnd (createTree sortBy tail))
                                 |> Nodes
 
                     let sortBy =
