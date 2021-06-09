@@ -99,7 +99,7 @@ let rec renderEntryTree state dispatch first tree =
 
                   Expander.create [
                       Expander.header name
-                      Expander.isExpanded true
+                      Expander.isExpanded (amount > 0u)
                       Expander.content (renderEntryTree child)
                   ] ]
     | Leaf entries -> renderEntryList state entries
