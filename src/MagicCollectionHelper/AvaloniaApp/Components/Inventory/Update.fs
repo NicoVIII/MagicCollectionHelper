@@ -69,7 +69,7 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
 
         let shrinkTree tree =
             tree
-            |> HungTree.mapKey List.singleton
+            |> HungTree.mapKey (List.singleton)
             |> shrinkTreeHelper
             |> HungTree.mapKey
                 (function
@@ -155,7 +155,8 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
                         | Custom location -> location.sortBy
 
                     (location, createTree sortBy entries) |> Some)
-            |> List.map (Tuple2.mapSnd shrinkTree)
+            // We shrink the tree and merge small groups of cards
+            |> List.map (Tuple2.mapSnd (shrinkTree))
 
         let viewMode =
             match state.viewMode with

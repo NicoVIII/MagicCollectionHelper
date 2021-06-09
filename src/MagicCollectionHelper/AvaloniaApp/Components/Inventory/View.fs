@@ -91,6 +91,12 @@ let rec renderEntryTree state dispatch first tree =
         wrapLayer
             (not first)
             [ for (name: string, child) in nodes do
+                  // We want to add the amount
+                  let amount =
+                      ExpanderTree.sumUpCards state.search child
+
+                  let name = $"{name} ({amount})"
+
                   Expander.create [
                       Expander.header name
                       Expander.isExpanded true
@@ -99,11 +105,6 @@ let rec renderEntryTree state dispatch first tree =
     | Leaf entries -> renderEntryList state entries
 
 let renderEntryTreeForLocation state dispatch (location: InventoryLocation) trees =
-    let sortBy =
-        match location with
-        | Fallback -> []
-        | Custom location -> location.sortBy
-
     ScrollViewer.create [
         ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
         ScrollViewer.content (
@@ -169,12 +170,9 @@ let content (state: State) (dispatch: Dispatch) : IView =
         let locationMap = locations |> Map.ofList
 
         let nameFromLocation map (location: InventoryLocation) =
-            let rec sumUpTree tree =
-                match tree with
-                | Nodes nodes -> List.sumBy (snd >> sumUpTree) nodes
-                | Leaf entries -> List.length entries
-
-            let amount = Map.find location map |> sumUpTree
+            let amount =
+                Map.find location map
+                |> ExpanderTree.sumUpCards state.search
 
             match location with
             | Custom location -> $"{location.name} ({amount})"
