@@ -120,7 +120,7 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
                                         |> String.concat " / "
                                     | None -> "Other"
                                 | ByTypeContains types ->
-                                    List.tryFind (fun (typ: string) -> entry.info.name.Contains typ) types
+                                    List.tryFind (fun (typ: string) -> entry.info.typeLine.Contains typ) types
                                     |> Option.defaultValue "Other")
 
                     let rec createTree sortBy entries =
