@@ -36,6 +36,7 @@ type Msg =
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
     | SavePrefs of Prefs
+    | SaveEntries of CardEntry list
     | InventoryMsg of Inventory.Msg
     | CollectionMsg of Collection.Msg
 

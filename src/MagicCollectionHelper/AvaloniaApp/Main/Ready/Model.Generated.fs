@@ -83,6 +83,7 @@ module Msg =
         | ChangeViewMode _ -> "ChangeViewMode"
         | ChangePrefs _ -> "ChangePrefs"
         | SavePrefs _ -> "SavePrefs"
+        | SaveEntries _ -> "SaveEntries"
         | InventoryMsg _ -> "InventoryMsg"
         | CollectionMsg _ -> "CollectionMsg"
 
@@ -98,8 +99,9 @@ module Msg =
         | ChangeViewMode _ -> 2
         | ChangePrefs _ -> 3
         | SavePrefs _ -> 4
-        | InventoryMsg _ -> 5
-        | CollectionMsg _ -> 6
+        | SaveEntries _ -> 5
+        | InventoryMsg _ -> 6
+        | CollectionMsg _ -> 7
 
     let isAsyncError (x: Msg) =
         match x with
@@ -124,6 +126,11 @@ module Msg =
     let isSavePrefs (x: Msg) =
         match x with
         | SavePrefs _ -> true
+        | _ -> false
+
+    let isSaveEntries (x: Msg) =
+        match x with
+        | SaveEntries _ -> true
         | _ -> false
 
     let isInventoryMsg (x: Msg) =

@@ -13,13 +13,22 @@ module Update =
     let processCollectionIntent intent (state, cmd) =
         match intent with
         | Collection.Intent.SaveEntries entries ->
-            let state =
-                state
-                |> match entries with
-                   | Some entries -> setl StateLenses.dsEntries entries
-                   | None -> id
+            match entries with
+            | Some entries ->
+                let state =
+                    state
+                    |> setl StateLenses.dsEntries entries
+                    |> setl StateLenses.entries []
 
-            state, Cmd.none
+                let fnc () =
+                    let cardInfo = getl StateLenses.cardInfo state
+                    DeckStatsCardEntry.listToEntriesAsync cardInfo entries
+
+                let cmd =
+                    Cmd.OfAsync.either fnc () SaveEntries AsyncError
+
+                state, cmd
+            | None -> state, Cmd.none
         | Collection.Intent.DoNothing -> state, cmd // We don't need to mutate the state
 
     let perform (msg: Msg) (state: State) =
@@ -46,6 +55,11 @@ module Update =
             state, Cmd.ofMsg (SavePrefs prefs)
         | SavePrefs prefs ->
             Persistence.Prefs.save prefs
+
+            state, Cmd.none
+        | SaveEntries entries ->
+            let state =
+                state |> setl StateLenses.entries entries
 
             state, Cmd.none
         | CollectionMsg msg ->
