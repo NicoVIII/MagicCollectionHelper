@@ -62,27 +62,27 @@ namespace rec MagicCollectionHelper.Core.Types.Generated
 
 module Card =
     open MagicCollectionHelper.Core.Types
-    let number (x: Card) = x.number
     let foil (x: Card) = x.foil
     let language (x: Card) = x.language
+    let number (x: Card) = x.number
     let set (x: Card) = x.set
-    let create (number: CollectorNumber) (foil: bool) (language: Language) (set: MagicSet) : Card =
-        { number = number
-          foil = foil
+    let create (foil: bool) (language: Language) (number: CollectorNumber) (set: MagicSet) : Card =
+        { foil = foil
           language = language
+          number = number
           set = set }
 
     let map
-        (mapnumber: CollectorNumber -> CollectorNumber)
         (mapfoil: bool -> bool)
         (maplanguage: Language -> Language)
+        (mapnumber: CollectorNumber -> CollectorNumber)
         (mapset: MagicSet -> MagicSet)
         (record': Card)
         =
         { record' with
-              number = mapnumber record'.number
               foil = mapfoil record'.foil
               language = maplanguage record'.language
+              number = mapnumber record'.number
               set = mapset record'.set }
 namespace rec MagicCollectionHelper.Core.Types.Generated
 

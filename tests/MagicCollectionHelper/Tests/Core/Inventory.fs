@@ -18,9 +18,9 @@ let cardInfo =
       cmc = 0u }
 
 let card =
-    { number = CollectorNumber "242"
-      foil = true
+    { foil = true
       language = Language "en"
+      number = CollectorNumber "242"
       set = MagicSet.create "M21" }
 
 let cardWithInfo = { card = card; info = cardInfo }

@@ -14,7 +14,7 @@ type CommonState =
     { analyseText: string
       cardInfo: MagicCollectionHelper.Core.Types.CardInfoMap
       dsEntries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
-      entries: MagicCollectionHelper.Core.Types.CardEntry list
+      entries: MagicCollectionHelper.Core.Types.OldAmountable<MagicCollectionHelper.Core.Types.CardEntry> list
       prefs: MagicCollectionHelper.Core.Types.Prefs
       setData: MagicCollectionHelper.Core.Types.SetDataMap
       viewMode: ViewMode }
@@ -57,6 +57,14 @@ module Model =
         |> String.concat Environment.NewLine
 
     let initCommon cardInfo dsEntries entries setData =
+        // If we init entries, every entry is old
+        let entries =
+            List.map
+                (fun entry ->
+                    { amountOld = entry.amount
+                      data = entry })
+                entries
+
         let prefs =
             Persistence.Prefs.load ()
             |> Option.defaultValue (Prefs.create false Config.missingPercentDefault false)

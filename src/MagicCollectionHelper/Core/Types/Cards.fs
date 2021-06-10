@@ -2,6 +2,28 @@ namespace MagicCollectionHelper.Core.Types
 
 open Myriad.Plugins
 
+/// Makes it possible to mark some type as old or not old
+type Oldable<'a> = { data: 'a; old: bool }
+
+module Oldable =
+    let create old data = { old = old; data = data }
+
+    let data wrapper = wrapper.data
+
+    let map mapper wrapper =
+        create wrapper.old (mapper wrapper.data)
+
+/// Makes it possible to add an oldAmount to a type
+type OldAmountable<'a> = { amountOld: uint; data: 'a }
+
+module OldAmountable =
+    let create amountOld data = { amountOld = amountOld; data = data }
+
+    let data wrapper = wrapper.data
+
+    let map mapper wrapper =
+        create wrapper.amountOld (mapper wrapper.data)
+
 /// All colors which are important in Magic
 type Color =
     | White
@@ -251,9 +273,9 @@ type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 /// A card identified by as few properties as possible
 [<Generator.Fields("cards")>]
 type Card =
-    { number: CollectorNumber
-      foil: bool
+    { foil: bool
       language: Language
+      number: CollectorNumber
       set: MagicSet }
 
 module Card =
@@ -277,13 +299,33 @@ module CardEntry =
             (fun cardAmountMap card ->
                 Map.change
                     card
-                    (function
-                    | Some amount -> amount + 1u |> Some
-                    | None -> Some 1u)
+                    (fun mapEntry ->
+                        mapEntry
+                        |> Option.defaultValue 0u
+                        |> (+) 1u
+                        |> Some)
                     cardAmountMap)
             Map.empty
         |> Map.toList
         |> List.map (fun (card, amount) -> { card = card; amount = amount })
+
+    let compareLists oldList newList =
+        // TODO: collapse duplicates
+        // We first create a map
+        let oldMap =
+            oldList
+            |> List.map (fun entry -> entry.card, entry)
+            |> Map.ofList
+
+        newList
+        |> List.map
+            (fun entry ->
+                let amountOld =
+                    match Map.tryFind entry.card oldMap with
+                    | Some entry -> entry.amount
+                    | None -> 0u
+
+                OldAmountable.create amountOld entry)
 
 [<Generator.Fields("cards")>]
 type CardWithInfo = { card: Card; info: CardInfo }
@@ -304,21 +346,25 @@ module CardEntryWithInfo =
     let create entry info = { entry = entry; info = info }
 
     /// Takes a list of cards and creates entry out of equal cards
-    let collapseCardList (cardList: CardWithInfo list) =
+    let collapseCardList (cardList: Oldable<CardWithInfo> list) =
         cardList
         |> List.fold
             (fun cardAmountMap card ->
                 Map.change
-                    card
-                    (function
-                    | Some amount -> amount + 1u |> Some
-                    | None -> Some 1u)
+                    card.data
+                    (fun mapEntry ->
+                        mapEntry
+                        |> Option.defaultValue (0u, 0u)
+                        |> (fun (a, b) -> a + 1u, b + if card.old then 1u else 0u)
+                        |> Some)
                     cardAmountMap)
             Map.empty
         |> Map.toList
         |> List.map
-            (fun (cardWithInfo, amount) ->
-                { info = cardWithInfo.info
-                  entry =
-                      { card = cardWithInfo.card
-                        amount = amount } })
+            (fun (cardWithInfo, (amount, amountOld)) ->
+                OldAmountable.create
+                    amountOld
+                    { info = cardWithInfo.info
+                      entry =
+                          { card = cardWithInfo.card
+                            amount = amount } })

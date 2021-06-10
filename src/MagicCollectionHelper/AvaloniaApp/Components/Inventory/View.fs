@@ -15,7 +15,7 @@ open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
-let actionBar (infoMap: CardInfoMap) (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
+let actionBar (infoMap: CardInfoMap) (entries: 'a list) (state: State) (dispatch: Dispatch) : IView =
     ActionButtonBar.create [
         ActionButton.create
             { text = "Take inventory"
@@ -34,7 +34,9 @@ type LocCards =
       amount: uint
       cards: string seq }
 
-let cardItem (state: State) (entryWithInfo: CardEntryWithInfo) =
+let cardItem (state: State) (oldAmountable: OldAmountable<CardEntryWithInfo>) =
+    let entryWithInfo = oldAmountable.data
+    let amountOld = oldAmountable.amountOld
     let entry = entryWithInfo.entry
     let info = entryWithInfo.info
     let set = entry.card.set
@@ -42,19 +44,29 @@ let cardItem (state: State) (entryWithInfo: CardEntryWithInfo) =
     let name = info.name
 
     let star = if entry.card.foil then "★" else " "
+    let old = entry.amount = amountOld
 
     let brush =
-        if String.iContains name state.search then
-            Brushes.White
+        let searched = String.iContains name state.search
+
+        match searched, old with
+        | true, true -> Brushes.White
+        | false, true -> Brushes.DarkGray
+        | true, false -> Brushes.LimeGreen
+        | false, false -> Brushes.DarkGreen
+
+    let added =
+        if not old then
+            $"(+%2i{entry.amount - amountOld})"
         else
-            Brushes.DarkGray
+            "     "
 
     CheckBox.create [
         CheckBox.fontFamily Config.monospaceFont
         CheckBox.foreground brush
         CheckBox.content (
             $"{star}[%5s{set.Value}-%s{number.Value.PadLeft(3, '0')}]-{entry.card.language.Value}"
-            + $" %2i{entry.amount} {name}"
+            + $" {added}%2i{entry.amount} {name}"
         )
     ]
 
@@ -190,7 +202,7 @@ let content (state: State) (dispatch: Dispatch) : IView =
             locations
             current
 
-let render (infoMap: CardInfoMap) setData (entries: CardEntry list) (state: State) (dispatch: Dispatch) : IView =
+let render (infoMap: CardInfoMap) setData entries (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             actionBar infoMap entries state dispatch

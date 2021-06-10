@@ -46,7 +46,8 @@ module ViewHelper =
     module ExpanderTree =
         let sumUpCards (search: string) =
             HungTree.sumBy (
-                List.filter (fun (entry: CardEntryWithInfo) -> String.iContains entry.info.name search)
+                List.map OldAmountable.data
+                >> List.filter (fun (entry: CardEntryWithInfo) -> String.iContains entry.info.name search)
                 >> List.sumBy (fun entry -> entry.entry.amount)
             )
 

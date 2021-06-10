@@ -33,7 +33,7 @@ module DeckStatsCardEntry =
     let toEntry cardInfoMap (entry: DeckStatsCardEntry) =
         match entry.set, entry.number, entry.language with
         | Some set, Some number, Some lang ->
-            Card.create number entry.foil lang set
+            Card.create entry.foil lang number set
             |> CardEntry.create entry.amount
             |> Some
         // We try to determine the number with name and set
@@ -42,7 +42,7 @@ module DeckStatsCardEntry =
             |> Map.tryFind (entry.name, set)
             |> Option.map
                 (fun info ->
-                    Card.create info.collectorNumber entry.foil lang set
+                    Card.create entry.foil lang info.collectorNumber set
                     |> CardEntry.create entry.amount)
         | _ -> None
 
@@ -62,6 +62,7 @@ module DeckStatsCardEntry =
             |> Map.ofList
 
         entries
+        // We add oldness info
         // We only take entries with enough info
         |> List.fold
             (fun lst (entry: DeckStatsCardEntry) ->
@@ -155,4 +156,4 @@ type InventoryLocation =
     | Custom of CustomLocation
     | Fallback
 
-type LocationWithCards = (InventoryLocation * CardEntry list) list
+type LocationWithCards = (InventoryLocation * OldAmountable<CardEntry> list) list

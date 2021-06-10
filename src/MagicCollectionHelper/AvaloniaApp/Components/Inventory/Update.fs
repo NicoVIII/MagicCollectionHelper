@@ -10,7 +10,13 @@ open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
-let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry list) (msg: Msg) (state: State) =
+let perform
+    (setData: SetDataMap)
+    (infoMap: CardInfoMap)
+    (entries: OldAmountable<CardEntry> list)
+    (msg: Msg)
+    (state: State)
+    =
     match msg with
     | AsyncError error -> raise error
     | TakeInventory ->
@@ -86,9 +92,16 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
                     let cards =
                         entries
                         |> List.choose
-                            (fun entry ->
+                            (fun oldAmountable ->
+                                let entry = oldAmountable.data
+
                                 Map.tryFind (entry.card.set, entry.card.number) infoMap
-                                |> Option.map (CardEntryWithInfo.create entry))
+                                |> Option.map
+                                    (fun cardInfo ->
+                                        let mapper =
+                                            (fun oldAmountable -> CardEntryWithInfo.create oldAmountable cardInfo)
+
+                                        OldAmountable.map mapper oldAmountable))
 
                     (location, cards))
             |> List.choose
@@ -96,7 +109,9 @@ let perform (setData: SetDataMap) (infoMap: CardInfoMap) (entries: CardEntry lis
                     let groupBy sortBy entries =
                         entries
                         |> List.groupBy
-                            (fun entry ->
+                            (fun oldAmountable ->
+                                let entry = oldAmountable.data
+
                                 match sortBy with
                                 | ByCmc -> $"CmC {entry.info.cmc}"
                                 | BySet -> $"Set {entry.info.set.Value}"

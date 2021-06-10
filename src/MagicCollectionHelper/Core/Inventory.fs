@@ -82,16 +82,16 @@ module Inventory =
             |> List.map (fun fnc -> fnc rules)
             |> List.forall id
 
-    let fitsInLocation (locCardMap: Map<InventoryLocation, CardWithInfo list>) card location =
-        let cardList = locCardMap.Item(Custom location)
+    let fitsInLocation (locCardMap: Map<InventoryLocation, Oldable<CardWithInfo> list>) card location =
+        let cardList =
+            locCardMap.Item(Custom location)
+            |> List.map Oldable.data
 
         Rules.fitsAll cardList card location.rules
 
     let determineLocation locCardMap locations card =
         locations
         |> List.tryFind (fitsInLocation locCardMap card)
-
-    let newEntryForCard (card: Card) : CardEntry = { amount = 1u; card = card }
 
     let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
         let entry = entryWithInfo.entry
@@ -154,7 +154,7 @@ module Inventory =
             |> Option.defaultValue (List.length language)
             |> string
 
-    let sortEntries setData location (entries: CardEntryWithInfo list) =
+    let sortEntries setData location entries =
         let random = Random()
 
         let sortRules =
@@ -162,15 +162,15 @@ module Inventory =
             | Custom location -> location.sortBy
             | Fallback -> [ ByName ]
 
-        let sortBy (e: CardEntryWithInfo) =
+        let sortBy (e: OldAmountable<CardEntryWithInfo>) =
             sortRules
-            |> List.map (getSortByValue setData e)
+            |> List.map (getSortByValue setData e.data)
             // We add a random factor at the end
             |> (fun lst -> List.append lst [ random.Next(0, 10000) |> sprintf "%04i" ])
 
         List.sortBy sortBy entries
 
-    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: CardEntry list) =
+    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: OldAmountable<CardEntry> list) =
         let mutable locCardMap =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
@@ -187,12 +187,17 @@ module Inventory =
             entries
             // We can consider a card only for inventory, if we have the info
             |> List.choose
-                (fun (entry: CardEntry) ->
+                (fun (oldable: OldAmountable<CardEntry>) ->
+                    let entry = oldable.data
+                    let amountOld = oldable.amountOld
+
                     Map.tryFind (entry.card.set, entry.card.number) infoMap
-                    |> Option.map (fun info -> { entry = entry; info = info }))
+                    |> Option.map (fun info -> OldAmountable.create amountOld { entry = entry; info = info }))
             // TODO: generalize and make configurable
             |> List.sortBy
-                (fun entryWithInfo ->
+                (fun oldAmountable ->
+                    let entryWithInfo = oldAmountable.data
+
                     [
                       // Language
                       match entryWithInfo.entry.card.language.Value with
@@ -211,18 +216,36 @@ module Inventory =
                       // Random
                       random.Next(0, 10000) |> string ])
 
-        for entryWithInfo in entriesWithInfo do
+        for oldAmountable in entriesWithInfo do
+            let entryWithInfo = oldAmountable.data
+
             let cardWithInfo =
                 CardWithInfo.create entryWithInfo.entry.card entryWithInfo.info
 
-            for _ = 1 to (int) entryWithInfo.entry.amount do
+            let old = Oldable.create true cardWithInfo
+
+            let notOld = Oldable.create false cardWithInfo
+
+            // for .. to does not work for uint
+            // BEWARE: Very unfunctional code ahead!
+            let mutable i = 0u
+
+            while i < entryWithInfo.entry.amount do
+                let oldable =
+                    if i < oldAmountable.amountOld then
+                        old
+                    else
+                        notOld
+
                 let location =
                     determineLocation locCardMap locations cardWithInfo
 
                 match location with
                 | Some location ->
-                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> cardWithInfo :: l)) locCardMap
-                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> cardWithInfo :: l)) locCardMap
+                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> oldable :: l)) locCardMap
+                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> oldable :: l)) locCardMap
+
+                i <- i + 1u
 
         // Collapse into entries again and sort by location rules
         locCardMap
@@ -231,7 +254,7 @@ module Inventory =
                 cardList
                 |> CardEntryWithInfo.collapseCardList
                 |> sortEntries setData location
-                |> List.map CardEntryWithInfo.entry)
+                |> List.map (OldAmountable.map CardEntryWithInfo.entry))
 
         // We now convert the map back into a list (order matters!) and sort it
         |> Map.toList

@@ -27,9 +27,10 @@ let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : I
 
     let inventoryableAmount =
         List.sumBy
-            (function
-            | (entry: CardEntry) when Map.containsKey (entry.card.set, entry.card.number) infoMap -> entry.amount
-            | _ -> 0u)
+            (OldAmountable.data
+             >> function
+             | (entry: CardEntry) when Map.containsKey (entry.card.set, entry.card.number) infoMap -> entry.amount
+             | _ -> 0u)
             entries
 
     let cardAmount =

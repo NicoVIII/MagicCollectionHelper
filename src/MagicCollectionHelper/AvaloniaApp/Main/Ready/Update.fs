@@ -16,9 +16,7 @@ module Update =
             match entries with
             | Some entries ->
                 let state =
-                    state
-                    |> setl StateLenses.dsEntries entries
-                    |> setl StateLenses.entries []
+                    state |> setl StateLenses.dsEntries entries
 
                 let fnc () =
                     let cardInfo = getl StateLenses.cardInfo state
@@ -58,8 +56,16 @@ module Update =
 
             state, Cmd.none
         | SaveEntries entries ->
+            let oldEntries =
+                state
+                |> getl StateLenses.entries
+                |> List.map OldAmountable.data
+
+            let comparedEntries =
+                CardEntry.compareLists oldEntries entries
+
             let state =
-                state |> setl StateLenses.entries entries
+                state |> setl StateLenses.entries comparedEntries
 
             state, Cmd.none
         | CollectionMsg msg ->
