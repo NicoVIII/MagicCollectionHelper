@@ -21,20 +21,23 @@ module CardTypes =
     /// The identifier for a language, typically the language a card is in
     type Language =
         | Language of string
-        static member unwrap(Language x) = x
-        member this.Value = Language.unwrap this
+        member this.Value =
+            let (Language v) = this
+            v
 
     /// The number for collectors of a card inside a given set
     type CollectorNumber =
         | CollectorNumber of string
-        static member unwrap(CollectorNumber x) = x
-        member this.Value = CollectorNumber.unwrap this
+        member this.Value =
+            let (CollectorNumber v) = this
+            v
 
     /// The identifier of a magic set
     type MagicSet =
         | MagicSet of string
-        static member unwrap(MagicSet x) = x
-        member this.Value = MagicSet.unwrap this
+        member this.Value =
+            let (MagicSet v) = this
+            v
 
     type ColorIdentity = Set<Color>
 
