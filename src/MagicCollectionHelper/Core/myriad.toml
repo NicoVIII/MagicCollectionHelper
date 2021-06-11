@@ -1,5 +1,5 @@
-["cards"]
-namespace = "MagicCollectionHelper.Core.Types.Generated"
+["core"]
+namespace = "MagicCollectionHelper.Core"
 
 ["types"]
 namespace = "MagicCollectionHelper.Core.Types"

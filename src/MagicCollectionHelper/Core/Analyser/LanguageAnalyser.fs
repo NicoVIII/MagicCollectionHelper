@@ -1,7 +1,5 @@
 namespace MagicCollectionHelper.Core
 
-open MagicCollectionHelper.Core.Types
-
 module LanguageAnalyser =
     type Result = Map<Language, uint>
 
@@ -9,9 +7,9 @@ module LanguageAnalyser =
 
     type Preferences = { dozenalize: bool }
 
-    let private createEmpty (): Result = Map.empty
+    let private createEmpty () : Result = Map.empty
 
-    let private collect _ (data: CollectData) (entry: DeckStatsCardEntry): Result =
+    let private collect _ (data: CollectData) (entry: DeckStatsCardEntry) : Result =
         // We skip cards without language
         match entry.language with
         | Some language ->
@@ -24,7 +22,7 @@ module LanguageAnalyser =
             data |> Map.add language amount
         | None -> data
 
-    let private postprocess (_: SetDataMap) (data: CollectData): Result = data
+    let private postprocess (_: SetDataMap) (data: CollectData) : Result = data
 
     let print (settings: Preferences) (result: Result) =
         let p = sprintf

@@ -9,23 +9,24 @@ type ViewMode =
     | Inventory
     | Preferences
 
-[<Generator.Lenses("main.ready", "MagicCollectionHelper.Core.Types.Lens")>]
+[<Generator.Lenses("main.ready", "MagicCollectionHelper.Core.Lens")>]
 type CommonState =
     { analyseText: string
-      cardInfo: MagicCollectionHelper.Core.Types.CardInfoMap
-      dsEntries: MagicCollectionHelper.Core.Types.DeckStatsCardEntry list
-      entries: MagicCollectionHelper.Core.Types.OldAmountable<MagicCollectionHelper.Core.Types.CardEntry> list
-      prefs: MagicCollectionHelper.Core.Types.Prefs
-      setData: MagicCollectionHelper.Core.Types.SetDataMap
+      cardInfo: MagicCollectionHelper.Core.CardTypes.CardInfoMap
+      dsEntries: MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list
+      entries: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.CardEntry> list
+      prefs: MagicCollectionHelper.Core.DomainTypes.Prefs
+      setData: MagicCollectionHelper.Core.DomainTypes.SetDataMap
       viewMode: ViewMode }
 
-[<Generator.Lenses("main.ready", "MagicCollectionHelper.Core.Types.Lens")>]
+[<Generator.Lenses("main.ready", "MagicCollectionHelper.Core.Lens")>]
 type State =
     { common: CommonState
       collection: MagicCollectionHelper.AvaloniaApp.Components.Collection.State
       inventory: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State }
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
+
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components
 

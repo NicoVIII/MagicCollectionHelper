@@ -6,7 +6,7 @@ open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Media
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory

@@ -4,7 +4,7 @@ open Avalonia.Controls
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated

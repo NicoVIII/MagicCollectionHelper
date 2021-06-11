@@ -8,16 +8,16 @@ type Loadable<'a> =
     | Import
     | Ready of 'a
 
-[<Generator.Lenses("main.loading", "MagicCollectionHelper.Core.Types.Lens")>]
+[<Generator.Lenses("main.loading", "MagicCollectionHelper.Core.Lens")>]
 type State =
-    { cardInfo: Loadable<MagicCollectionHelper.Core.Types.CardInfoMap>
-      dsEntries: Loadable<MagicCollectionHelper.Core.Types.DeckStatsCardEntry list>
-      entries: Loadable<MagicCollectionHelper.Core.Types.CardEntry list>
-      setData: Loadable<MagicCollectionHelper.Core.Types.SetDataMap> }
+    { cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
+      dsEntries: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>
+      entries: Loadable<MagicCollectionHelper.Core.CardTypes.CardEntry list>
+      setData: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap> }
 
 open Elmish
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 [<Generator.DuCases("main.loading")>]
 type Msg =

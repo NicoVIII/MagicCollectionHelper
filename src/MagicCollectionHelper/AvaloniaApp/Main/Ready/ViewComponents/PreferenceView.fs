@@ -1,12 +1,14 @@
 namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 open Avalonia.Controls
+
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 
+open MagicCollectionHelper.Core
+
 open MagicCollectionHelper.AvaloniaApp.Main.Ready
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
-open MagicCollectionHelper.Core.Types
 
 module PreferenceView =
     let render (state: State) (dispatch: Dispatch) : IView =

@@ -3,8 +3,6 @@ module MagicCollectionHelper.AvaloniaApp.Components.Inventory.Update
 open Elmish
 
 open MagicCollectionHelper.Core
-open MagicCollectionHelper.Core.Types
-open MagicCollectionHelper.Core.Types.Generated
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory

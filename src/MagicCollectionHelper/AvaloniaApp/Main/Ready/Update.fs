@@ -5,7 +5,6 @@ open System
 
 open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Import
-open MagicCollectionHelper.Core.Types
 
 open MagicCollectionHelper.AvaloniaApp.Components
 

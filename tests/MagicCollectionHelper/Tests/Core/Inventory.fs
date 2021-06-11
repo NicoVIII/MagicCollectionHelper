@@ -3,7 +3,6 @@ module MagicCollectionHelper.Tests.Core.Inventory
 open Expecto
 
 open MagicCollectionHelper.Core
-open MagicCollectionHelper.Core.Types
 
 // Global card info for the tests
 let cardInfo =

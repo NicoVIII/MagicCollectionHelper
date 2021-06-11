@@ -1,0 +1,85 @@
+namespace MagicCollectionHelper.Core
+
+[<AutoOpen>]
+module DomainTypesModules =
+    module DeckStatsCardEntry =
+        let toEntry cardInfoMap (entry: DeckStatsCardEntry) =
+            match entry.set, entry.number, entry.language with
+            | Some set, Some number, Some lang ->
+                Card.create entry.foil lang number set
+                |> CardEntry.create entry.amount
+                |> Some
+            // We try to determine the number with name and set
+            | Some set, None, Some lang ->
+                cardInfoMap
+                |> Map.tryFind (entry.name, set)
+                |> Option.map
+                    (fun info ->
+                        Card.create entry.foil lang info.collectorNumber set
+                        |> CardEntry.create entry.amount)
+            | _ -> None
+
+        let listToEntries cardInfoMap (entries: DeckStatsCardEntry list) =
+            // We change the map to improve lookup perf
+            let cardInfoMap =
+                cardInfoMap
+                |> Map.toList
+                |> List.map snd
+                |> List.groupBy (fun (info: CardInfo) -> (info.name, info.set))
+                |> List.choose
+                    (fun (key, infoList) ->
+                        match infoList with
+                        | [ info ] -> (key, info) |> Some
+                        // Kein (eindeutiges) Ergebnis gefunden
+                        | _ -> None)
+                |> Map.ofList
+
+            entries
+            // We only take entries with enough info
+            |> List.fold
+                (fun lst (entry: DeckStatsCardEntry) ->
+                    match toEntry cardInfoMap entry with
+                    | Some entry -> entry :: lst
+                    | None -> lst)
+                []
+            // We remove now all duplicates
+            |> List.groupBy (fun entry -> entry.card)
+            |> List.map
+                (fun (card, entryList) ->
+                    { amount = List.sumBy (fun (entry: CardEntry) -> entry.amount) entryList
+                      card = card })
+            |> List.rev
+
+        let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =
+            async { return listToEntries cardInfoMap entries }
+
+    module Analyser =
+        let create emptyData collect postprocess print =
+            { emptyData = emptyData
+              collect = collect
+              postprocess = postprocess
+              print = print }
+
+    module Rules =
+        let empty =
+            { inSet = None
+              inLanguage = None
+              isFoil = None
+              isToken = None
+              typeContains = None
+              typeNotContains = None
+              limit = None
+              limitExact = None
+              rarity = None
+              colorIdentity = None }
+
+        let withInSet v rules = { rules with inSet = Some v }
+        let withInLanguage v rules = { rules with inLanguage = Some v }
+        let withIsFoil v rules = { rules with isFoil = Some v }
+        let withIsToken v rules = { rules with isToken = Some v }
+        let withTypeContains v rules = { rules with typeContains = Some v }
+        let withTypeNotContains v rules = { rules with typeNotContains = Some v }
+        let withLimit v rules = { rules with limit = Some v }
+        let withLimitExact v rules = { rules with limitExact = Some v }
+        let withRarity v rules : Rules = { rules with rarity = Some v }
+        let withColorIdentity v rules : Rules = { rules with colorIdentity = Some v }

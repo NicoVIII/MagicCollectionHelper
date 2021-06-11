@@ -12,10 +12,12 @@
     <Compile Include="Types/Cards.Generated.fs">
       <MyriadFile>Types/Cards.fs</MyriadFile>
     </Compile>
+    <Compile Include="Types/Cards.Modules.fs"/>
     <Compile Include="Types/Domain.fs" />
     <Compile Include="Types/Domain.Generated.fs">
       <MyriadFile>Types/Domain.fs</MyriadFile>
     </Compile>
+    <Compile Include="Types/Domain.Modules.fs"/>
 
     <Compile Include="Helper.fs" />
     <Compile Include="SystemInfo.fs" />

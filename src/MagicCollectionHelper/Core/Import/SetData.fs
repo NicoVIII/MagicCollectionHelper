@@ -5,7 +5,6 @@ open FSharp.Json
 open System.IO
 
 open MagicCollectionHelper.Core
-open MagicCollectionHelper.Core.Types
 
 module SetData =
     type SetDataCSV =

@@ -1,7 +1,5 @@
 namespace MagicCollectionHelper.Core
 
-open MagicCollectionHelper.Core.Types
-
 module Analyser =
     /// Combine analysers to use same loop for collection
     let combine analyser1 analyser2 =
@@ -35,14 +33,14 @@ module Analyser =
         |> analyser.print prefs
 
     let analyse setData config data =
-        let basicPrefs: BasicAnalyser.Preferences = { dozenalize = config.dozenalize }
+        let basicPrefs : BasicAnalyser.Preferences = { dozenalize = config.dozenalize }
 
-        let setPrefs: SetAnalyser.Preferences =
+        let setPrefs : SetAnalyser.Preferences =
             { missingPercent = config.missingPercent
               dozenalize = config.dozenalize
               withFoils = config.setWithFoils }
 
-        let langPrefs: LanguageAnalyser.Preferences = { dozenalize = config.dozenalize }
+        let langPrefs : LanguageAnalyser.Preferences = { dozenalize = config.dozenalize }
 
         // Combine all analysers
         let analyser =

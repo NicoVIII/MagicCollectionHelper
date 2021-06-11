@@ -1,6 +1,6 @@
 namespace MagicCollectionHelper.AvaloniaApp
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp
 

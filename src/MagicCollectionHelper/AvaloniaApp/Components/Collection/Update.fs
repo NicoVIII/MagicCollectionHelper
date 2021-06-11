@@ -4,9 +4,7 @@ open Elmish
 
 open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Import
-open MagicCollectionHelper.Core.Types
 
-open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 
 let perform (msg: Msg) (state: State) =

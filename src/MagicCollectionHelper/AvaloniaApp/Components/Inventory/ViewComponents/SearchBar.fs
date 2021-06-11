@@ -5,7 +5,7 @@ open Avalonia.Layout
 
 open Avalonia.FuncUI.DSL
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory

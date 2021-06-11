@@ -1,9 +1,5 @@
 namespace MagicCollectionHelper.Core
 
-open MagicCollectionHelper.Core.Types
-
-open System.Text
-
 module BasicAnalyser =
     type Result =
         { amount: uint
@@ -21,7 +17,7 @@ module BasicAnalyser =
 
     type Preferences = { dozenalize: bool }
 
-    let private createEmpty (): CollectData =
+    let private createEmpty () : CollectData =
         { amount = 0u
           uniqueWithSet = Set.empty
           foils = 0u
@@ -55,7 +51,7 @@ module BasicAnalyser =
               withSet = withSet
               withLanguage = withLanguage }
 
-    let postprocess (_: SetDataMap) data: Result =
+    let postprocess (_: SetDataMap) data : Result =
         { amount = data.amount
           uniqueWithSet = data.uniqueWithSet |> Set.count |> uint
           withSet = data.withSet

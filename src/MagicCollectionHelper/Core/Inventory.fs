@@ -2,9 +2,6 @@ namespace MagicCollectionHelper.Core
 
 open System
 
-open MagicCollectionHelper.Core.Types
-open MagicCollectionHelper.Core.Types.Generated
-
 [<RequireQualifiedAccess>]
 module Inventory =
     module Rules =

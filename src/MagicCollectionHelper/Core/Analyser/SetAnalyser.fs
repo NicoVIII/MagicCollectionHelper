@@ -1,9 +1,6 @@
 namespace MagicCollectionHelper.Core
 
-open System.Text
-
 open MagicCollectionHelper.Core.TryParser
-open MagicCollectionHelper.Core.Types
 
 module SetAnalyser =
     type CardSetData =

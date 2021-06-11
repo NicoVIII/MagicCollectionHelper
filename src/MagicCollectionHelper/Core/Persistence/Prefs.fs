@@ -3,7 +3,6 @@ namespace MagicCollectionHelper.Core.Persistence
 open TypedPersistence.Json
 
 open MagicCollectionHelper.Core
-open MagicCollectionHelper.Core.Types
 
 module Prefs =
     let fileName = "settings.json"

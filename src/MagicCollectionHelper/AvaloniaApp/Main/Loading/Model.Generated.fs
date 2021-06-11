@@ -7,30 +7,30 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Main.Loading.Generated
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Main.Loading
     let cardInfo =
-        MagicCollectionHelper.Core.Types.Lens(
+        MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.cardInfo),
-            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.Types.CardInfoMap>) ->
+            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>) ->
                 { x with cardInfo = value })
         )
 
     let dsEntries =
-        MagicCollectionHelper.Core.Types.Lens(
+        MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.dsEntries),
-            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.Types.DeckStatsCardEntry list>) ->
+            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>) ->
                 { x with dsEntries = value })
         )
 
     let entries =
-        MagicCollectionHelper.Core.Types.Lens(
+        MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.entries),
-            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.Types.CardEntry list>) ->
+            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.CardTypes.CardEntry list>) ->
                 { x with entries = value })
         )
 
     let setData =
-        MagicCollectionHelper.Core.Types.Lens(
+        MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.setData),
-            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.Types.SetDataMap>) ->
+            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap>) ->
                 { x with setData = value })
         )
 namespace rec MagicCollectionHelper.AvaloniaApp.Main.Loading.Generated

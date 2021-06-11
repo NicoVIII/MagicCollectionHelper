@@ -1,12 +1,12 @@
 namespace MagicCollectionHelper.Core.Import
 
+open FSharp.Data
+open System.IO
+
+open MagicCollectionHelper.Core
+
 [<RequireQualifiedAccess>]
 module Collection =
-    open FSharp.Data
-    open System.IO
-
-    open MagicCollectionHelper.Core.Types
-
     type Collection = CsvProvider<"./example.csv">
 
     let private rowToEntry (row: Collection.Row) : DeckStatsCardEntry =

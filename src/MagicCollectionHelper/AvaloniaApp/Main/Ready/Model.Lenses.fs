@@ -1,6 +1,6 @@
 namespace MagicCollectionHelper.AvaloniaApp.Main.Ready
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp.Main.Ready.Generated
 

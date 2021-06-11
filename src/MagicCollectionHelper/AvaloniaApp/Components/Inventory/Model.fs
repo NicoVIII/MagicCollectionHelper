@@ -6,20 +6,20 @@ type ViewMode =
     | Empty
     | Edit
     | Loading
-    | Location of MagicCollectionHelper.Core.Types.InventoryLocation option
+    | Location of MagicCollectionHelper.Core.DomainTypes.InventoryLocation option
 
 type LocationWithHungTree =
-    MagicCollectionHelper.Core.Types.InventoryLocation * MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.Types.OldAmountable<MagicCollectionHelper.Core.Types.CardEntryWithInfo> list>
+    MagicCollectionHelper.Core.DomainTypes.InventoryLocation * MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.CardEntryWithInfo> list>
 
-[<Generator.Lenses("components.inventory", "MagicCollectionHelper.Core.Types.Lens")>]
+[<Generator.Lenses("components.inventory", "MagicCollectionHelper.Core.Lens")>]
 type State =
     { filteredInventory: LocationWithHungTree list
-      inventory: MagicCollectionHelper.Core.Types.LocationWithCards
-      locations: MagicCollectionHelper.Core.Types.CustomLocation list
+      inventory: MagicCollectionHelper.Core.DomainTypes.LocationWithCards
+      locations: MagicCollectionHelper.Core.DomainTypes.CustomLocation list
       search: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search
       viewMode: ViewMode }
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 [<Generator.DuCases("components.inventory")>]
 type Msg =

@@ -11,8 +11,6 @@ module CardData =
     open System.IO
 
     open MagicCollectionHelper.Core
-    open MagicCollectionHelper.Core.Types
-    open MagicCollectionHelper.Core.Types.Generated
 
     type BulkDataDefaultCardsResponse = { download_uri: string }
 

@@ -7,13 +7,13 @@ namespace rec MagicCollectionHelper.AvaloniaApp
 module SearchLenses =
     open MagicCollectionHelper.AvaloniaApp.DomainTypes
     let text =
-        MagicCollectionHelper.Core.Types.Lens(
+        MagicCollectionHelper.Core.Lens(
             (fun (x: Search) -> x.text),
             (fun (x: Search) (value: string) -> { x with text = value })
         )
 
     let old =
-        MagicCollectionHelper.Core.Types.Lens(
+        MagicCollectionHelper.Core.Lens(
             (fun (x: Search) -> x.old),
             (fun (x: Search) (value: bool option) -> { x with old = value })
         )

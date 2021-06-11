@@ -2,9 +2,9 @@ namespace MagicCollectionHelper.AvaloniaApp.Components.Collection
 
 open Myriad.Plugins
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
-[<Generator.Lenses("components-collection", "MagicCollectionHelper.Core.Types.Lens")>]
+[<Generator.Lenses("components-collection", "MagicCollectionHelper.Core.Lens")>]
 type State = { loadInProgress: bool }
 
 [<Generator.DuCases("components-collection")>]

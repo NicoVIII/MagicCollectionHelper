@@ -4,7 +4,7 @@ open Avalonia.Controls
 open Avalonia.FuncUI.DSL
 open Avalonia.Layout
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 module ViewHelper =
     /// A node of the HungTree. It contains a key and another tree

@@ -1,12 +1,11 @@
 module MagicCollectionHelper.AvaloniaApp.Main.Ready.View
 
 open Avalonia.Controls
-open Avalonia.Controls.Primitives
+
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
-open Avalonia.Layout
 
-open MagicCollectionHelper.Core.Types
+open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents

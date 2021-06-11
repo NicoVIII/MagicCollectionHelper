@@ -1,13 +1,15 @@
 namespace MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 
 open Avalonia.Controls
-open Avalonia.FuncUI.DSL
-open Avalonia.FuncUI.Types
 open Avalonia.Layout
 open Avalonia.Media
 
+open Avalonia.FuncUI.DSL
+open Avalonia.FuncUI.Types
+
+open MagicCollectionHelper.Core
+
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
-open MagicCollectionHelper.Core.Types
 
 module LocationEdit =
     let inSetLine _ _ inSet =
