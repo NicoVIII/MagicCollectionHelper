@@ -43,7 +43,13 @@ module ViewHelper =
         let sumUpCards search =
             HungTree.sumBy (
                 List.filter (fun oldableEntry -> Search.fits search oldableEntry)
-                >> List.sumBy (fun oldableEntry -> oldableEntry.data.entry.amount)
+                >> List.sumBy
+                    (fun oldableEntry ->
+                        let amount = oldableEntry.data.entry.amount
+
+                        match search.old with
+                        | Some false -> amount - oldableEntry.amountOld
+                        | _ -> amount)
             )
 
     let label row label =
