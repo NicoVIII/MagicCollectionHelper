@@ -61,7 +61,7 @@ module Update =
                 |> List.map OldAmountable.data
 
             let comparedEntries =
-                CardEntry.compareLists oldEntries entries
+                AgedCardEntry.determineCardAge oldEntries entries
 
             let state =
                 state |> setl StateLenses.entries comparedEntries

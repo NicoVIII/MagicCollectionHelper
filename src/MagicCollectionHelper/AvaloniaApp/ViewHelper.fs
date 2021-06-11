@@ -44,11 +44,11 @@ module ViewHelper =
             HungTree.sumBy (
                 List.filter (fun oldableEntry -> Search.fits search oldableEntry)
                 >> List.sumBy
-                    (fun oldableEntry ->
-                        let amount = oldableEntry.data.entry.amount
+                    (fun agedEntryWithInfo ->
+                        let amount = agedEntryWithInfo.data.data.amount
 
                         match search.old with
-                        | Some false -> amount - oldableEntry.amountOld
+                        | Some false -> amount - agedEntryWithInfo.data.amountOld
                         | _ -> amount)
             )
 

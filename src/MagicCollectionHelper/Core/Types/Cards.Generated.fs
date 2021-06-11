@@ -4,6 +4,43 @@
 //------------------------------------------------------------------------------
 namespace rec MagicCollectionHelper.Core
 
+module Card =
+    open MagicCollectionHelper.Core.CardTypes
+    let foil (x: Card) = x.foil
+    let language (x: Card) = x.language
+    let number (x: Card) = x.number
+    let set (x: Card) = x.set
+    let create (foil: bool) (language: Language) (number: CollectorNumber) (set: MagicSet) : Card =
+        { foil = foil
+          language = language
+          number = number
+          set = set }
+
+    let map
+        (mapfoil: bool -> bool)
+        (maplanguage: Language -> Language)
+        (mapnumber: CollectorNumber -> CollectorNumber)
+        (mapset: MagicSet -> MagicSet)
+        (record': Card)
+        =
+        { record' with
+              foil = mapfoil record'.foil
+              language = maplanguage record'.language
+              number = mapnumber record'.number
+              set = mapset record'.set }
+namespace rec MagicCollectionHelper.Core
+
+module CardEntry =
+    open MagicCollectionHelper.Core.CardTypes
+    let amount (x: CardEntry) = x.amount
+    let card (x: CardEntry) = x.card
+    let create (amount: uint) (card: Card) : CardEntry = { amount = amount; card = card }
+    let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': CardEntry) =
+        { record' with
+              amount = mapamount record'.amount
+              card = mapcard record'.card }
+namespace rec MagicCollectionHelper.Core
+
 module CardInfo =
     open MagicCollectionHelper.Core.CardTypes
     let name (x: CardInfo) = x.name
@@ -58,65 +95,6 @@ module CardInfo =
               rarity = maprarity record'.rarity
               typeLine = maptypeLine record'.typeLine
               cmc = mapcmc record'.cmc }
-namespace rec MagicCollectionHelper.Core
-
-module Card =
-    open MagicCollectionHelper.Core.CardTypes
-    let foil (x: Card) = x.foil
-    let language (x: Card) = x.language
-    let number (x: Card) = x.number
-    let set (x: Card) = x.set
-    let create (foil: bool) (language: Language) (number: CollectorNumber) (set: MagicSet) : Card =
-        { foil = foil
-          language = language
-          number = number
-          set = set }
-
-    let map
-        (mapfoil: bool -> bool)
-        (maplanguage: Language -> Language)
-        (mapnumber: CollectorNumber -> CollectorNumber)
-        (mapset: MagicSet -> MagicSet)
-        (record': Card)
-        =
-        { record' with
-              foil = mapfoil record'.foil
-              language = maplanguage record'.language
-              number = mapnumber record'.number
-              set = mapset record'.set }
-namespace rec MagicCollectionHelper.Core
-
-module CardEntry =
-    open MagicCollectionHelper.Core.CardTypes
-    let amount (x: CardEntry) = x.amount
-    let card (x: CardEntry) = x.card
-    let create (amount: uint) (card: Card) : CardEntry = { amount = amount; card = card }
-    let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': CardEntry) =
-        { record' with
-              amount = mapamount record'.amount
-              card = mapcard record'.card }
-namespace rec MagicCollectionHelper.Core
-
-module CardWithInfo =
-    open MagicCollectionHelper.Core.CardTypes
-    let card (x: CardWithInfo) = x.card
-    let info (x: CardWithInfo) = x.info
-    let create (card: Card) (info: CardInfo) : CardWithInfo = { card = card; info = info }
-    let map (mapcard: Card -> Card) (mapinfo: CardInfo -> CardInfo) (record': CardWithInfo) =
-        { record' with
-              card = mapcard record'.card
-              info = mapinfo record'.info }
-namespace rec MagicCollectionHelper.Core
-
-module CardEntryWithInfo =
-    open MagicCollectionHelper.Core.CardTypes
-    let entry (x: CardEntryWithInfo) = x.entry
-    let info (x: CardEntryWithInfo) = x.info
-    let create (entry: CardEntry) (info: CardInfo) : CardEntryWithInfo = { entry = entry; info = info }
-    let map (mapentry: CardEntry -> CardEntry) (mapinfo: CardInfo -> CardInfo) (record': CardEntryWithInfo) =
-        { record' with
-              entry = mapentry record'.entry
-              info = mapinfo record'.info }
 namespace rec MagicCollectionHelper.Core
 
 module Rarity =

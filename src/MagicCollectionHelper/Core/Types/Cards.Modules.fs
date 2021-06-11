@@ -2,22 +2,6 @@ namespace MagicCollectionHelper.Core
 
 [<AutoOpen>]
 module CardTypesModules =
-    module Oldable =
-        let create old data = { old = old; data = data }
-
-        let data (wrapper: Oldable<'a>) = wrapper.data
-
-        let map mapper wrapper =
-            create wrapper.old (mapper wrapper.data)
-
-    module OldAmountable =
-        let create amountOld data = { amountOld = amountOld; data = data }
-
-        let data wrapper = wrapper.data
-
-        let map mapper wrapper =
-            create wrapper.amountOld (mapper wrapper.data)
-
     module CollectorNumber =
         let fromString (s: string) =
             // We remove trailing zeros from the string
@@ -235,7 +219,52 @@ module CardTypesModules =
             |> Map.toList
             |> List.map (fun (card, amount) -> { card = card; amount = amount })
 
-        let compareLists oldList newList =
+    module Oldable =
+        let create old data = { old = old; data = data }
+
+        let data (wrapper: Oldable<'a>) = wrapper.data
+
+        let map mapper wrapper =
+            create wrapper.old (mapper wrapper.data)
+
+    module OldAmountable =
+        let create amountOld data : OldAmountable<'a> = { amountOld = amountOld; data = data }
+
+        let data (wrapper: OldAmountable<'a>) = wrapper.data
+
+        let inline map mapper (wrapper: OldAmountable<'a>) : OldAmountable<'b> =
+            create wrapper.amountOld (mapper wrapper.data)
+
+    module WithInfo =
+        let create info data = { data = data; info = info }
+
+        let data (withInfo: WithInfo<'a>) = withInfo.data
+
+        let inline map mapper (wrapper: WithInfo<'a>) : WithInfo<'b> =
+            create wrapper.info (mapper wrapper.data)
+
+        /// Checks if those two cards are rulewise the same. They do not have to be from the same set
+        let isSame withInfo1 withInfo2 =
+            withInfo1.info.oracleId = withInfo2.info.oracleId
+
+    module CardWithInfo =
+        let create card info : CardWithInfo = { data = card; info = info }
+
+        /// Checks if those two cards are rulewise the same. They do not have to be from the same set
+        let isSame (card1: CardWithInfo) (card2: CardWithInfo) = WithInfo.isSame card1 card2
+
+        let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) = Card.isExactSame card1.data card2.data
+
+    module CardEntryWithInfo =
+        let create entry info : CardEntryWithInfo = { data = entry; info = info }
+
+    module AgedCard =
+        let create old card : AgedCard = Oldable.create old card
+
+    module AgedCardEntry =
+        let create amountOld entry : AgedCardEntry = OldAmountable.create amountOld entry
+
+        let determineCardAge oldList newList =
             // We first create a map
             let oldMap =
                 oldList
@@ -252,38 +281,30 @@ module CardTypesModules =
 
                     OldAmountable.create amountOld entry)
 
-    module CardWithInfo =
-        let create card info = { card = card; info = info }
+    module AgedCardWithInfo =
+        let create info card : AgedCardWithInfo = WithInfo.create info card
 
-        /// Checks if those two cards are rulewise the same. They do not have to be from the same set
-        let isSame (card1: CardWithInfo) (card2: CardWithInfo) =
-            card1.info.oracleId = card2.info.oracleId
-
-        let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) = Card.isExactSame card1.card card2.card
-
-    module CardEntryWithInfo =
-        let create entry info = { entry = entry; info = info }
+    module AgedCardEntryWithInfo =
+        let create info entry : AgedCardEntryWithInfo = WithInfo.create info entry
 
         /// Takes a list of cards and creates entry out of equal cards
-        let collapseCardList (cardList: Oldable<CardWithInfo> list) =
+        let fromCardList (cardList: AgedCardWithInfo list) =
             cardList
             |> List.fold
                 (fun cardAmountMap card ->
                     Map.change
-                        card.data
+                        (WithInfo.map Oldable.data card)
                         (fun mapEntry ->
                             mapEntry
                             |> Option.defaultValue (0u, 0u)
-                            |> (fun (a, b) -> a + 1u, b + if card.old then 1u else 0u)
+                            |> (fun (a, b) -> a + 1u, b + if card.data.old then 1u else 0u)
                             |> Some)
                         cardAmountMap)
                 Map.empty
             |> Map.toList
             |> List.map
-                (fun (cardWithInfo, (amount, amountOld)) ->
-                    OldAmountable.create
-                        amountOld
-                        { info = cardWithInfo.info
-                          entry =
-                              { card = cardWithInfo.card
-                                amount = amount } })
+                (fun (cardWithInfo: CardWithInfo, (amount, amountOld)) ->
+                    cardWithInfo.data
+                    |> CardEntry.create amount
+                    |> AgedCardEntry.create amountOld
+                    |> create cardWithInfo.info)

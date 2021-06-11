@@ -65,10 +65,10 @@ module Inventory =
             fitsRule rules.limitExact rule
 
         let fitsAll cardsInLoc (cardWithInfo: CardWithInfo) rules =
-            [ fitsInSetRule cardWithInfo.card
-              fitsInLanguageRule cardWithInfo.card
-              fitsIsFoil cardWithInfo.card
-              fitsIsToken cardWithInfo.card
+            [ fitsInSetRule cardWithInfo.data
+              fitsInLanguageRule cardWithInfo.data
+              fitsIsFoil cardWithInfo.data
+              fitsIsToken cardWithInfo.data
               fitsTypeContains cardWithInfo.info
               fitsTypeNotContains cardWithInfo.info
               fitsColorIdentity cardWithInfo.info
@@ -79,10 +79,10 @@ module Inventory =
             |> List.map (fun fnc -> fnc rules)
             |> List.forall id
 
-    let fitsInLocation (locCardMap: Map<InventoryLocation, Oldable<CardWithInfo> list>) card location =
+    let fitsInLocation (locCardMap: Map<InventoryLocation, AgedCardWithInfo list>) card location =
         let cardList =
             locCardMap.Item(Custom location)
-            |> List.map Oldable.data
+            |> List.map (WithInfo.map Oldable.data)
 
         Rules.fitsAll cardList card location.rules
 
@@ -91,7 +91,7 @@ module Inventory =
         |> List.tryFind (fitsInLocation locCardMap card)
 
     let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
-        let entry = entryWithInfo.entry
+        let entry = entryWithInfo.data
         let info = entryWithInfo.info
 
         match sortBy with
@@ -159,16 +159,19 @@ module Inventory =
             | Custom location -> location.sortBy
             | Fallback -> [ ByName ]
 
-        let sortBy (e: OldAmountable<CardEntryWithInfo>) =
+        let sortBy (agedEntryWithInfo: AgedCardEntryWithInfo) =
+            let entryWithInfo =
+                WithInfo.map OldAmountable.data agedEntryWithInfo
+
             sortRules
-            |> List.map (getSortByValue setData e.data)
+            |> List.map (getSortByValue setData entryWithInfo)
             // We add a random factor at the end
             |> (fun lst -> List.append lst [ random.Next(0, 10000) |> sprintf "%04i" ])
 
-        List.sortBy sortBy entries
+        entries |> List.sortBy sortBy
 
-    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: OldAmountable<CardEntry> list) =
-        let mutable locCardMap =
+    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: AgedCardEntry list) =
+        let mutable locCardMap : Map<InventoryLocation, AgedCardWithInfo list> =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
 
@@ -180,16 +183,15 @@ module Inventory =
         // We sort the cards before trying to put them into locations
         let random = Random()
 
-        let entriesWithInfo =
+        let agedEntriesWithInfo =
             entries
             // We can consider a card only for inventory, if we have the info
             |> List.choose
-                (fun (oldable: OldAmountable<CardEntry>) ->
-                    let entry = oldable.data
-                    let amountOld = oldable.amountOld
+                (fun (agedEntry: AgedCardEntry) ->
+                    let entry = agedEntry.data
 
                     Map.tryFind (entry.card.set, entry.card.number) infoMap
-                    |> Option.map (fun info -> OldAmountable.create amountOld { entry = entry; info = info }))
+                    |> Option.map (fun info -> AgedCardEntryWithInfo.create info agedEntry))
             // TODO: generalize and make configurable
             |> List.sortBy
                 (fun oldAmountable ->
@@ -197,50 +199,50 @@ module Inventory =
 
                     [
                       // Language
-                      match entryWithInfo.entry.card.language.Value with
+                      match entryWithInfo.data.card.language.Value with
                       | "en" -> "0"
                       | "de" -> "1"
                       | _ -> "2"
                       // Foil
-                      if entryWithInfo.entry.card.foil then
+                      if entryWithInfo.data.card.foil then
                           "0"
                       else
                           "1"
                       // Set
-                      (Map.find entryWithInfo.entry.card.set setData)
+                      (Map.find entryWithInfo.data.card.set setData)
                           .date
-                      entryWithInfo.entry.card.number.Value
+                      entryWithInfo.data.card.number.Value
                       // Random
                       random.Next(0, 10000) |> string ])
 
-        for oldAmountable in entriesWithInfo do
-            let entryWithInfo = oldAmountable.data
+        for agedEntryWithInfo in agedEntriesWithInfo do
+            let getCard old =
+                WithInfo.map
+                    (fun (agedEntry: AgedCardEntry) -> AgedCard.create old agedEntry.data.card)
+                    agedEntryWithInfo
 
-            let cardWithInfo =
-                CardWithInfo.create entryWithInfo.entry.card entryWithInfo.info
-
-            let old = Oldable.create true cardWithInfo
-
-            let notOld = Oldable.create false cardWithInfo
+            let old = getCard true
+            let notOld = getCard false
 
             // for .. to does not work for uint
             // BEWARE: Very unfunctional code ahead!
             let mutable i = 0u
 
-            while i < entryWithInfo.entry.amount do
-                let oldable =
-                    if i < oldAmountable.amountOld then
+            while i < agedEntryWithInfo.data.data.amount do
+                let agedCard =
+                    if i < agedEntryWithInfo.data.amountOld then
                         old
                     else
                         notOld
 
                 let location =
-                    determineLocation locCardMap locations cardWithInfo
+                    WithInfo.map Oldable.data agedCard
+                    |> determineLocation locCardMap locations
 
                 match location with
                 | Some location ->
-                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> oldable :: l)) locCardMap
-                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> oldable :: l)) locCardMap
+                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> agedCard :: l)) locCardMap
+                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> agedCard :: l)) locCardMap
 
                 i <- i + 1u
 
@@ -249,9 +251,9 @@ module Inventory =
         |> Map.map
             (fun location cardList ->
                 cardList
-                |> CardEntryWithInfo.collapseCardList
+                |> AgedCardEntryWithInfo.fromCardList
                 |> sortEntries setData location
-                |> List.map (OldAmountable.map CardEntryWithInfo.entry))
+                |> List.map WithInfo.data)
 
         // We now convert the map back into a list (order matters!) and sort it
         |> Map.toList

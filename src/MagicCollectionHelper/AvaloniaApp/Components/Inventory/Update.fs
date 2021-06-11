@@ -92,16 +92,11 @@ let perform
                     let cards =
                         entries
                         |> List.choose
-                            (fun oldAmountable ->
-                                let entry = oldAmountable.data
+                            (fun agedEntry ->
+                                let entry = agedEntry.data
 
                                 Map.tryFind (entry.card.set, entry.card.number) infoMap
-                                |> Option.map
-                                    (fun cardInfo ->
-                                        let mapper =
-                                            (fun oldAmountable -> CardEntryWithInfo.create oldAmountable cardInfo)
-
-                                        OldAmountable.map mapper oldAmountable))
+                                |> Option.map (fun cardInfo -> AgedCardEntryWithInfo.create cardInfo agedEntry))
 
                     (location, cards))
             |> List.choose
@@ -109,24 +104,25 @@ let perform
                     let groupBy sortBy entries =
                         entries
                         |> List.groupBy
-                            (fun oldAmountable ->
-                                let entry = oldAmountable.data
+                            (fun (agedEntryWithInfo: AgedCardEntryWithInfo) ->
+                                let entry = agedEntryWithInfo.data.data
+                                let info = agedEntryWithInfo.info
 
                                 match sortBy with
-                                | ByCmc -> $"CmC {entry.info.cmc}"
-                                | BySet -> $"Set {entry.info.set.Value}"
-                                | ByColorIdentity -> ColorIdentity.toString entry.info.colorIdentity
-                                | ByName -> entry.info.name.Substring(0, 1)
-                                | ByCollectorNumber -> entry.info.collectorNumber.Value
+                                | ByCmc -> $"CmC {info.cmc}"
+                                | BySet -> $"Set {info.set.Value}"
+                                | ByColorIdentity -> ColorIdentity.toString info.colorIdentity
+                                | ByName -> info.name.Substring(0, 1)
+                                | ByCollectorNumber -> info.collectorNumber.Value
                                 | ByLanguage langList ->
-                                    let lang = entry.entry.card.language
+                                    let lang = entry.card.language
 
                                     if List.contains lang langList then
                                         lang.Value
                                     else
                                         "Other"
                                 | ByRarity rarities ->
-                                    List.tryFind (Set.contains entry.info.rarity) rarities
+                                    List.tryFind (Set.contains info.rarity) rarities
                                     |> function
                                     | Some set ->
                                         set
@@ -135,7 +131,7 @@ let perform
                                         |> String.concat " / "
                                     | None -> "Other"
                                 | ByTypeContains types ->
-                                    List.tryFind (fun (typ: string) -> entry.info.typeLine.Contains typ) types
+                                    List.tryFind (fun (typ: string) -> info.typeLine.Contains typ) types
                                     |> Option.defaultValue "Other")
 
                     let rec createTree sortBy entries =

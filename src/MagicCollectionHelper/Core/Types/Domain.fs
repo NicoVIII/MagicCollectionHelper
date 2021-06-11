@@ -74,4 +74,4 @@ module DomainTypes =
         | Custom of CustomLocation
         | Fallback
 
-    type LocationWithCards = (InventoryLocation * OldAmountable<CardEntry> list) list
+    type LocationWithCards = (InventoryLocation * AgedCardEntry list) list

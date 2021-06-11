@@ -4,12 +4,6 @@ open Myriad.Plugins
 
 [<AutoOpen>]
 module CardTypes =
-    /// Makes it possible to mark some type as old or not old
-    type Oldable<'a> = { data: 'a; old: bool }
-
-    /// Makes it possible to add an oldAmount to a type
-    type OldAmountable<'a> = { amountOld: uint; data: 'a }
-
     /// All colors which are important in Magic
     type Color =
         | White
@@ -50,6 +44,18 @@ module CardTypes =
         | Special
         | Bonus
 
+    /// A card identified by as few properties as possible
+    [<Generator.Fields("core")>]
+    type Card =
+        { foil: bool
+          language: Language
+          number: CollectorNumber
+          set: MagicSet }
+
+    /// A card entry, which is used to condense multiple cards into one card object and an amount
+    [<Generator.Fields("core")>]
+    type CardEntry = { amount: uint; card: Card }
+
     /// Additional info for a card
     [<Generator.Fields("core")>]
     type CardInfo =
@@ -65,20 +71,17 @@ module CardTypes =
 
     type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 
-    /// A card identified by as few properties as possible
-    [<Generator.Fields("core")>]
-    type Card =
-        { foil: bool
-          language: Language
-          number: CollectorNumber
-          set: MagicSet }
+    /// Makes it possible to mark some type as old or not old
+    type Oldable<'a> = { data: 'a; old: bool }
 
-    /// A card entry, which is used to condense multiple cards into one card object and an amount
-    [<Generator.Fields("core")>]
-    type CardEntry = { amount: uint; card: Card }
+    /// Makes it possible to add an oldAmount to a type
+    type OldAmountable<'a> = { amountOld: uint; data: 'a }
 
-    [<Generator.Fields("core")>]
-    type CardWithInfo = { card: Card; info: CardInfo }
+    type WithInfo<'a> = { data: 'a; info: CardInfo }
 
-    [<Generator.Fields("core")>]
-    type CardEntryWithInfo = { entry: CardEntry; info: CardInfo }
+    type CardWithInfo = WithInfo<Card>
+    type CardEntryWithInfo = WithInfo<CardEntry>
+    type AgedCard = Oldable<Card>
+    type AgedCardEntry = OldAmountable<CardEntry>
+    type AgedCardWithInfo = WithInfo<AgedCard>
+    type AgedCardEntryWithInfo = WithInfo<AgedCardEntry>

@@ -33,11 +33,11 @@ type LocCards =
       amount: uint
       cards: string seq }
 
-let cardItem (state: State) (oldableEntry: OldAmountable<CardEntryWithInfo>) =
-    let entryWithInfo = oldableEntry.data
-    let amountOld = oldableEntry.amountOld
-    let entry = entryWithInfo.entry
-    let info = entryWithInfo.info
+let cardItem (state: State) (agedEntryWithInfo: AgedCardEntryWithInfo) =
+    let agedEntry = agedEntryWithInfo.data
+    let info = agedEntryWithInfo.info
+    let entry = agedEntry.data
+    let amountOld = agedEntry.amountOld
     let set = entry.card.set
     let number = entry.card.number
     let name = info.name
@@ -46,7 +46,8 @@ let cardItem (state: State) (oldableEntry: OldAmountable<CardEntryWithInfo>) =
     let old = entry.amount = amountOld
 
     let brush =
-        let searched = Search.fits state.search oldableEntry
+        let searched =
+            Search.fits state.search agedEntryWithInfo
 
         match searched, old with
         | true, true -> Brushes.White

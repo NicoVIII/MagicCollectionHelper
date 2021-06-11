@@ -22,7 +22,7 @@ let card =
       number = CollectorNumber "242"
       set = MagicSet.create "M21" }
 
-let cardWithInfo = { card = card; info = cardInfo }
+let cardWithInfo = { data = card; info = cardInfo }
 
 // Helpers so that fantomas isn't screwing up the formatting
 let inventoryTests = testList "Inventory"
