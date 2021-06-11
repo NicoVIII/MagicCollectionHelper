@@ -6,10 +6,6 @@ open Avalonia.Layout
 
 open MagicCollectionHelper.Core.Types
 
-module String =
-    let iContains (haystack: string) (needle: string) =
-        (haystack.ToLower()).Contains(needle.ToLower())
-
 module ViewHelper =
     /// A node of the HungTree. It contains a key and another tree
     type HungTreeNode<'Key, 'Value> = 'Key * HungTree<'Key, 'Value>
@@ -44,11 +40,10 @@ module ViewHelper =
 
     // Specific version of HungTree, which we use for our expander structure
     module ExpanderTree =
-        let sumUpCards (search: string) =
+        let sumUpCards search =
             HungTree.sumBy (
-                List.map OldAmountable.data
-                >> List.filter (fun (entry: CardEntryWithInfo) -> String.iContains entry.info.name search)
-                >> List.sumBy (fun entry -> entry.entry.amount)
+                List.filter (fun oldableEntry -> Search.fits search oldableEntry)
+                >> List.sumBy (fun oldableEntry -> oldableEntry.data.entry.amount)
             )
 
     let label row label =

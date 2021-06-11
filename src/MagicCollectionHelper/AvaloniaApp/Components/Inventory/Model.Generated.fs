@@ -28,7 +28,7 @@ module StateLenses =
     let search =
         MagicCollectionHelper.Core.Types.Lens(
             (fun (x: State) -> x.search),
-            (fun (x: State) (value: string) -> { x with search = value })
+            (fun (x: State) (value: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search) -> { x with search = value })
         )
 
     let viewMode =
@@ -43,11 +43,11 @@ module Msg =
     let toString (x: Msg) =
         match x with
         | AsyncError _ -> "AsyncError"
+        | ChangeState _ -> "ChangeState"
         | TakeInventory -> "TakeInventory"
         | SaveInventory _ -> "SaveInventory"
         | OpenLocationEdit -> "OpenLocationEdit"
         | CloseLocationEdit -> "CloseLocationEdit"
-        | ChangeSearchString _ -> "ChangeSearchString"
         | FilterInventory _ -> "FilterInventory"
         | ChangeLocation _ -> "ChangeLocation"
         | UpdateLocationRules _ -> "UpdateLocationRules"
@@ -62,11 +62,11 @@ module Msg =
     let toTag (x: Msg) =
         match x with
         | AsyncError _ -> 0
-        | TakeInventory -> 1
-        | SaveInventory _ -> 2
-        | OpenLocationEdit -> 3
-        | CloseLocationEdit -> 4
-        | ChangeSearchString _ -> 5
+        | ChangeState _ -> 1
+        | TakeInventory -> 2
+        | SaveInventory _ -> 3
+        | OpenLocationEdit -> 4
+        | CloseLocationEdit -> 5
         | FilterInventory _ -> 6
         | ChangeLocation _ -> 7
         | UpdateLocationRules _ -> 8
@@ -74,6 +74,11 @@ module Msg =
     let isAsyncError (x: Msg) =
         match x with
         | AsyncError _ -> true
+        | _ -> false
+
+    let isChangeState (x: Msg) =
+        match x with
+        | ChangeState _ -> true
         | _ -> false
 
     let isTakeInventory (x: Msg) =
@@ -94,11 +99,6 @@ module Msg =
     let isCloseLocationEdit (x: Msg) =
         match x with
         | CloseLocationEdit -> true
-        | _ -> false
-
-    let isChangeSearchString (x: Msg) =
-        match x with
-        | ChangeSearchString _ -> true
         | _ -> false
 
     let isFilterInventory (x: Msg) =

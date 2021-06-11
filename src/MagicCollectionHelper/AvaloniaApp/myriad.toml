@@ -1,3 +1,6 @@
+["types"]
+namespace = "MagicCollectionHelper.AvaloniaApp"
+
 ["components-collection"]
 namespace = "MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated"
 

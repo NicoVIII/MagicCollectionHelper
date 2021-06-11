@@ -5,7 +5,6 @@ open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 open Avalonia.Media
-open System
 
 open MagicCollectionHelper.Core.Types
 
@@ -34,9 +33,9 @@ type LocCards =
       amount: uint
       cards: string seq }
 
-let cardItem (state: State) (oldAmountable: OldAmountable<CardEntryWithInfo>) =
-    let entryWithInfo = oldAmountable.data
-    let amountOld = oldAmountable.amountOld
+let cardItem (state: State) (oldableEntry: OldAmountable<CardEntryWithInfo>) =
+    let entryWithInfo = oldableEntry.data
+    let amountOld = oldableEntry.amountOld
     let entry = entryWithInfo.entry
     let info = entryWithInfo.info
     let set = entry.card.set
@@ -47,7 +46,7 @@ let cardItem (state: State) (oldAmountable: OldAmountable<CardEntryWithInfo>) =
     let old = entry.amount = amountOld
 
     let brush =
-        let searched = String.iContains name state.search
+        let searched = Search.fits state.search oldableEntry
 
         match searched, old with
         | true, true -> Brushes.White
@@ -111,7 +110,7 @@ let rec renderEntryTree state dispatch first tree =
 
                   Expander.create [
                       Expander.header name
-                      Expander.isExpanded (state.search.Length >= 3 && amount > 0u)
+                      Expander.isExpanded (amount > 0u)
                       Expander.content (renderEntryTree child)
                   ] ]
     | Leaf entries -> renderEntryList state entries
@@ -127,18 +126,6 @@ let renderEntryTreeForLocation state dispatch (location: InventoryLocation) tree
         )
     ]
 
-let searchBar state dispatch =
-    TextBox.create [
-        TextBox.dock Dock.Top
-        TextBox.text state.search
-        TextBox.onTextChanged (
-            (fun text ->
-                if state.search <> text then
-                    ChangeSearchString text |> dispatch),
-            OnChangeOf state.search
-        )
-    ]
-
 let locationItem state dispatch (location: InventoryLocation) tree =
     Border.create [
         Border.borderThickness (1., 0., 0., 0.)
@@ -146,7 +133,7 @@ let locationItem state dispatch (location: InventoryLocation) tree =
         Border.child (
             DockPanel.create [
                 DockPanel.children [
-                    searchBar state dispatch
+                    SearchBar.render state.search dispatch
                     renderEntryTreeForLocation state dispatch location tree
                 ]
             ]

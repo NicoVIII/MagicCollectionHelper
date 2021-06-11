@@ -6,6 +6,7 @@ open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Types
 open MagicCollectionHelper.Core.Types.Generated
 
+open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
@@ -19,6 +20,7 @@ let perform
     =
     match msg with
     | AsyncError error -> raise error
+    | ChangeState map -> map state, Cmd.none
     | TakeInventory ->
         let state =
             state |> setl StateLenses.viewMode Loading
@@ -190,10 +192,6 @@ let perform
             state |> setl StateLenses.inventory inventory
 
         (state, Cmd.ofMsg (FilterInventory inventory))
-    | ChangeSearchString term ->
-        let state = state |> setl StateLenses.search term
-
-        state, Cmd.none
     | ChangeLocation location ->
         let state =
             state

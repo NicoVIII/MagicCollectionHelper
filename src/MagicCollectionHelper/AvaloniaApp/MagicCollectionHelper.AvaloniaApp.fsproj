@@ -10,6 +10,15 @@
   <ItemGroup>
     <Compile Include="Config.fs" />
     <Compile Include="Icons.fs" />
+    <Compile Include="String.fs" />
+
+    <!-- Types -->
+    <Compile Include="Types/Types.fs" />
+    <Compile Include="Types/Types.Generated.fs">
+      <MyriadFile>Types/Types.fs</MyriadFile>
+    </Compile>
+    <Compile Include="Types/Types.Modules.fs" />
+
     <Compile Include="ViewHelper.fs" />
 
     <!-- Elements -->

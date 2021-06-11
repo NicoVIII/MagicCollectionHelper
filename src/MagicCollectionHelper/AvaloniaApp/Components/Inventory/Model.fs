@@ -16,7 +16,7 @@ type State =
     { filteredInventory: LocationWithHungTree list
       inventory: MagicCollectionHelper.Core.Types.LocationWithCards
       locations: MagicCollectionHelper.Core.Types.CustomLocation list
-      search: string
+      search: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search
       viewMode: ViewMode }
 
 open MagicCollectionHelper.Core.Types
@@ -24,11 +24,11 @@ open MagicCollectionHelper.Core.Types
 [<Generator.DuCases("components.inventory")>]
 type Msg =
     | AsyncError of exn
+    | ChangeState of (State -> State)
     | TakeInventory
     | SaveInventory of LocationWithCards
     | OpenLocationEdit
     | CloseLocationEdit
-    | ChangeSearchString of string
     | FilterInventory of LocationWithCards
     | ChangeLocation of InventoryLocation
     | UpdateLocationRules of CustomLocationName * (Rules -> Rules)
@@ -47,5 +47,5 @@ module Model =
         { inventory = []
           filteredInventory = []
           locations = locations
-          search = ""
+          search = { text = ""; old = None }
           viewMode = Empty }
