@@ -16,7 +16,7 @@ module Collection =
               row.Collector_number
               |> function
               | "" -> None
-              | nr -> nr |> CollectorNumber |> Some
+              | nr -> nr |> CollectorNumber.fromString |> Some
           foil = row.Is_foil.GetValueOrDefault() = 1
           language =
               row.Language

@@ -62,7 +62,6 @@ module DeckStatsCardEntry =
             |> Map.ofList
 
         entries
-        // We add oldness info
         // We only take entries with enough info
         |> List.fold
             (fun lst (entry: DeckStatsCardEntry) ->
@@ -70,6 +69,12 @@ module DeckStatsCardEntry =
                 | Some entry -> entry :: lst
                 | None -> lst)
             []
+        // We remove now all duplicates
+        |> List.groupBy (fun entry -> entry.card)
+        |> List.map
+            (fun (card, entryList) ->
+                { amount = List.sumBy (fun (entry: CardEntry) -> entry.amount) entryList
+                  card = card })
         |> List.rev
 
     let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =

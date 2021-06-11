@@ -310,7 +310,6 @@ module CardEntry =
         |> List.map (fun (card, amount) -> { card = card; amount = amount })
 
     let compareLists oldList newList =
-        // TODO: collapse duplicates
         // We first create a map
         let oldMap =
             oldList
