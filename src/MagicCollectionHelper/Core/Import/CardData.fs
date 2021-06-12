@@ -4,7 +4,6 @@ namespace MagicCollectionHelper.Core.Import
 module CardData =
     open FsHttp
     open FsHttp.DslCE
-    open FSharp.Data
     open FSharp.Json
     open Newtonsoft.Json.Linq
     open System
@@ -16,26 +15,13 @@ module CardData =
 
     let fetchBulkData (filePath: string) =
         async {
-            // Create directory, if it doesn't exist
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath))
-            |> ignore
-
             let! rawResponse = httpAsync { GET "https://api.scryfall.com/bulk-data/default_cards" }
 
             let response =
                 Response.toText rawResponse
                 |> Json.deserialize<BulkDataDefaultCardsResponse>
 
-            let! fileRequest = Http.AsyncRequestStream(response.download_uri)
-
-            use outputFile =
-                new FileStream(filePath, FileMode.Create)
-
-            do!
-                fileRequest.ResponseStream.CopyToAsync(outputFile)
-                |> Async.AwaitTask
-
-            return filePath
+            return! downloadFile response.download_uri filePath
         }
 
     let private tokenToColorSet (jToken: JToken) =
@@ -127,5 +113,7 @@ module CardData =
                 |> Seq.map (lineToInfo)
                 |> Seq.filter (fun l -> l.IsSome)
                 |> Seq.map (fun l -> l.Value)
-                |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
+                |> Seq.fold
+                    (fun map info -> Map.add (info.set, info.collectorNumber) info map)
+                    Map.empty
         }

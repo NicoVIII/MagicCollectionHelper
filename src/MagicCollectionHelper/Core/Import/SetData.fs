@@ -16,22 +16,7 @@ module SetData =
     type SetDataListCSV = { data: SetDataCSV list }
 
     let fetchSetData (filePath: string) =
-        async {
-            // Create directory, if it doesn't exist
-            Directory.CreateDirectory(Path.GetDirectoryName(filePath))
-            |> ignore
-
-            let! fileRequest = Http.AsyncRequestStream("https://api.scryfall.com/sets")
-
-            use outputFile =
-                new FileStream(filePath, FileMode.Create)
-
-            do!
-                fileRequest.ResponseStream.CopyToAsync(outputFile)
-                |> Async.AwaitTask
-
-            return filePath
-        }
+        async { return! downloadFile "https://api.scryfall.com/sets" filePath }
 
     let prepareImportFile () =
         let filePath =
@@ -61,8 +46,7 @@ module SetData =
                 |> (fun data -> data.data)
                 |> List.map
                     (fun setData ->
-                        let setCode =
-                            setData.code.ToUpper() |> MagicSet.create
+                        let setCode = setData.code.ToUpper() |> MagicSet.create
 
                         let setData =
                             { SetData.name = setData.name

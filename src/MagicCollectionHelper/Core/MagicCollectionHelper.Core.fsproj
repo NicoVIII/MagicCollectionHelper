@@ -35,6 +35,7 @@
 
     <!-- Imports -->
     <Compile Include="Import/Types.fs" />
+    <Compile Include="Import/Helper.fs" />
     <Compile Include="Import/CardData.fs" />
     <Compile Include="Import/Collection.fs" />
     <Compile Include="Import/SetData.fs" />
