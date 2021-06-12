@@ -18,7 +18,12 @@ let actionBar (infoMap: CardInfoMap) (entries: 'a list) (state: State) (dispatch
     ActionButtonBar.create [
         ActionButton.create
             { text = "Take inventory"
-              isEnabled = (not (infoMap.IsEmpty || entries.IsEmpty || state.viewMode = Loading))
+              isEnabled =
+                  (not (
+                      infoMap.IsEmpty
+                      || entries.IsEmpty
+                      || state.viewMode = Loading
+                  ))
               action = (fun _ -> TakeInventory |> dispatch)
               subPatch = Never }
     ]
@@ -32,10 +37,19 @@ let cardItem (state: State) (entry: AgedEntryWithInfo) =
     let amount = entry ^. AgedEntryWithInfoLenses.amount
     let amountOld = entry ^. AgedEntryWithInfoLenses.amountOld
     let foil = entry ^. AgedEntryWithInfoLenses.foil
-    let language = entry ^. AgedEntryWithInfoLenses.language
     let name = entry ^. AgedEntryWithInfoLenses.name
-    let number = entry ^. AgedEntryWithInfoLenses.number
-    let set = entry ^. AgedEntryWithInfoLenses.set
+
+    let langValue =
+        entry ^. AgedEntryWithInfoLenses.language
+        |> Language.unwrap
+
+    let numberValue =
+        entry ^. AgedEntryWithInfoLenses.number
+        |> CollectorNumber.unwrap
+
+    let setValue =
+        entry ^. AgedEntryWithInfoLenses.set
+        |> MagicSet.unwrap
 
     let star = if foil then "★" else " "
     let old = amount = amountOld
@@ -55,7 +69,7 @@ let cardItem (state: State) (entry: AgedEntryWithInfo) =
         CheckBox.fontFamily Config.monospaceFont
         CheckBox.foreground brush
         CheckBox.content (
-            $"{star}[%5s{set.Value}-%s{number.Value.PadLeft(3, '0')}]-{language.Value}"
+            $"{star}[%5s{setValue}-%s{numberValue.PadLeft(3, '0')}]-{langValue}"
             + $" {added}%2i{amount} {name}"
         )
     ]
@@ -158,13 +172,17 @@ let content (state: State) (dispatch: Dispatch) : IView =
         let locationMap = locations |> Map.ofList
 
         let nameFromLocation map (location: InventoryLocation) =
-            let amount = Map.find location map |> ExpanderTree.sumUpCards state.search
+            let amount =
+                Map.find location map
+                |> ExpanderTree.sumUpCards state.search
 
             match location with
             | Custom location -> $"{location.name} ({amount})"
             | Fallback -> $"Leftover ({amount})"
 
-        let current = location |> Option.defaultValue (locations |> List.head |> fst)
+        let current =
+            location
+            |> Option.defaultValue (locations |> List.head |> fst)
 
         TabView.renderFromList
             (nameFromLocation locationMap)

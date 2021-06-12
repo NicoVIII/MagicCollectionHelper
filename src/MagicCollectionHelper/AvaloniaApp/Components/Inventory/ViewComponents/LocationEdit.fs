@@ -17,7 +17,7 @@ module LocationEdit =
             TextBlock.create [
                 TextBlock.text (
                     inSet
-                    |> Set.map (fun (set: MagicSet) -> set.Value)
+                    |> Set.map MagicSet.unwrap
                     |> Set.toList
                     |> String.concat ","
                 )

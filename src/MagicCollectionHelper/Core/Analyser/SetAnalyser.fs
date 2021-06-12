@@ -53,8 +53,8 @@ module SetAnalyser =
                             numberSet
                             // We have to remove cards outside of the normal number range from the collected number
                             |> Set.filter
-                                (fun number ->
-                                    match number.Value with
+                                (fun (CollectorNumber number) ->
+                                    match number with
                                     | Uint number -> number > 0u && number <= max
                                     | _ -> false)
                             |> Set.count
@@ -80,7 +80,7 @@ module SetAnalyser =
         |> Map.map (Postprocess.transformSet cardData)
 
     module private Print =
-        let setLine dozenalize (set: MagicSet) collectionData =
+        let setLine dozenalize set collectionData =
             let percent =
                 if dozenalize then
                     collectionData.percent * 144.
@@ -89,7 +89,7 @@ module SetAnalyser =
 
             sprintf
                 "%5s - %3s/%3s (%s%s) - %s"
-                set.Value
+                (MagicSet.unwrap set)
                 (Numbers.print dozenalize 0 (int collectionData.collected))
                 (Numbers.print dozenalize 0 (collectionData.max |> int))
                 (Numbers.print dozenalize 1 percent)
@@ -124,7 +124,9 @@ module SetAnalyser =
                         // Print set line and maybe token set line
                         Print.setLine dozenalize set setData
                     | None ->
-                        $"%5s{set.Value} - No set data found (%2i{value.cards.Count})"
+                        let setValue = MagicSet.unwrap set
+
+                        $"%5s{setValue} - No set data found (%2i{value.cards.Count})"
                         |> Seq.singleton)
             |> Seq.concat
 
@@ -140,13 +142,13 @@ module SetAnalyser =
                         && missing.Count > 0 -> Some(set, setData)
                     | _ -> None)
             |> Seq.map
-                (fun (set: MagicSet, setData) ->
+                (fun ((MagicSet set), setData) ->
                     let missing =
                         setData.missing.Count
                         |> Numbers.print dozenalize 0
 
                     let titleLine =
-                        $"%-3s{set.Value} - %2s{missing} missing:"
+                        $"%-3s{set} - %2s{missing} missing:"
                         |> Seq.singleton
 
                     let cardIds = setData.missing
@@ -156,7 +158,9 @@ module SetAnalyser =
                     if Seq.length cardIds > 0 then
                         missingLines <-
                             cardIds
-                            |> Seq.map (fun (CollectorNumber number) -> number |> Numbers.print dozenalize 0)
+                            |> Seq.map
+                                (fun (CollectorNumber number) ->
+                                    number |> Numbers.print dozenalize 0)
                             |> Seq.reduce (fun x y -> x + "," + y)
                             |> Seq.singleton
                             |> Seq.append missingLines
@@ -170,5 +174,4 @@ module SetAnalyser =
           missingLines ]
         |> Seq.concat
 
-    let get =
-        Analyser.create createEmpty collect postprocess print
+    let get = Analyser.create createEmpty collect postprocess print

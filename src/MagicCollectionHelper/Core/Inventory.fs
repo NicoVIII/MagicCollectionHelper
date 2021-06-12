@@ -15,8 +15,7 @@ module Inventory =
             fitsRule rules.inSet (Set.contains set)
 
         let fitsInLanguageRule cardWithInfo rules =
-            let language =
-                cardWithInfo ^. CardWithInfoLenses.language
+            let language = cardWithInfo ^. CardWithInfoLenses.language
 
             fitsRule rules.inLanguage (fun language -> language = language)
 
@@ -41,26 +40,22 @@ module Inventory =
             fitsRule rules.typeNotContains (Set.forall (info.typeLine.Contains >> not))
 
         let fitsRarity cardWithInfo rules =
-            let rarity =
-                cardWithInfo ^. CardWithInfoLenses.rarity
+            let rarity = cardWithInfo ^. CardWithInfoLenses.rarity
 
             fitsRule rules.rarity (fun rarities -> Set.contains rarity rarities)
 
         let fitsColorIdentity cardWithInfo rules =
-            let colorIdentity =
-                cardWithInfo ^. CardWithInfoLenses.colorIdentity
+            let colorIdentity = cardWithInfo ^. CardWithInfoLenses.colorIdentity
 
-            fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains colorIdentity colorIdentities)
+            fitsRule
+                rules.colorIdentity
+                (fun colorIdentities -> Set.contains colorIdentity colorIdentities)
 
         let fitsLimit cardsInLoc cardWithInfo rules =
             let rule limit =
                 let sum =
                     List.sumBy
-                        (fun c ->
-                            if CardWithInfo.isSame c cardWithInfo then
-                                1
-                            else
-                                0)
+                        (fun c -> if CardWithInfo.isSame c cardWithInfo then 1 else 0)
                         cardsInLoc
 
                 (uint) sum < limit
@@ -71,11 +66,7 @@ module Inventory =
             let rule limitExact =
                 let sum =
                     List.sumBy
-                        (fun c ->
-                            if CardWithInfo.isExactSame c cardWithInfo then
-                                1
-                            else
-                                0)
+                        (fun c -> if CardWithInfo.isExactSame c cardWithInfo then 1 else 0)
                         cardsInLoc
 
                 (uint) sum < limitExact
@@ -119,6 +110,7 @@ module Inventory =
         | ByName -> entryWithInfo ^. EntryWithInfoLenses.name
         | BySet ->
             let set = entryWithInfo ^. EntryWithInfoLenses.set
+            let setValue = set |> MagicSet.unwrap
 
             let date =
                 Map.tryFind set setData
@@ -127,7 +119,7 @@ module Inventory =
                 | None -> "0000-00-00"
 
             let extension =
-                match set.Value with
+                match setValue with
                 | set when set.StartsWith "T" -> set.Substring 1 + "Z"
                 | set -> set + "A"
 
@@ -141,46 +133,33 @@ module Inventory =
             entryWithInfo ^. EntryWithInfoLenses.cmc
             |> sprintf "%02i"
         | ByTypeContains typeContains ->
-            let typeLine =
-                entryWithInfo ^. EntryWithInfoLenses.typeLine
+            let typeLine = entryWithInfo ^. EntryWithInfoLenses.typeLine
 
             typeContains
             |> List.fold
                 (fun (found, strng) typeContains ->
-                    if found then
-                        (true, strng + "9")
-                    else if typeLine.Contains typeContains then
-                        (true, strng + "1")
-                    else
-                        (false, strng + "9"))
+                    if found then (true, strng + "9")
+                    else if typeLine.Contains typeContains then (true, strng + "1")
+                    else (false, strng + "9"))
                 (false, "")
             |> snd
         | ByRarity rarities ->
-            let rarity =
-                entryWithInfo ^. EntryWithInfoLenses.rarity
+            let rarity = entryWithInfo ^. EntryWithInfoLenses.rarity
 
             rarities
             |> List.indexed
             |> List.tryPick
                 (fun (index, raritySet) ->
-                    if Set.contains rarity raritySet then
-                        Some index
-                    else
-                        None)
+                    if Set.contains rarity raritySet then Some index else None)
             |> Option.defaultValue (List.length rarities)
             |> string
         | ByLanguage languages ->
-            let language =
-                entryWithInfo ^. EntryWithInfoLenses.language
+            let language = entryWithInfo ^. EntryWithInfoLenses.language
 
             languages
             |> List.indexed
             |> List.tryPick
-                (fun (index, sLanguage) ->
-                    if sLanguage = language then
-                        Some index
-                    else
-                        None)
+                (fun (index, sLanguage) -> if sLanguage = language then Some index else None)
             |> Option.defaultValue (List.length languages)
             |> string
 
@@ -193,8 +172,7 @@ module Inventory =
             | Fallback -> [ ByName ]
 
         let sortBy (agedEntryWithInfo: AgedEntryWithInfo) =
-            let entryWithInfo =
-                agedEntryWithInfo |> AgedEntryWithInfo.removeAge
+            let entryWithInfo = agedEntryWithInfo |> AgedEntryWithInfo.removeAge
 
             sortRules
             |> List.map (getSortByValue setData entryWithInfo)
@@ -227,12 +205,16 @@ module Inventory =
 
                     let language =
                         entry ^. AgedEntryWithInfoLenses.language
+                        |> Language.unwrap
 
-                    let number = entry ^. AgedEntryWithInfoLenses.number
+                    let number =
+                        entry ^. AgedEntryWithInfoLenses.number
+                        |> CollectorNumber.unwrap
+
                     let set = entry ^. AgedEntryWithInfoLenses.set
 
                     [ // Language
-                      match language.Value with
+                      match language with
                       | "en" -> "0"
                       | "de" -> "1"
                       | _ -> "2"
@@ -240,7 +222,7 @@ module Inventory =
                       if foil then "0" else "1"
                       // Set
                       (Map.find set setData).date
-                      number.Value
+                      number
                       // Random
                       random.Next(0, 10000) |> string ])
 
@@ -260,11 +242,7 @@ module Inventory =
             let mutable i = 0u
 
             while i < agedEntryWithInfo.data.data.amount do
-                let card =
-                    if i < agedEntryWithInfo.data.amountOld then
-                        old
-                    else
-                        notOld
+                let card = if i < agedEntryWithInfo.data.amountOld then old else notOld
 
                 let location =
                     card
@@ -273,8 +251,10 @@ module Inventory =
 
                 match location with
                 | Some location ->
-                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
-                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
+                    locCardMap <-
+                        Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
+                | None ->
+                    locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
 
                 i <- i + 1u
 

@@ -4,46 +4,6 @@ open Myriad.Plugins
 
 [<AutoOpen>]
 module CardTypes =
-    /// All colors which are important in Magic
-    type Color =
-        | White
-        | Blue
-        | Black
-        | Red
-        | Green
-
-    /// The identifier for a language, typically the language a card is in
-    type Language =
-        | Language of string
-        member this.Value =
-            let (Language v) = this
-            v
-
-    /// The number for collectors of a card inside a given set
-    type CollectorNumber =
-        | CollectorNumber of string
-        member this.Value =
-            let (CollectorNumber v) = this
-            v
-
-    /// The identifier of a magic set
-    type MagicSet =
-        | MagicSet of string
-        member this.Value =
-            let (MagicSet v) = this
-            v
-
-    type ColorIdentity = Set<Color>
-
-    [<Generator.DuCases("core")>]
-    type Rarity =
-        | Common
-        | Uncommon
-        | Rare
-        | Mythic
-        | Special
-        | Bonus
-
     /// A card identified by as few properties as possible
     [<Generator.Fields("core")>]
     [<Generator.Lenses("core", "Lens")>]

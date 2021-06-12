@@ -8,12 +8,17 @@
 
     <!-- Types -->
     <Compile Include="Types/Lenses.fs" />
-    <Compile Include="Types/Cards.fs" />
-    <Compile Include="Types/Cards.Generated.fs">
-      <MyriadFile>Types/Cards.fs</MyriadFile>
+    <Compile Include="Types/CardPart.fs" />
+    <Compile Include="Types/CardPart.Generated.fs">
+      <MyriadFile>Types/CardPart.fs</MyriadFile>
     </Compile>
-    <Compile Include="Types/Cards.Lenses.fs"/>
-    <Compile Include="Types/Cards.Modules.fs"/>
+    <Compile Include="Types/CardPart.Modules.fs"/>
+    <Compile Include="Types/Card.fs" />
+    <Compile Include="Types/Card.Generated.fs">
+      <MyriadFile>Types/Card.fs</MyriadFile>
+    </Compile>
+    <Compile Include="Types/Card.Lenses.fs"/>
+    <Compile Include="Types/Card.Modules.fs"/>
     <Compile Include="Types/Domain.fs" />
     <Compile Include="Types/Domain.Generated.fs">
       <MyriadFile>Types/Domain.fs</MyriadFile>
