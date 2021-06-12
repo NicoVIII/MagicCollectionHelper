@@ -7,16 +7,19 @@ open MagicCollectionHelper.AvaloniaApp
 [<AutoOpen>]
 module DomainTypeModules =
     module Search =
-        let fits (search: Search) (agedEntryWithInfo: AgedCardEntryWithInfo) =
-            let entry = agedEntryWithInfo.data.data
-            let amountOld = agedEntryWithInfo.data.amountOld
-            let info = agedEntryWithInfo.info
+        let fits (search: Search) (entry: AgedEntryWithInfo) =
+            let amount = entry ^. AgedEntryWithInfoLenses.amount
+
+            let amountOld =
+                entry ^. AgedEntryWithInfoLenses.amountOld
+
+            let name = entry ^. AgedEntryWithInfoLenses.name
 
             let fitOld () =
                 match search.old with
                 | None -> true
-                | Some old -> (amountOld = entry.amount) = old
+                | Some old -> (amountOld = amount) = old
 
-            let fitText () = String.iContains info.name search.text
+            let fitText () = String.iContains name search.text
 
             fitOld () && fitText ()

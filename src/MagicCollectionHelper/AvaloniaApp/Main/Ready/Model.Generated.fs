@@ -29,7 +29,7 @@ module CommonStateLenses =
     let entries =
         MagicCollectionHelper.Core.Lens(
             (fun (x: CommonState) -> x.entries),
-            (fun (x: CommonState) (value: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.CardEntry> list) ->
+            (fun (x: CommonState) (value: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.Entry> list) ->
                 { x with entries = value })
         )
 

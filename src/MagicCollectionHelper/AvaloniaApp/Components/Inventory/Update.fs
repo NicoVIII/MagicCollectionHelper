@@ -12,23 +12,22 @@ open MagicCollectionHelper.AvaloniaApp.ViewHelper
 let perform
     (setData: SetDataMap)
     (infoMap: CardInfoMap)
-    (entries: OldAmountable<CardEntry> list)
+    (entries: OldAmountable<Entry> list)
     (msg: Msg)
-    (state: State)
+    state
     =
     match msg with
     | AsyncError error -> raise error
     | ChangeState map -> map state, Cmd.none
     | TakeInventory ->
-        let state =
-            state |> setl StateLenses.viewMode Loading
+        let state = state |> (StateLenses.viewMode .-> Loading)
 
         let fnc () =
             Inventory.takeAsync setData infoMap state.locations entries
 
         let cmd = Cmd.OfAsync.perform fnc () SaveInventory
 
-        (state, cmd)
+        state, cmd
     | FilterInventory inventory ->
         // TODO: move to prefs
         let minSize = 20
@@ -52,7 +51,8 @@ let perform
                                 if (lastAmount + amount <= maxSize)
                                    || lastAmount < minSize then
                                     // We merge the leafs
-                                    (List.append lastNames names, Leaf(List.append lastEntries entries))
+                                    (List.append lastNames names,
+                                     Leaf(List.append lastEntries entries))
                                     :: tail
                                 else
                                     node :: nodes'
@@ -68,10 +68,7 @@ let perform
             // We repeat shrinking as long as there is something to shrink
             let shrunkTree = singleRun tree
 
-            if shrunkTree <> tree then
-                shrinkTreeHelper shrunkTree
-            else
-                shrunkTree
+            if shrunkTree <> tree then shrinkTreeHelper shrunkTree else shrunkTree
 
         let shrinkTree tree =
             tree
@@ -96,7 +93,8 @@ let perform
                                 let entry = agedEntry.data
 
                                 Map.tryFind (entry.card.set, entry.card.number) infoMap
-                                |> Option.map (fun cardInfo -> AgedCardEntryWithInfo.create cardInfo agedEntry))
+                                |> Option.map
+                                    (fun cardInfo -> AgedEntryWithInfo.create cardInfo agedEntry))
 
                     (location, cards))
             |> List.choose
@@ -104,25 +102,35 @@ let perform
                     let groupBy sortBy entries =
                         entries
                         |> List.groupBy
-                            (fun (agedEntryWithInfo: AgedCardEntryWithInfo) ->
-                                let entry = agedEntryWithInfo.data.data
-                                let info = agedEntryWithInfo.info
-
+                            (fun (entry: AgedEntryWithInfo) ->
                                 match sortBy with
-                                | ByCmc -> $"CmC {info.cmc}"
-                                | BySet -> $"Set {info.set.Value}"
-                                | ByColorIdentity -> ColorIdentity.toString info.colorIdentity
-                                | ByName -> info.name.Substring(0, 1)
-                                | ByCollectorNumber -> info.collectorNumber.Value
+                                | ByCmc ->
+                                    entry ^. AgedEntryWithInfoLenses.cmc
+                                    |> sprintf "CmC %i"
+                                | BySet ->
+                                    entry ^. AgedEntryWithInfoLenses.set
+                                    |> MagicSet.unwrap
+                                    |> sprintf "Set %s"
+                                | ByColorIdentity ->
+                                    entry ^. AgedEntryWithInfoLenses.colorIdentity
+                                    |> ColorIdentity.toString
+                                | ByName ->
+                                    (entry ^. AgedEntryWithInfoLenses.name)
+                                        .Substring(0, 1)
+                                | ByCollectorNumber ->
+                                    entry ^. AgedEntryWithInfoLenses.number
+                                    |> CollectorNumber.unwrap
                                 | ByLanguage langList ->
-                                    let lang = entry.card.language
+                                    let language = entry ^. AgedEntryWithInfoLenses.language
 
-                                    if List.contains lang langList then
-                                        lang.Value
+                                    if List.contains language langList then
+                                        Language.unwrap language
                                     else
                                         "Other"
                                 | ByRarity rarities ->
-                                    List.tryFind (Set.contains info.rarity) rarities
+                                    let rarity = entry ^. AgedEntryWithInfoLenses.rarity
+
+                                    List.tryFind (Set.contains rarity) rarities
                                     |> function
                                     | Some set ->
                                         set
@@ -131,7 +139,9 @@ let perform
                                         |> String.concat " / "
                                     | None -> "Other"
                                 | ByTypeContains types ->
-                                    List.tryFind (fun (typ: string) -> info.typeLine.Contains typ) types
+                                    let typeLine = entry ^. AgedEntryWithInfoLenses.typeLine
+
+                                    List.tryFind (fun (typ: string) -> typeLine.Contains typ) types
                                     |> Option.defaultValue "Other")
 
                     let rec createTree sortBy entries =
@@ -177,13 +187,12 @@ let perform
 
         let state =
             state
-            |> setl StateLenses.filteredInventory grouped
-            |> setl StateLenses.viewMode viewMode
+            |> (StateLenses.filteredInventory .-> grouped)
+            |> (StateLenses.viewMode .-> viewMode)
 
         (state, Cmd.none)
     | SaveInventory inventory ->
-        let state =
-            state |> setl StateLenses.inventory inventory
+        let state = state |> setl StateLenses.inventory inventory
 
         (state, Cmd.ofMsg (FilterInventory inventory))
     | ChangeLocation location ->
@@ -197,8 +206,7 @@ let perform
 
         (state, Cmd.none)
     | CloseLocationEdit ->
-        let state =
-            state |> setl StateLenses.viewMode (Location None)
+        let state = state |> setl StateLenses.viewMode (Location None)
 
         (state, Cmd.none)
     | UpdateLocationRules (locationName, rulesMutation) ->

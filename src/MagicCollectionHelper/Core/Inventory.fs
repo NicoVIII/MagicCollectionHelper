@@ -10,36 +10,54 @@ module Inventory =
             | None -> true
             | Some value -> rule value
 
-        let fitsInSetRule (card: Card) rules =
-            fitsRule rules.inSet (Set.contains card.set)
+        let fitsInSetRule cardWithInfo rules =
+            let set = cardWithInfo ^. CardWithInfoLenses.set
+            fitsRule rules.inSet (Set.contains set)
 
-        let fitsInLanguageRule (card: Card) rules =
-            fitsRule rules.inLanguage (fun language -> language = card.language)
+        let fitsInLanguageRule cardWithInfo rules =
+            let language =
+                cardWithInfo ^. CardWithInfoLenses.language
 
-        let fitsIsFoil (card: Card) rules =
-            fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = card.foil)
+            fitsRule rules.inLanguage (fun language -> language = language)
 
-        let fitsIsToken (card: Card) rules =
+        let fitsIsFoil cardWithInfo rules =
+            let foil = cardWithInfo ^. CardWithInfoLenses.foil
+
+            fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = foil)
+
+        let fitsIsToken cardWithInfo rules =
+            let card = cardWithInfo ^. CardWithInfoLenses.card
+
             fitsRule rules.isToken (fun shouldBeToken -> shouldBeToken = Card.isToken card)
 
-        let fitsTypeContains (info: CardInfo) rules =
+        let fitsTypeContains cardWithInfo rules =
+            let info = cardWithInfo ^. CardWithInfoLenses.info
+
             fitsRule rules.typeContains (Set.forall info.typeLine.Contains)
 
-        let fitsTypeNotContains (info: CardInfo) rules =
+        let fitsTypeNotContains cardWithInfo rules =
+            let info = cardWithInfo ^. CardWithInfoLenses.info
+
             fitsRule rules.typeNotContains (Set.forall (info.typeLine.Contains >> not))
 
-        let fitsRarity (info: CardInfo) rules =
-            fitsRule rules.rarity (fun rarity -> Set.contains info.rarity rarity)
+        let fitsRarity cardWithInfo rules =
+            let rarity =
+                cardWithInfo ^. CardWithInfoLenses.rarity
 
-        let fitsColorIdentity (info: CardInfo) rules =
-            fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains info.colorIdentity colorIdentities)
+            fitsRule rules.rarity (fun rarities -> Set.contains rarity rarities)
 
-        let fitsLimit cardsInLoc (card: CardWithInfo) rules =
+        let fitsColorIdentity cardWithInfo rules =
+            let colorIdentity =
+                cardWithInfo ^. CardWithInfoLenses.colorIdentity
+
+            fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains colorIdentity colorIdentities)
+
+        let fitsLimit cardsInLoc cardWithInfo rules =
             let rule limit =
                 let sum =
                     List.sumBy
                         (fun c ->
-                            if CardWithInfo.isSame c card then
+                            if CardWithInfo.isSame c cardWithInfo then
                                 1
                             else
                                 0)
@@ -49,12 +67,12 @@ module Inventory =
 
             fitsRule rules.limit rule
 
-        let fitsLimitExact cardsInLoc (card: CardWithInfo) rules =
+        let fitsLimitExact cardsInLoc cardWithInfo rules =
             let rule limitExact =
                 let sum =
                     List.sumBy
                         (fun c ->
-                            if CardWithInfo.isExactSame c card then
+                            if CardWithInfo.isExactSame c cardWithInfo then
                                 1
                             else
                                 0)
@@ -64,25 +82,25 @@ module Inventory =
 
             fitsRule rules.limitExact rule
 
-        let fitsAll cardsInLoc (cardWithInfo: CardWithInfo) rules =
-            [ fitsInSetRule cardWithInfo.data
-              fitsInLanguageRule cardWithInfo.data
-              fitsIsFoil cardWithInfo.data
-              fitsIsToken cardWithInfo.data
-              fitsTypeContains cardWithInfo.info
-              fitsTypeNotContains cardWithInfo.info
-              fitsColorIdentity cardWithInfo.info
-              fitsRarity cardWithInfo.info
-              fitsLimit cardsInLoc cardWithInfo
-              fitsLimitExact cardsInLoc cardWithInfo ]
+        let fitsAll cardsInLoc cardWithInfo rules =
+            [ fitsInSetRule
+              fitsInLanguageRule
+              fitsIsFoil
+              fitsIsToken
+              fitsTypeContains
+              fitsTypeNotContains
+              fitsColorIdentity
+              fitsRarity
+              fitsLimit cardsInLoc
+              fitsLimitExact cardsInLoc ]
             // Evaluate functions
-            |> List.map (fun fnc -> fnc rules)
+            |> List.map (fun fnc -> fnc cardWithInfo rules)
             |> List.forall id
 
     let fitsInLocation (locCardMap: Map<InventoryLocation, AgedCardWithInfo list>) card location =
         let cardList =
             locCardMap.Item(Custom location)
-            |> List.map (WithInfo.map Oldable.data)
+            |> List.map (WithInfo.map (getl AgedCardLenses.card))
 
         Rules.fitsAll cardList card location.rules
 
@@ -90,65 +108,80 @@ module Inventory =
         locations
         |> List.tryFind (fitsInLocation locCardMap card)
 
-    let getSortByValue setData (entryWithInfo: CardEntryWithInfo) sortBy =
-        let entry = entryWithInfo.data
-        let info = entryWithInfo.info
-
+    let getSortByValue setData entryWithInfo sortBy =
         match sortBy with
         | ByColorIdentity ->
             let pos =
-                ColorIdentity.getPosition info.colorIdentity
+                entryWithInfo ^. EntryWithInfoLenses.colorIdentity
+                |> ColorIdentity.getPosition
 
             sprintf "%02i" pos
-        | ByName -> info.name
+        | ByName -> entryWithInfo ^. EntryWithInfoLenses.name
         | BySet ->
+            let set = entryWithInfo ^. EntryWithInfoLenses.set
+
             let date =
-                Map.tryFind entry.card.set setData
+                Map.tryFind set setData
                 |> function
                 | Some setData -> setData.date
                 | None -> "0000-00-00"
 
             let extension =
-                match entry.card.set.Value with
+                match set.Value with
                 | set when set.StartsWith "T" -> set.Substring 1 + "Z"
                 | set -> set + "A"
 
             $"{date}{extension}"
-        | ByCollectorNumber -> sprintf "%s" (entry.card.number.Value.PadLeft(3, '0'))
-        | ByCmc -> sprintf "%02i" info.cmc
+        | ByCollectorNumber ->
+            (entryWithInfo ^. EntryWithInfoLenses.number
+             |> CollectorNumber.unwrap)
+                .PadLeft(3, '0')
+            |> sprintf "%s"
+        | ByCmc ->
+            entryWithInfo ^. EntryWithInfoLenses.cmc
+            |> sprintf "%02i"
         | ByTypeContains typeContains ->
+            let typeLine =
+                entryWithInfo ^. EntryWithInfoLenses.typeLine
+
             typeContains
             |> List.fold
                 (fun (found, strng) typeContains ->
                     if found then
                         (true, strng + "9")
-                    else if info.typeLine.Contains typeContains then
+                    else if typeLine.Contains typeContains then
                         (true, strng + "1")
                     else
                         (false, strng + "9"))
                 (false, "")
             |> snd
         | ByRarity rarities ->
+            let rarity =
+                entryWithInfo ^. EntryWithInfoLenses.rarity
+
             rarities
             |> List.indexed
             |> List.tryPick
                 (fun (index, raritySet) ->
-                    if Set.contains info.rarity raritySet then
+                    if Set.contains rarity raritySet then
                         Some index
                     else
                         None)
             |> Option.defaultValue (List.length rarities)
             |> string
-        | ByLanguage language ->
-            language
+        | ByLanguage languages ->
+            let language =
+                entryWithInfo ^. EntryWithInfoLenses.language
+
+            languages
             |> List.indexed
             |> List.tryPick
-                (fun (index, language) ->
-                    if language = entry.card.language then
+                (fun (index, sLanguage) ->
+                    if sLanguage = language then
                         Some index
                     else
                         None)
-            |> Option.defaultValue (List.length language)
+            |> Option.defaultValue (List.length languages)
             |> string
 
     let sortEntries setData location entries =
@@ -159,9 +192,9 @@ module Inventory =
             | Custom location -> location.sortBy
             | Fallback -> [ ByName ]
 
-        let sortBy (agedEntryWithInfo: AgedCardEntryWithInfo) =
+        let sortBy (agedEntryWithInfo: AgedEntryWithInfo) =
             let entryWithInfo =
-                WithInfo.map OldAmountable.data agedEntryWithInfo
+                agedEntryWithInfo |> AgedEntryWithInfo.removeAge
 
             sortRules
             |> List.map (getSortByValue setData entryWithInfo)
@@ -170,7 +203,7 @@ module Inventory =
 
         entries |> List.sortBy sortBy
 
-    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: AgedCardEntry list) =
+    let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: AgedEntry list) =
         let mutable locCardMap : Map<InventoryLocation, AgedCardWithInfo list> =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
@@ -186,39 +219,37 @@ module Inventory =
         let agedEntriesWithInfo =
             entries
             // We can consider a card only for inventory, if we have the info
-            |> List.choose
-                (fun (agedEntry: AgedCardEntry) ->
-                    let entry = agedEntry.data
-
-                    Map.tryFind (entry.card.set, entry.card.number) infoMap
-                    |> Option.map (fun info -> AgedCardEntryWithInfo.create info agedEntry))
+            |> List.choose (AgedEntryWithInfo.fromEntry infoMap)
             // TODO: generalize and make configurable
             |> List.sortBy
-                (fun oldAmountable ->
-                    let entryWithInfo = oldAmountable.data
+                (fun entry ->
+                    let foil = entry ^. AgedEntryWithInfoLenses.foil
 
-                    [
-                      // Language
-                      match entryWithInfo.data.card.language.Value with
+                    let language =
+                        entry ^. AgedEntryWithInfoLenses.language
+
+                    let number = entry ^. AgedEntryWithInfoLenses.number
+                    let set = entry ^. AgedEntryWithInfoLenses.set
+
+                    [ // Language
+                      match language.Value with
                       | "en" -> "0"
                       | "de" -> "1"
                       | _ -> "2"
                       // Foil
-                      if entryWithInfo.data.card.foil then
-                          "0"
-                      else
-                          "1"
+                      if foil then "0" else "1"
                       // Set
-                      (Map.find entryWithInfo.data.card.set setData)
-                          .date
-                      entryWithInfo.data.card.number.Value
+                      (Map.find set setData).date
+                      number.Value
                       // Random
                       random.Next(0, 10000) |> string ])
 
         for agedEntryWithInfo in agedEntriesWithInfo do
             let getCard old =
                 WithInfo.map
-                    (fun (agedEntry: AgedCardEntry) -> AgedCard.create old agedEntry.data.card)
+                    (fun agedEntry ->
+                        agedEntry ^. AgedEntryLenses.card
+                        |> AgedCard.create old)
                     agedEntryWithInfo
 
             let old = getCard true
@@ -229,20 +260,21 @@ module Inventory =
             let mutable i = 0u
 
             while i < agedEntryWithInfo.data.data.amount do
-                let agedCard =
+                let card =
                     if i < agedEntryWithInfo.data.amountOld then
                         old
                     else
                         notOld
 
                 let location =
-                    WithInfo.map Oldable.data agedCard
+                    card
+                    |> AgedCardWithInfo.removeAge
                     |> determineLocation locCardMap locations
 
                 match location with
                 | Some location ->
-                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> agedCard :: l)) locCardMap
-                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> agedCard :: l)) locCardMap
+                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
+                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
 
                 i <- i + 1u
 
@@ -251,10 +283,9 @@ module Inventory =
         |> Map.map
             (fun location cardList ->
                 cardList
-                |> AgedCardEntryWithInfo.fromCardList
+                |> AgedEntryWithInfo.fromCardList
                 |> sortEntries setData location
-                |> List.map WithInfo.data)
-
+                |> List.map (getl AgedEntryWithInfoLenses.agedEntry))
         // We now convert the map back into a list (order matters!) and sort it
         |> Map.toList
         |> List.sortBy

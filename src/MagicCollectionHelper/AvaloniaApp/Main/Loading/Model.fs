@@ -12,7 +12,7 @@ type Loadable<'a> =
 type State =
     { cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
       dsEntries: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>
-      entries: Loadable<MagicCollectionHelper.Core.CardTypes.CardEntry list>
+      entries: Loadable<MagicCollectionHelper.Core.CardTypes.Entry list>
       setData: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap> }
 
 open Elmish
@@ -32,14 +32,14 @@ type Msg =
     | ImportSetData of string
     | SaveSetData of SetDataMap
     | CalcEntries of CardInfoMap * DeckStatsCardEntry list
-    | SaveEntries of CardEntry list
+    | SaveEntries of Entry list
     | CheckLoadingState
 
 type Dispatch = Msg -> unit
 
 type Intent =
     | DoNothing
-    | ChangeToReady of CardInfoMap * DeckStatsCardEntry list * CardEntry list * SetDataMap
+    | ChangeToReady of CardInfoMap * DeckStatsCardEntry list * Entry list * SetDataMap
 
 module Model =
     let init () =

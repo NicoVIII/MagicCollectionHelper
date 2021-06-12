@@ -14,16 +14,11 @@ open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
 open MagicCollectionHelper.AvaloniaApp.Elements
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
-let actionBar (infoMap: CardInfoMap) (entries: 'a list) (state: State) (dispatch: Dispatch) : IView =
+let actionBar (infoMap: CardInfoMap) (entries: 'a list) (state: State) (dispatch: Dispatch) =
     ActionButtonBar.create [
         ActionButton.create
             { text = "Take inventory"
-              isEnabled =
-                  (not (
-                      infoMap.IsEmpty
-                      || entries.IsEmpty
-                      || state.viewMode = Loading
-                  ))
+              isEnabled = (not (infoMap.IsEmpty || entries.IsEmpty || state.viewMode = Loading))
               action = (fun _ -> TakeInventory |> dispatch)
               subPatch = Never }
     ]
@@ -33,21 +28,20 @@ type LocCards =
       amount: uint
       cards: string seq }
 
-let cardItem (state: State) (agedEntryWithInfo: AgedCardEntryWithInfo) =
-    let agedEntry = agedEntryWithInfo.data
-    let info = agedEntryWithInfo.info
-    let entry = agedEntry.data
-    let amountOld = agedEntry.amountOld
-    let set = entry.card.set
-    let number = entry.card.number
-    let name = info.name
+let cardItem (state: State) (entry: AgedEntryWithInfo) =
+    let amount = entry ^. AgedEntryWithInfoLenses.amount
+    let amountOld = entry ^. AgedEntryWithInfoLenses.amountOld
+    let foil = entry ^. AgedEntryWithInfoLenses.foil
+    let language = entry ^. AgedEntryWithInfoLenses.language
+    let name = entry ^. AgedEntryWithInfoLenses.name
+    let number = entry ^. AgedEntryWithInfoLenses.number
+    let set = entry ^. AgedEntryWithInfoLenses.set
 
-    let star = if entry.card.foil then "★" else " "
-    let old = entry.amount = amountOld
+    let star = if foil then "★" else " "
+    let old = amount = amountOld
 
     let brush =
-        let searched =
-            Search.fits state.search agedEntryWithInfo
+        let searched = Search.fits state.search entry
 
         match searched, old with
         | true, true -> Brushes.White
@@ -55,18 +49,14 @@ let cardItem (state: State) (agedEntryWithInfo: AgedCardEntryWithInfo) =
         | true, false -> Brushes.LimeGreen
         | false, false -> Brushes.DarkGreen
 
-    let added =
-        if not old then
-            $"(+%2i{entry.amount - amountOld})"
-        else
-            "     "
+    let added = if not old then $"(+%2i{amount - amountOld})" else "     "
 
     CheckBox.create [
         CheckBox.fontFamily Config.monospaceFont
         CheckBox.foreground brush
         CheckBox.content (
-            $"{star}[%5s{set.Value}-%s{number.Value.PadLeft(3, '0')}]-{entry.card.language.Value}"
-            + $" {added}%2i{entry.amount} {name}"
+            $"{star}[%5s{set.Value}-%s{number.Value.PadLeft(3, '0')}]-{language.Value}"
+            + $" {added}%2i{amount} {name}"
         )
     ]
 
@@ -104,9 +94,7 @@ let rec renderEntryTree state dispatch first tree =
             (not first)
             [ for (name: string, child) in nodes do
                   // We want to add the amount
-                  let amount =
-                      ExpanderTree.sumUpCards state.search child
-
+                  let amount = ExpanderTree.sumUpCards state.search child
                   let name = $"{name} ({amount})"
 
                   Expander.create [
@@ -170,17 +158,13 @@ let content (state: State) (dispatch: Dispatch) : IView =
         let locationMap = locations |> Map.ofList
 
         let nameFromLocation map (location: InventoryLocation) =
-            let amount =
-                Map.find location map
-                |> ExpanderTree.sumUpCards state.search
+            let amount = Map.find location map |> ExpanderTree.sumUpCards state.search
 
             match location with
             | Custom location -> $"{location.name} ({amount})"
             | Fallback -> $"Leftover ({amount})"
 
-        let current =
-            location
-            |> Option.defaultValue (locations |> List.head |> fst)
+        let current = location |> Option.defaultValue (locations |> List.head |> fst)
 
         TabView.renderFromList
             (nameFromLocation locationMap)

@@ -14,7 +14,7 @@ type CommonState =
     { analyseText: string
       cardInfo: MagicCollectionHelper.Core.CardTypes.CardInfoMap
       dsEntries: MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list
-      entries: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.CardEntry> list
+      entries: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.Entry> list
       prefs: MagicCollectionHelper.Core.DomainTypes.Prefs
       setData: MagicCollectionHelper.Core.DomainTypes.SetDataMap
       viewMode: ViewMode }
@@ -37,7 +37,7 @@ type Msg =
     | ChangeViewMode of ViewMode
     | ChangePrefs of Prefs
     | SavePrefs of Prefs
-    | SaveEntries of CardEntry list
+    | SaveEntries of Entry list
     | InventoryMsg of Inventory.Msg
     | CollectionMsg of Collection.Msg
 

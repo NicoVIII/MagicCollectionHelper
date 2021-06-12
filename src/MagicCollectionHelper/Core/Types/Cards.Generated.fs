@@ -4,6 +4,66 @@
 //------------------------------------------------------------------------------
 namespace rec MagicCollectionHelper.Core
 
+module CardLenses =
+    open MagicCollectionHelper.Core.CardTypes
+    let foil =
+        Lens((fun (x: Card) -> x.foil), (fun (x: Card) (value: bool) -> { x with foil = value }))
+
+    let language =
+        Lens((fun (x: Card) -> x.language), (fun (x: Card) (value: Language) -> { x with language = value }))
+
+    let number =
+        Lens((fun (x: Card) -> x.number), (fun (x: Card) (value: CollectorNumber) -> { x with number = value }))
+
+    let set =
+        Lens((fun (x: Card) -> x.set), (fun (x: Card) (value: MagicSet) -> { x with set = value }))
+namespace rec MagicCollectionHelper.Core
+
+module EntryLenses =
+    open MagicCollectionHelper.Core.CardTypes
+    let amount =
+        Lens((fun (x: Entry) -> x.amount), (fun (x: Entry) (value: uint) -> { x with amount = value }))
+
+    let card =
+        Lens((fun (x: Entry) -> x.card), (fun (x: Entry) (value: Card) -> { x with card = value }))
+namespace rec MagicCollectionHelper.Core
+
+module CardInfoLenses =
+    open MagicCollectionHelper.Core.CardTypes
+    let name =
+        Lens((fun (x: CardInfo) -> x.name), (fun (x: CardInfo) (value: string) -> { x with name = value }))
+
+    let set =
+        Lens((fun (x: CardInfo) -> x.set), (fun (x: CardInfo) (value: MagicSet) -> { x with set = value }))
+
+    let collectorNumber =
+        Lens(
+            (fun (x: CardInfo) -> x.collectorNumber),
+            (fun (x: CardInfo) (value: CollectorNumber) -> { x with collectorNumber = value })
+        )
+
+    let colors =
+        Lens((fun (x: CardInfo) -> x.colors), (fun (x: CardInfo) (value: Set<Color>) -> { x with colors = value }))
+
+    let colorIdentity =
+        Lens(
+            (fun (x: CardInfo) -> x.colorIdentity),
+            (fun (x: CardInfo) (value: ColorIdentity) -> { x with colorIdentity = value })
+        )
+
+    let oracleId =
+        Lens((fun (x: CardInfo) -> x.oracleId), (fun (x: CardInfo) (value: string) -> { x with oracleId = value }))
+
+    let rarity =
+        Lens((fun (x: CardInfo) -> x.rarity), (fun (x: CardInfo) (value: Rarity) -> { x with rarity = value }))
+
+    let typeLine =
+        Lens((fun (x: CardInfo) -> x.typeLine), (fun (x: CardInfo) (value: string) -> { x with typeLine = value }))
+
+    let cmc =
+        Lens((fun (x: CardInfo) -> x.cmc), (fun (x: CardInfo) (value: uint) -> { x with cmc = value }))
+namespace rec MagicCollectionHelper.Core
+
 module Card =
     open MagicCollectionHelper.Core.CardTypes
     let foil (x: Card) = x.foil
@@ -30,12 +90,12 @@ module Card =
               set = mapset record'.set }
 namespace rec MagicCollectionHelper.Core
 
-module CardEntry =
+module Entry =
     open MagicCollectionHelper.Core.CardTypes
-    let amount (x: CardEntry) = x.amount
-    let card (x: CardEntry) = x.card
-    let create (amount: uint) (card: Card) : CardEntry = { amount = amount; card = card }
-    let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': CardEntry) =
+    let amount (x: Entry) = x.amount
+    let card (x: Entry) = x.card
+    let create (amount: uint) (card: Card) : Entry = { amount = amount; card = card }
+    let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': Entry) =
         { record' with
               amount = mapamount record'.amount
               card = mapcard record'.card }

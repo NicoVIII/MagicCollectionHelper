@@ -23,7 +23,7 @@ module StateLenses =
     let entries =
         MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.entries),
-            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.CardTypes.CardEntry list>) ->
+            (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.CardTypes.Entry list>) ->
                 { x with entries = value })
         )
 

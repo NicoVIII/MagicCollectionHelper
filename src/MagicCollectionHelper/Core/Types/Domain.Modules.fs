@@ -7,7 +7,7 @@ module DomainTypesModules =
             match entry.set, entry.number, entry.language with
             | Some set, Some number, Some lang ->
                 Card.create entry.foil lang number set
-                |> CardEntry.create entry.amount
+                |> Entry.create entry.amount
                 |> Some
             // We try to determine the number with name and set
             | Some set, None, Some lang ->
@@ -16,7 +16,7 @@ module DomainTypesModules =
                 |> Option.map
                     (fun info ->
                         Card.create entry.foil lang info.collectorNumber set
-                        |> CardEntry.create entry.amount)
+                        |> Entry.create entry.amount)
             | _ -> None
 
         let listToEntries cardInfoMap (entries: DeckStatsCardEntry list) =
@@ -46,7 +46,7 @@ module DomainTypesModules =
             |> List.groupBy (fun entry -> entry.card)
             |> List.map
                 (fun (card, entryList) ->
-                    { amount = List.sumBy (fun (entry: CardEntry) -> entry.amount) entryList
+                    { amount = List.sumBy (getl EntryLenses.amount) entryList
                       card = card })
             |> List.rev
 

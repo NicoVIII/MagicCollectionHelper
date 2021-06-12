@@ -46,6 +46,7 @@ module CardTypes =
 
     /// A card identified by as few properties as possible
     [<Generator.Fields("core")>]
+    [<Generator.Lenses("core", "Lens")>]
     type Card =
         { foil: bool
           language: Language
@@ -54,10 +55,12 @@ module CardTypes =
 
     /// A card entry, which is used to condense multiple cards into one card object and an amount
     [<Generator.Fields("core")>]
-    type CardEntry = { amount: uint; card: Card }
+    [<Generator.Lenses("core", "Lens")>]
+    type Entry = { amount: uint; card: Card }
 
     /// Additional info for a card
     [<Generator.Fields("core")>]
+    [<Generator.Lenses("core", "Lens")>]
     type CardInfo =
         { name: string
           set: MagicSet
@@ -80,8 +83,8 @@ module CardTypes =
     type WithInfo<'a> = { data: 'a; info: CardInfo }
 
     type CardWithInfo = WithInfo<Card>
-    type CardEntryWithInfo = WithInfo<CardEntry>
+    type EntryWithInfo = WithInfo<Entry>
     type AgedCard = Oldable<Card>
-    type AgedCardEntry = OldAmountable<CardEntry>
+    type AgedEntry = OldAmountable<Entry>
     type AgedCardWithInfo = WithInfo<AgedCard>
-    type AgedCardEntryWithInfo = WithInfo<AgedCardEntry>
+    type AgedEntryWithInfo = WithInfo<AgedEntry>

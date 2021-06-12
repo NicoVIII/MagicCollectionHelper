@@ -10,7 +10,10 @@ trim_trailing_whitespace = true
 indent_size = 2
 
 [*.fs]
+fsharp_max_if_then_else_short_width = 70
+fsharp_max_value_binding_width = 70
 fsharp_single_argument_web_mode = true
+max_line_length = 100
 indent_size = 4
 
 [*.xaml]

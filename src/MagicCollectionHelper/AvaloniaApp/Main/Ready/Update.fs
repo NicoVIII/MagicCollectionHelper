@@ -14,15 +14,13 @@ module Update =
         | Collection.Intent.SaveEntries entries ->
             match entries with
             | Some entries ->
-                let state =
-                    state |> setl StateLenses.dsEntries entries
+                let state = state |> setl StateLenses.dsEntries entries
 
                 let fnc () =
                     let cardInfo = getl StateLenses.cardInfo state
                     DeckStatsCardEntry.listToEntriesAsync cardInfo entries
 
-                let cmd =
-                    Cmd.OfAsync.either fnc () SaveEntries AsyncError
+                let cmd = Cmd.OfAsync.either fnc () SaveEntries AsyncError
 
                 state, cmd
             | None -> state, Cmd.none
@@ -58,18 +56,15 @@ module Update =
             let oldEntries =
                 state
                 |> getl StateLenses.entries
-                |> List.map OldAmountable.data
+                |> List.map (getl AgedEntryLenses.entry)
 
-            let comparedEntries =
-                AgedCardEntry.determineCardAge oldEntries entries
+            let comparedEntries = AgedEntry.determineCardAge oldEntries entries
 
-            let state =
-                state |> setl StateLenses.entries comparedEntries
+            let state = state |> setl StateLenses.entries comparedEntries
 
             state, Cmd.none
         | CollectionMsg msg ->
-            let (iState, iCmd, intent) =
-                Collection.Update.perform msg state.collection
+            let (iState, iCmd, intent) = Collection.Update.perform msg state.collection
 
             (state, iCmd |> Cmd.map CollectionMsg)
             |> Tuple2.mapFst (setl StateLenses.collection iState)

@@ -2,10 +2,15 @@ namespace MagicCollectionHelper.Core
 
 [<AutoOpen>]
 module CardTypesModules =
+    module Language =
+        let unwrap (Language l) = l
+
     module CollectorNumber =
         let fromString (s: string) =
             // We remove trailing zeros from the string
             s.TrimStart('0') |> CollectorNumber
+
+        let unwrap (CollectorNumber n) = n
 
     module MagicSet =
         /// Converts some old two letter set abbreviations to the new three letter counterpart
@@ -60,6 +65,8 @@ module CardTypesModules =
             >> convertSetAbbrev
             >> MagicSet
 
+        let unwrap (MagicSet v) = v
+
     module ColorIdentity =
         let colorless = Set.empty
 
@@ -95,24 +102,18 @@ module CardTypesModules =
         let temur = [ Green; Blue; Red ] |> Set.ofList
 
         // Four colors - shards of alara + div.
-        let nonWhite =
-            [ Blue; Black; Red; Green ] |> Set.ofList
+        let nonWhite = [ Blue; Black; Red; Green ] |> Set.ofList
 
-        let nonBlue =
-            [ Black; Red; Green; White ] |> Set.ofList
+        let nonBlue = [ Black; Red; Green; White ] |> Set.ofList
 
-        let nonBlack =
-            [ Red; Green; White; Blue ] |> Set.ofList
+        let nonBlack = [ Red; Green; White; Blue ] |> Set.ofList
 
-        let nonRed =
-            [ Green; White; Blue; Black ] |> Set.ofList
+        let nonRed = [ Green; White; Blue; Black ] |> Set.ofList
 
-        let nonGreen =
-            [ White; Blue; Black; Red ] |> Set.ofList
+        let nonGreen = [ White; Blue; Black; Red ] |> Set.ofList
 
         // Five colors
-        let allColors =
-            [ White; Blue; Black; Red; Green ] |> Set.ofList
+        let allColors = [ White; Blue; Black; Red; Green ] |> Set.ofList
 
         let private sorted =
             [ colorless
@@ -201,7 +202,7 @@ module CardTypesModules =
             let setValue = card.set.Value
             setValue.Length = 4 && setValue.StartsWith "T"
 
-    module CardEntry =
+    module Entry =
         /// Takes a list of cards and creates entry out of equal cards
         let collapseCardList cardList =
             cardList
@@ -222,15 +223,11 @@ module CardTypesModules =
     module Oldable =
         let create old data = { old = old; data = data }
 
-        let data (wrapper: Oldable<'a>) = wrapper.data
-
         let map mapper wrapper =
             create wrapper.old (mapper wrapper.data)
 
     module OldAmountable =
         let create amountOld data : OldAmountable<'a> = { amountOld = amountOld; data = data }
-
-        let data (wrapper: OldAmountable<'a>) = wrapper.data
 
         let inline map mapper (wrapper: OldAmountable<'a>) : OldAmountable<'b> =
             create wrapper.amountOld (mapper wrapper.data)
@@ -238,7 +235,9 @@ module CardTypesModules =
     module WithInfo =
         let create info data = { data = data; info = info }
 
-        let data (withInfo: WithInfo<'a>) = withInfo.data
+        let addInfo infoMap getSet getNumber data =
+            Map.tryFind (getSet data, getNumber data) infoMap
+            |> Option.map (fun info -> create info data)
 
         let inline map mapper (wrapper: WithInfo<'a>) : WithInfo<'b> =
             create wrapper.info (mapper wrapper.data)
@@ -250,30 +249,37 @@ module CardTypesModules =
     module CardWithInfo =
         let create card info : CardWithInfo = { data = card; info = info }
 
+        let fromCard infoMap =
+            WithInfo.addInfo infoMap (getl CardLenses.set) (getl CardLenses.number)
+
         /// Checks if those two cards are rulewise the same. They do not have to be from the same set
         let isSame (card1: CardWithInfo) (card2: CardWithInfo) = WithInfo.isSame card1 card2
 
-        let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) = Card.isExactSame card1.data card2.data
+        let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) =
+            Card.isExactSame card1.data card2.data
 
-    module CardEntryWithInfo =
-        let create entry info : CardEntryWithInfo = { data = entry; info = info }
+    module EntryWithInfo =
+        let create entry info : EntryWithInfo = { data = entry; info = info }
+
+        let fromEntry infoMap =
+            WithInfo.addInfo infoMap (getl EntryLenses.set) (getl EntryLenses.number)
 
     module AgedCard =
         let create old card : AgedCard = Oldable.create old card
 
-    module AgedCardEntry =
-        let create amountOld entry : AgedCardEntry = OldAmountable.create amountOld entry
+    module AgedEntry =
+        let create amountOld entry : AgedEntry = OldAmountable.create amountOld entry
 
         let determineCardAge oldList newList =
             // We first create a map
             let oldMap =
                 oldList
-                |> List.map (fun (entry: CardEntry) -> entry.card, entry)
+                |> List.map (fun (entry: Entry) -> entry.card, entry)
                 |> Map.ofList
 
             newList
             |> List.map
-                (fun (entry: CardEntry) ->
+                (fun (entry: Entry) ->
                     let amountOld =
                         match Map.tryFind entry.card oldMap with
                         | Some entry -> entry.amount
@@ -284,8 +290,18 @@ module CardTypesModules =
     module AgedCardWithInfo =
         let create info card : AgedCardWithInfo = WithInfo.create info card
 
-    module AgedCardEntryWithInfo =
-        let create info entry : AgedCardEntryWithInfo = WithInfo.create info entry
+        let fromCard infoMap =
+            WithInfo.addInfo infoMap (getl AgedCardLenses.set) (getl AgedCardLenses.number)
+
+        let removeAge = WithInfo.map (getl AgedCardLenses.card)
+
+    module AgedEntryWithInfo =
+        let create info entry : AgedEntryWithInfo = WithInfo.create info entry
+
+        let fromEntry infoMap =
+            WithInfo.addInfo infoMap (getl AgedEntryLenses.set) (getl AgedEntryLenses.number)
+
+        let removeAge = WithInfo.map (getl AgedEntryLenses.entry)
 
         /// Takes a list of cards and creates entry out of equal cards
         let fromCardList (cardList: AgedCardWithInfo list) =
@@ -293,7 +309,7 @@ module CardTypesModules =
             |> List.fold
                 (fun cardAmountMap card ->
                     Map.change
-                        (WithInfo.map Oldable.data card)
+                        (AgedCardWithInfo.removeAge card)
                         (fun mapEntry ->
                             mapEntry
                             |> Option.defaultValue (0u, 0u)
@@ -305,6 +321,6 @@ module CardTypesModules =
             |> List.map
                 (fun (cardWithInfo: CardWithInfo, (amount, amountOld)) ->
                     cardWithInfo.data
-                    |> CardEntry.create amount
-                    |> AgedCardEntry.create amountOld
+                    |> Entry.create amount
+                    |> AgedEntry.create amountOld
                     |> create cardWithInfo.info)

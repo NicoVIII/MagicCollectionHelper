@@ -9,7 +9,7 @@ type ViewMode =
     | Location of MagicCollectionHelper.Core.DomainTypes.InventoryLocation option
 
 type LocationWithHungTree =
-    MagicCollectionHelper.Core.DomainTypes.InventoryLocation * MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.CardTypes.AgedCardEntryWithInfo list>
+    MagicCollectionHelper.Core.DomainTypes.InventoryLocation * MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.CardTypes.AgedEntryWithInfo list>
 
 [<Generator.Lenses("components.inventory", "MagicCollectionHelper.Core.Lens")>]
 type State =
