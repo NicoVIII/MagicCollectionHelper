@@ -39,13 +39,12 @@ module Collection =
         |> Seq.sortDescending
         |> Seq.tryFind (
             Path.GetFileName
-            >> (fun (s: string) -> s.StartsWith "collection")
+            >> (String.startsWith "collection")
         )
         // Convert to absolute path
         |> Option.map (Path.GetFullPath)
 
-    let import =
-        searchImportFile >> Option.map (parseCsv)
+    let import = searchImportFile >> Option.map (parseCsv)
 
     // Because import could become an expensive task, we provide an async version
     let importAsync () = async { return import () }

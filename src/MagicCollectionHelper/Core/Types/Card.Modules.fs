@@ -9,7 +9,10 @@ module CardTypesModules =
 
         let isToken (card: Card) =
             let setValue = card ^. CardLenses.set |> MagicSet.unwrap
-            setValue.Length = 4 && setValue.StartsWith "T"
+
+            [ String.length >> (=) 4
+              String.startsWith "T" ]
+            |> List.forall (fun fnc -> fnc setValue)
 
     module Entry =
         /// Takes a list of cards and creates entry out of equal cards

@@ -10,7 +10,6 @@
   <ItemGroup>
     <Compile Include="Config.fs" />
     <Compile Include="Icons.fs" />
-    <Compile Include="String.fs" />
 
     <!-- Types -->
     <Compile Include="Types/Types.fs" />
