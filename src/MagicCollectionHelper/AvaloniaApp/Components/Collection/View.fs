@@ -33,8 +33,7 @@ let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : I
              | None -> 0u)
             entries
 
-    let cardAmount =
-        List.sumBy (fun (entry: DeckStatsCardEntry) -> entry.amount) dsEntries
+    let cardAmount = List.sumBy (fun (entry: DeckStatsCardEntry) -> entry.amount) dsEntries
 
     TextBlock.create [
         TextBlock.textWrapping TextWrapping.Wrap

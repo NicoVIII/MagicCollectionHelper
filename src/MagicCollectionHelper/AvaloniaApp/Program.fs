@@ -18,11 +18,13 @@ type MainWindow() as this =
 #if DEBUG
     let msgToString msg =
         match msg with
-        | LoadingMsg subMsg -> $"{Generated.Msg.toString msg}-{Loading.Generated.Msg.toString subMsg}"
+        | LoadingMsg subMsg ->
+            $"{Generated.Msg.toString msg}-{Loading.Generated.Msg.toString subMsg}"
         | ReadyMsg subMsg ->
             let subSubMsgString =
                 match subMsg with
-                | Ready.Msg.InventoryMsg subSubMsg -> $"{Inventory.Generated.Msg.toString subSubMsg}"
+                | Ready.Msg.InventoryMsg subSubMsg ->
+                    $"{Inventory.Generated.Msg.toString subSubMsg}"
                 | _ -> "???"
 
             $"{Generated.Msg.toString msg}-{Ready.Generated.Msg.toString subMsg}-{subSubMsgString}"
@@ -57,7 +59,8 @@ type App() =
 
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
-        | :? IClassicDesktopStyleApplicationLifetime as desktopLifetime -> desktopLifetime.MainWindow <- MainWindow()
+        | :? IClassicDesktopStyleApplicationLifetime as desktopLifetime ->
+            desktopLifetime.MainWindow <- MainWindow()
         | _ -> ()
 
 module Program =

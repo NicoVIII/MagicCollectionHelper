@@ -21,8 +21,7 @@ module SystemInfo =
             | Windows -> OSPlatform.Windows
 
         // Wrap IsOSPlatform to use with OS record
-        let isOS =
-            mapPlatform >> RuntimeInformation.IsOSPlatform
+        let isOS = mapPlatform >> RuntimeInformation.IsOSPlatform
 
         // Determine os
         [ Linux; MacOS; Windows ]

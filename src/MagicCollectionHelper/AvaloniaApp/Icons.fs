@@ -48,5 +48,4 @@ module Icons =
             C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z"
 
     // From https://materialdesignicons.com/icon/check
-    let check =
-        create "M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
+    let check = create "M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"

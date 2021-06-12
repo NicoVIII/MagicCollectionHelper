@@ -33,8 +33,7 @@ module BasicAnalyser =
         let unique, withSet =
             match entry.set, entry.number with
             | Some set, Some number ->
-                let unique =
-                    data.uniqueWithSet |> Set.add (set, number)
+                let unique = data.uniqueWithSet |> Set.add (set, number)
 
                 (unique, data.withSet + 1u)
             | _ -> (data.uniqueWithSet, data.withSet)
@@ -73,5 +72,4 @@ module BasicAnalyser =
             p "%5s - Foils" (pN result.foils)
         }
 
-    let get =
-        Analyser.create createEmpty collect postprocess print
+    let get = Analyser.create createEmpty collect postprocess print

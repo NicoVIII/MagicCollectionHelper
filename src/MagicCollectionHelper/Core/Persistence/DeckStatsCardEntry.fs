@@ -7,8 +7,7 @@ open MagicCollectionHelper.Core
 module DeckStatsCardEntry =
     let fileName = "entries.json"
 
-    let filePath =
-        [ SystemInfo.savePath; fileName ] |> Path.combine
+    let filePath = [ SystemInfo.savePath; fileName ] |> Path.combine
 
     let save = save<DeckStatsCardEntry list> filePath
 

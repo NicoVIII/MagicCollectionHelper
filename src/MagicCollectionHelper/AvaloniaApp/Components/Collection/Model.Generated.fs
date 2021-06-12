@@ -6,7 +6,6 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Collection
-
     let loadInProgress =
         MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.loadInProgress),
@@ -16,7 +15,6 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 
 module Msg =
     open MagicCollectionHelper.AvaloniaApp.Components.Collection
-
     let toString (x: Msg) =
         match x with
         | ImportCollection -> "ImportCollection"

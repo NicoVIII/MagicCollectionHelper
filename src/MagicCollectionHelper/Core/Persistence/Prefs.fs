@@ -7,8 +7,7 @@ open MagicCollectionHelper.Core
 module Prefs =
     let fileName = "settings.json"
 
-    let filePath =
-        [ SystemInfo.savePath; fileName ] |> Path.combine
+    let filePath = [ SystemInfo.savePath; fileName ] |> Path.combine
 
     let save = save<Prefs> filePath
 

@@ -6,5 +6,4 @@ open Avalonia.Media
 module Config =
     let lineColor = "darkgray"
 
-    let monospaceFont =
-        FontFamily "Droid Sans Mono, monospace, Droid Sans Fallback"
+    let monospaceFont = FontFamily "Droid Sans Mono, monospace, Droid Sans Fallback"

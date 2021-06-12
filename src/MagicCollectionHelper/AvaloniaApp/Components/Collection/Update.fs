@@ -10,13 +10,11 @@ open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 let perform (msg: Msg) (state: State) =
     match msg with
     | ImportCollection ->
-        let state =
-            setl StateLenses.loadInProgress true state
+        let state = setl StateLenses.loadInProgress true state
 
         let fnc = Collection.importAsync
 
-        let cmd =
-            Cmd.OfAsync.perform fnc () WriteCollection
+        let cmd = Cmd.OfAsync.perform fnc () WriteCollection
 
         state, cmd, DoNothing
     | WriteCollection import ->
@@ -30,7 +28,6 @@ let perform (msg: Msg) (state: State) =
 
         state, Cmd.ofMsg (SaveCollection entryList), DoNothing
     | SaveCollection import ->
-        let state =
-            setl StateLenses.loadInProgress false state
+        let state = setl StateLenses.loadInProgress false state
 
         state, Cmd.none, SaveEntries import

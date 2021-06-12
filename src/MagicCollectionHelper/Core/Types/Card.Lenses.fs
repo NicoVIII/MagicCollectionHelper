@@ -13,7 +13,10 @@ module CardTypesLenses =
             Lens((fun oldable -> oldable.old), (fun oldable value -> { oldable with old = value }))
 
         let data =
-            Lens((fun (oldable: Oldable<'a>) -> oldable.data), (fun oldable value -> { oldable with data = value }))
+            Lens(
+                (fun (oldable: Oldable<'a>) -> oldable.data),
+                (fun oldable value -> { oldable with data = value })
+            )
 
     module OldAmountableLenses =
         let amountOld =
@@ -30,10 +33,16 @@ module CardTypesLenses =
 
     module WithInfo =
         let data =
-            Lens((fun withInfo -> withInfo.data), (fun withInfo value -> { withInfo with data = value }))
+            Lens(
+                (fun withInfo -> withInfo.data),
+                (fun withInfo value -> { withInfo with data = value })
+            )
 
         let info =
-            Lens((fun withInfo -> withInfo.info), (fun withInfo value -> { withInfo with info = value }))
+            Lens(
+                (fun withInfo -> withInfo.info),
+                (fun withInfo value -> { withInfo with info = value })
+            )
 
     module AgedCardLenses =
         // Base lenses

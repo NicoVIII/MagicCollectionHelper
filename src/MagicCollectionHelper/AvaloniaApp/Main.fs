@@ -34,8 +34,7 @@ module Update =
         | Loading state, LoadingMsg msg ->
             let state, cmd, intent = Loading.Update.perform msg state
 
-            let state' =
-                processLoadingIntent intent (Loading state)
+            let state' = processLoadingIntent intent (Loading state)
 
             state', Cmd.map LoadingMsg cmd
         | Ready state, ReadyMsg msg ->

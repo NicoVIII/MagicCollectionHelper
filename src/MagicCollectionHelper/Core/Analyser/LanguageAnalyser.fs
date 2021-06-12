@@ -31,11 +31,12 @@ module LanguageAnalyser =
 
         let data =
             result
-            |> Map.map (fun (Language key) value -> $"%s{key}: %s{Numbers.print settings.dozenalize 0uy (int value)}")
+            |> Map.map
+                (fun (Language key) value ->
+                    $"%s{key}: %s{Numbers.print settings.dozenalize 0uy (int value)}")
             |> Map.toSeq
             |> Seq.map (fun (_, value) -> value)
 
         [ title; data ] |> Seq.concat
 
-    let get =
-        Analyser.create createEmpty collect postprocess print
+    let get = Analyser.create createEmpty collect postprocess print

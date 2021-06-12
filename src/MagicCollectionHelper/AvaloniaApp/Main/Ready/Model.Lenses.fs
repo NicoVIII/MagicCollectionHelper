@@ -9,24 +9,18 @@ module StateLenses =
         StateLenses.common
         << CommonStateLenses.analyseText
 
-    let cardInfo =
-        StateLenses.common << CommonStateLenses.cardInfo
+    let cardInfo = StateLenses.common << CommonStateLenses.cardInfo
 
     let collection = StateLenses.collection
 
-    let dsEntries =
-        StateLenses.common << CommonStateLenses.dsEntries
+    let dsEntries = StateLenses.common << CommonStateLenses.dsEntries
 
-    let entries =
-        StateLenses.common << CommonStateLenses.entries
+    let entries = StateLenses.common << CommonStateLenses.entries
 
-    let prefs =
-        StateLenses.common << CommonStateLenses.prefs
+    let prefs = StateLenses.common << CommonStateLenses.prefs
 
-    let setData =
-        StateLenses.common << CommonStateLenses.setData
+    let setData = StateLenses.common << CommonStateLenses.setData
 
     let inventory = StateLenses.inventory
 
-    let viewMode =
-        StateLenses.common << CommonStateLenses.viewMode
+    let viewMode = StateLenses.common << CommonStateLenses.viewMode

@@ -79,7 +79,10 @@ module TabView =
                                 ToggleButton.create [
                                     ToggleButton.content tabText
                                     ToggleButton.isChecked (tab = current |> Some)
-                                    ToggleButton.onClick ((fun _ -> tab |> dispatchMsg), OnChangeOf current)
+                                    ToggleButton.onClick (
+                                        (fun _ -> tab |> dispatchMsg),
+                                        OnChangeOf current
+                                    )
                                 ]
                         ]
                     ]
@@ -104,10 +107,7 @@ module TabView =
                     let tabs = tab :: tabs
 
                     let content =
-                        if current = tab then
-                            renderTabData tab tabData |> Some
-                        else
-                            content
+                        if current = tab then renderTabData tab tabData |> Some else content
 
                     tabs, content)
                 list

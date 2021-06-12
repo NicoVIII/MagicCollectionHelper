@@ -25,28 +25,23 @@ module Update =
             |> function
             | FileExists path -> state, Cmd.ofMsg (ImportCardInfo path), DoNothing
             | DownloadFile job ->
-                let state =
-                    state |> setl StateLenses.cardInfo Download
+                let state = state |> setl StateLenses.cardInfo Download
 
                 let fnc () = job
 
-                let cmd =
-                    Cmd.OfAsync.either fnc () ImportCardInfo AsyncError
+                let cmd = Cmd.OfAsync.either fnc () ImportCardInfo AsyncError
 
                 state, cmd, DoNothing
         | ImportCardInfo filePath ->
-            let state =
-                state |> setl StateLenses.cardInfo Import
+            let state = state |> setl StateLenses.cardInfo Import
 
             let fnc () = CardData.importFile filePath
 
-            let cmd =
-                Cmd.OfAsync.either fnc () SaveCardInfo AsyncError
+            let cmd = Cmd.OfAsync.either fnc () SaveCardInfo AsyncError
 
             state, cmd, DoNothing
         | SaveCardInfo import ->
-            let state =
-                state |> setl StateLenses.cardInfo (Ready import)
+            let state = state |> setl StateLenses.cardInfo (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | PrepareSetData ->
@@ -54,13 +49,11 @@ module Update =
             |> function
             | FileExists path -> state, Cmd.ofMsg (ImportSetData path), DoNothing
             | DownloadFile job ->
-                let state =
-                    state |> setl StateLenses.setData Download
+                let state = state |> setl StateLenses.setData Download
 
                 let fnc () = job
 
-                let cmd =
-                    Cmd.OfAsync.either fnc () ImportSetData AsyncError
+                let cmd = Cmd.OfAsync.either fnc () ImportSetData AsyncError
 
                 state, cmd, DoNothing
         | ImportSetData filePath ->
@@ -68,20 +61,17 @@ module Update =
 
             let fnc () = SetData.importFile filePath
 
-            let cmd =
-                Cmd.OfAsync.either fnc () SaveSetData AsyncError
+            let cmd = Cmd.OfAsync.either fnc () SaveSetData AsyncError
 
             state, cmd, DoNothing
         | SaveSetData import ->
-            let state =
-                state |> setl StateLenses.setData (Ready import)
+            let state = state |> setl StateLenses.setData (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | LoadCollection ->
             let fnc = Persistence.DeckStatsCardEntry.loadAsync
 
-            let cmd =
-                Cmd.OfAsync.perform fnc () SaveCollection
+            let cmd = Cmd.OfAsync.perform fnc () SaveCollection
 
             state, cmd, DoNothing
         | SaveCollection collection ->
@@ -98,13 +88,11 @@ module Update =
             let fnc () =
                 DeckStatsCardEntry.listToEntriesAsync cardInfo entries
 
-            let cmd =
-                Cmd.OfAsync.either fnc () SaveEntries AsyncError
+            let cmd = Cmd.OfAsync.either fnc () SaveEntries AsyncError
 
             state, cmd, DoNothing
         | SaveEntries entries ->
-            let state =
-                state |> setl StateLenses.entries (Ready entries)
+            let state = state |> setl StateLenses.entries (Ready entries)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | CheckLoadingState ->
@@ -113,7 +101,8 @@ module Update =
                 match state.cardInfo, state.dsEntries, state.entries, state.setData with
                 | Ready cardInfo, Ready dsEntries, Ready entries, Ready setData ->
                     Cmd.none, ChangeToReady(cardInfo, dsEntries, entries, setData)
-                | Ready cardInfo, Ready dsEntries, _, _ -> CalcEntries(cardInfo, dsEntries) |> Cmd.ofMsg, DoNothing
+                | Ready cardInfo, Ready dsEntries, _, _ ->
+                    CalcEntries(cardInfo, dsEntries) |> Cmd.ofMsg, DoNothing
                 | _ -> Cmd.none, DoNothing
 
             state, cmd, intent

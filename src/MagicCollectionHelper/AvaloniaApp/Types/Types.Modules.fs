@@ -10,8 +10,7 @@ module DomainTypeModules =
         let fits (search: Search) (entry: AgedEntryWithInfo) =
             let amount = entry ^. AgedEntryWithInfoLenses.amount
 
-            let amountOld =
-                entry ^. AgedEntryWithInfoLenses.amountOld
+            let amountOld = entry ^. AgedEntryWithInfoLenses.amountOld
 
             let name = entry ^. AgedEntryWithInfoLenses.name
 
