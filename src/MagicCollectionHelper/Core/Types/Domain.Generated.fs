@@ -6,8 +6,8 @@ namespace rec MagicCollectionHelper.Core
 
 module PrefsLenses =
     open MagicCollectionHelper.Core.DomainTypes
-    let dozenalize =
-        Lens((fun (x: Prefs) -> x.dozenalize), (fun (x: Prefs) (value: bool) -> { x with dozenalize = value }))
+    let numBase =
+        Lens((fun (x: Prefs) -> x.numBase), (fun (x: Prefs) (value: NumBase) -> { x with numBase = value }))
 
     let missingPercent =
         Lens((fun (x: Prefs) -> x.missingPercent), (fun (x: Prefs) (value: float) -> { x with missingPercent = value }))
@@ -36,21 +36,58 @@ namespace rec MagicCollectionHelper.Core
 
 module Prefs =
     open MagicCollectionHelper.Core.DomainTypes
-    let dozenalize (x: Prefs) = x.dozenalize
+    let numBase (x: Prefs) = x.numBase
     let missingPercent (x: Prefs) = x.missingPercent
     let setWithFoils (x: Prefs) = x.setWithFoils
-    let create (dozenalize: bool) (missingPercent: float) (setWithFoils: bool) : Prefs =
-        { dozenalize = dozenalize
+    let create (numBase: NumBase) (missingPercent: float) (setWithFoils: bool) : Prefs =
+        { numBase = numBase
           missingPercent = missingPercent
           setWithFoils = setWithFoils }
 
     let map
-        (mapdozenalize: bool -> bool)
+        (mapnumBase: NumBase -> NumBase)
         (mapmissingPercent: float -> float)
         (mapsetWithFoils: bool -> bool)
         (record': Prefs)
         =
         { record' with
-              dozenalize = mapdozenalize record'.dozenalize
+              numBase = mapnumBase record'.numBase
               missingPercent = mapmissingPercent record'.missingPercent
               setWithFoils = mapsetWithFoils record'.setWithFoils }
+namespace rec MagicCollectionHelper.Core
+
+module NumBase =
+    open MagicCollectionHelper.Core.DomainTypes
+    let toString (x: NumBase) =
+        match x with
+        | Decimal -> "Decimal"
+        | Dozenal -> "Dozenal"
+        | Seximal -> "Seximal"
+
+    let fromString (x: string) =
+        match x with
+        | "Decimal" -> Some Decimal
+        | "Dozenal" -> Some Dozenal
+        | "Seximal" -> Some Seximal
+        | _ -> None
+
+    let toTag (x: NumBase) =
+        match x with
+        | Decimal -> 0
+        | Dozenal -> 1
+        | Seximal -> 2
+
+    let isDecimal (x: NumBase) =
+        match x with
+        | Decimal -> true
+        | _ -> false
+
+    let isDozenal (x: NumBase) =
+        match x with
+        | Dozenal -> true
+        | _ -> false
+
+    let isSeximal (x: NumBase) =
+        match x with
+        | Seximal -> true
+        | _ -> false

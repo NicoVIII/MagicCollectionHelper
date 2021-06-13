@@ -20,7 +20,7 @@ module SetAnalyser =
 
     type Preferences =
         { missingPercent: float
-          dozenalize: bool
+          numBase: NumBase
           withFoils: bool }
 
     let private createEmpty () : CollectType = Map.empty
@@ -80,25 +80,25 @@ module SetAnalyser =
         |> Map.map (Postprocess.transformSet cardData)
 
     module private Print =
-        let setLine dozenalize set collectionData =
+        let setLine numBase set collectionData =
             let percent =
-                if dozenalize then
-                    collectionData.percent * 144.
-                else
-                    collectionData.percent * 100.
+                match numBase with
+                | Decimal -> collectionData.percent * 100.
+                | Dozenal -> collectionData.percent * 144.
+                | Seximal -> collectionData.percent * 36.
 
             sprintf
                 "%5s - %3s/%3s (%s%s) - %s"
                 (MagicSet.unwrap set)
-                (Numbers.print dozenalize 0 (int collectionData.collected))
-                (Numbers.print dozenalize 0 (collectionData.max |> int))
-                (Numbers.print dozenalize 1 percent)
-                (if dozenalize then "pg" else "%")
+                (Numbers.print numBase 0 (int collectionData.collected))
+                (Numbers.print numBase 0 (collectionData.max |> int))
+                (Numbers.print numBase 1 percent)
+                "%"
                 collectionData.name
             |> Seq.singleton
 
-    let private print (settings: Preferences) (result: Result) =
-        let dozenalize = settings.dozenalize
+    let private print (prefs: Preferences) (result: Result) =
+        let numBase = prefs.numBase
 
         // We sort sets descending by "fullness"
         // If we have no set data we sort by number of cards + tokens, then number of cards
@@ -122,7 +122,7 @@ module SetAnalyser =
                     match value.setData with
                     | Some setData ->
                         // Print set line and maybe token set line
-                        Print.setLine dozenalize set setData
+                        Print.setLine numBase set setData
                     | None ->
                         let setValue = MagicSet.unwrap set
 
@@ -138,14 +138,12 @@ module SetAnalyser =
 
                     match setData with
                     | Some ({ missing = missing; percent = percent } as setData) when
-                        percent > settings.missingPercent
+                        percent > prefs.missingPercent
                         && missing.Count > 0 -> Some(set, setData)
                     | _ -> None)
             |> Seq.map
                 (fun ((MagicSet set), setData) ->
-                    let missing =
-                        setData.missing.Count
-                        |> Numbers.print dozenalize 0
+                    let missing = setData.missing.Count |> Numbers.print numBase 0
 
                     let titleLine =
                         $"%-3s{set} - %2s{missing} missing:"
@@ -159,8 +157,7 @@ module SetAnalyser =
                         missingLines <-
                             cardIds
                             |> Seq.map
-                                (fun (CollectorNumber number) ->
-                                    number |> Numbers.print dozenalize 0)
+                                (fun (CollectorNumber number) -> number |> Numbers.print numBase 0)
                             |> Seq.reduce (fun x y -> x + "," + y)
                             |> Seq.singleton
                             |> Seq.append missingLines

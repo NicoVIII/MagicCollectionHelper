@@ -45,11 +45,12 @@ module Update =
 
             state, Cmd.none
         | ChangePrefs prefs ->
-            let state = setl StateLenses.prefs prefs state
+            let state = (StateLenses.prefs %-> prefs) state
 
-            state, Cmd.ofMsg (SavePrefs prefs)
-        | SavePrefs prefs ->
-            Persistence.Prefs.save prefs
+            state, Cmd.ofMsg SavePrefs
+        | SavePrefs ->
+            state ^. StateLenses.prefs
+            |> Persistence.Prefs.save
 
             state, Cmd.none
         | SaveEntries entries ->

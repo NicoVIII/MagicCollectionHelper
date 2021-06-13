@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\paket-files\NicoVIII\Basealize\src\Dozenalize\Dozenalize.fsproj" />
+    <ProjectReference Include="..\..\..\paket-files\NicoVIII\Basealize\src\Seximalize\Seximalize.fsproj" />
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

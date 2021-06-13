@@ -2,6 +2,7 @@ namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 open Avalonia.Controls
 
+open Avalonia.FuncUI.Components
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 
@@ -22,6 +23,7 @@ module PreferenceView =
                     StackPanel.children [
                         Grid.create [
                             Grid.columnDefinitions "Auto, Auto"
+                            Grid.rowDefinitions (List.replicate 2 "Auto" |> String.concat ",5,")
                             Grid.children [
                                 label 0 "Missing from percent"
                                 NumericUpDown.create [
@@ -35,11 +37,37 @@ module PreferenceView =
                                         (fun value ->
                                             if value <> prefs.missingPercent * 100. then
                                                 value / 100.
-                                                |> setlr PrefsLenses.missingPercent prefs
+                                                |> setl PrefsLenses.missingPercent
                                                 |> ChangePrefs
                                                 |> dispatch),
-                                        OnChangeOf prefs
+                                        OnChangeOf prefs.missingPercent
                                     )
+                                ]
+                                label 2 "Number base"
+                                ComboBox.create [
+                                    ComboBox.column 1
+                                    ComboBox.row 2
+                                    ComboBox.dataItems [
+                                        Decimal
+                                        Dozenal
+                                        Seximal
+                                    ]
+                                    ComboBox.selectedItem prefs.numBase
+                                    ComboBox.itemTemplate (
+                                        DataTemplateView<NumBase>.create
+                                            (fun numBase ->
+                                                TextBlock.create [
+                                                    TextBlock.text (NumBase.toString numBase)
+                                                ])
+                                    )
+                                    ComboBox.onSelectedItemChanged
+                                        (fun v ->
+                                            if v <> null then
+                                                v
+                                                |> unbox<NumBase>
+                                                |> setl PrefsLenses.numBase
+                                                |> ChangePrefs
+                                                |> dispatch)
                                 ]
                             ]
                         ]
@@ -48,35 +76,17 @@ module PreferenceView =
                             CheckBox.isChecked prefs.setWithFoils
                             CheckBox.onChecked (
                                 (fun _ ->
-                                    setl PrefsLenses.setWithFoils true prefs
+                                    (PrefsLenses.setWithFoils .-> true)
                                     |> ChangePrefs
                                     |> dispatch),
-                                OnChangeOf prefs
+                                Never
                             )
                             CheckBox.onUnchecked (
                                 (fun _ ->
-                                    setl PrefsLenses.setWithFoils false prefs
+                                    (PrefsLenses.setWithFoils .-> false)
                                     |> ChangePrefs
                                     |> dispatch),
-                                OnChangeOf prefs
-                            )
-                        ]
-                        CheckBox.create [
-                            CheckBox.content "Dozenalize"
-                            CheckBox.isChecked prefs.dozenalize
-                            CheckBox.onChecked (
-                                (fun _ ->
-                                    setl PrefsLenses.dozenalize true prefs
-                                    |> ChangePrefs
-                                    |> dispatch),
-                                OnChangeOf prefs
-                            )
-                            CheckBox.onUnchecked (
-                                (fun _ ->
-                                    setl PrefsLenses.dozenalize false prefs
-                                    |> ChangePrefs
-                                    |> dispatch),
-                                OnChangeOf prefs
+                                Never
                             )
                         ]
                     ]

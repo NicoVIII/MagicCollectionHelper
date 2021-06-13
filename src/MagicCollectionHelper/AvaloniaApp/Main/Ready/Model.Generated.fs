@@ -84,7 +84,7 @@ module Msg =
         | Analyse -> "Analyse"
         | ChangeViewMode _ -> "ChangeViewMode"
         | ChangePrefs _ -> "ChangePrefs"
-        | SavePrefs _ -> "SavePrefs"
+        | SavePrefs -> "SavePrefs"
         | SaveEntries _ -> "SaveEntries"
         | InventoryMsg _ -> "InventoryMsg"
         | CollectionMsg _ -> "CollectionMsg"
@@ -92,6 +92,7 @@ module Msg =
     let fromString (x: string) =
         match x with
         | "Analyse" -> Some Analyse
+        | "SavePrefs" -> Some SavePrefs
         | _ -> None
 
     let toTag (x: Msg) =
@@ -100,7 +101,7 @@ module Msg =
         | Analyse -> 1
         | ChangeViewMode _ -> 2
         | ChangePrefs _ -> 3
-        | SavePrefs _ -> 4
+        | SavePrefs -> 4
         | SaveEntries _ -> 5
         | InventoryMsg _ -> 6
         | CollectionMsg _ -> 7
@@ -127,7 +128,7 @@ module Msg =
 
     let isSavePrefs (x: Msg) =
         match x with
-        | SavePrefs _ -> true
+        | SavePrefs -> true
         | _ -> false
 
     let isSaveEntries (x: Msg) =

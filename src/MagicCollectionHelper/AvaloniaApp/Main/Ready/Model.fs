@@ -35,8 +35,8 @@ type Msg =
     | AsyncError of exn
     | Analyse
     | ChangeViewMode of ViewMode
-    | ChangePrefs of Prefs
-    | SavePrefs of Prefs
+    | ChangePrefs of (Prefs -> Prefs)
+    | SavePrefs
     | SaveEntries of Entry list
     | InventoryMsg of Inventory.Msg
     | CollectionMsg of Collection.Msg
@@ -68,7 +68,7 @@ module Model =
 
         let prefs =
             Persistence.Prefs.load ()
-            |> Option.defaultValue (Prefs.create false Config.missingPercentDefault false)
+            |> Option.defaultValue (Prefs.create Decimal Config.missingPercentDefault false)
 
         let state =
             { analyseText = arrow

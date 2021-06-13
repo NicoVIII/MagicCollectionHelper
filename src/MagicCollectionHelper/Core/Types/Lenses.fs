@@ -21,7 +21,10 @@ module Lens =
 
     let setlr (Lens (_, set)) source value = set source value
 
-    // We define also the infix operators like in FSharpPlus
+    let over lens updater source =
+        getl lens source |> updater |> setlr lens source
 
+    // We define also the infix operators like in FSharpPlus
     let (^.) source lens = getl lens source
-    let (.->) lens value = setl lens value
+    let (.->) = setl
+    let (%->) = over

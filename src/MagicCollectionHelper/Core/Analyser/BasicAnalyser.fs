@@ -15,7 +15,7 @@ module BasicAnalyser =
           withSet: uint
           withLanguage: uint }
 
-    type Preferences = { dozenalize: bool }
+    type Preferences = { numBase: NumBase }
 
     let private createEmpty () : CollectData =
         { amount = 0u
@@ -57,11 +57,10 @@ module BasicAnalyser =
           foils = data.foils
           withLanguage = data.withLanguage }
 
-    let print (settings: Preferences) (result: Result) =
+    let print (prefs: Preferences) (result: Result) =
         let p = sprintf
 
-        let inline pN x =
-            Numbers.print settings.dozenalize 0uy (int x)
+        let inline pN x = Numbers.print prefs.numBase 0uy (int x)
 
         seq {
             "Basic Analysis"

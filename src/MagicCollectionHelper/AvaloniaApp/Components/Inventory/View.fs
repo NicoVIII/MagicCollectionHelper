@@ -63,7 +63,7 @@ let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
         | true, false -> Brushes.LimeGreen
         | false, false -> Brushes.DarkGreen
 
-    let inline pN p = Numbers.print prefs.dozenalize p
+    let inline pN p = Numbers.print prefs.numBase p
 
     let added = if not old then $"(+%2s{pN 0 (amount - amountOld)})" else "     "
 
@@ -102,7 +102,7 @@ let renderEntryList prefs state entries =
 let rec renderEntryTree prefs state dispatch first tree =
     let renderEntryTree = renderEntryTree prefs state dispatch false
 
-    let inline pN p = Numbers.print prefs.dozenalize p
+    let inline pN p = Numbers.print prefs.numBase p
 
     match tree with
     // If we have only one node, we skip it
@@ -175,7 +175,7 @@ let content prefs (state: State) (dispatch: Dispatch) : IView =
         let locations = state.filteredInventory
         let locationMap = locations |> Map.ofList
 
-        let inline pN p = Numbers.print prefs.dozenalize p
+        let inline pN p = Numbers.print prefs.numBase p
 
         let nameFromLocation map (location: InventoryLocation) =
             let amount =

@@ -46,9 +46,9 @@ let renderText prefs dsEntries entries infoMap (state: State) (dispatch: Dispatc
 
                 let percent =
                     (double inventoryableAmount) / (double cardAmount)
-                    * 100.
+                    |> Numbers.percent prefs.numBase
 
-                let inline pN p = Numbers.print prefs.dozenalize p
+                let inline pN p = Numbers.print prefs.numBase p
 
                 $"You have %s{pN 0 cardAmount} cards in your collection.\n\n"
                 + $"From those you can use {pN 0 inventoryableAmount} ({pN 1 percent}%%) for inventory."

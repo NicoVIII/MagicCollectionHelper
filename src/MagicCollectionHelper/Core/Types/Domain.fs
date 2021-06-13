@@ -4,11 +4,17 @@ open Myriad.Plugins
 
 [<AutoOpen>]
 module DomainTypes =
+    [<Generator.DuCases("core")>]
+    type NumBase =
+        | Decimal
+        | Dozenal
+        | Seximal
+
     /// Type which holds user preferences so the user can customize some behaviors
     [<Generator.Lenses("core", "Lens")>]
     [<Generator.Fields("core")>]
     type Prefs =
-        { dozenalize: bool
+        { numBase: NumBase
           missingPercent: float
           setWithFoils: bool }
 

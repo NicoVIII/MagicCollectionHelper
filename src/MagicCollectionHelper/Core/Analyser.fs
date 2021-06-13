@@ -33,14 +33,14 @@ module Analyser =
         |> analyser.print prefs
 
     let analyse setData config data =
-        let basicPrefs : BasicAnalyser.Preferences = { dozenalize = config.dozenalize }
+        let basicPrefs : BasicAnalyser.Preferences = { numBase = config.numBase }
 
         let setPrefs : SetAnalyser.Preferences =
             { missingPercent = config.missingPercent
-              dozenalize = config.dozenalize
+              numBase = config.numBase
               withFoils = config.setWithFoils }
 
-        let langPrefs : LanguageAnalyser.Preferences = { dozenalize = config.dozenalize }
+        let langPrefs : LanguageAnalyser.Preferences = { numBase = config.numBase }
 
         // Combine all analysers
         let analyser =

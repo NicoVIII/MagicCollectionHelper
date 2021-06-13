@@ -25,17 +25,28 @@ module Set =
     let inline ofListList set = set |> Set.ofSeq |> Set.map Set.ofSeq
 
 module Numbers =
-    open Dozenalize
-
     // I would want to use pitman, but it looks like Avalonia has problems with
     // those unicode characters :(
-    let config = Config.andrews
+    let dozenalConfig = Dozenalize.Config.andrews
 
-    let inline print dozenal precision number =
-        if dozenal then
-            Display.number config (byte precision) (decimal number)
-        else
-            String.Format($"{{0:F{precision}}}", number)
+    let inline percent basePref number =
+        let one = LanguagePrimitives.GenericOne
+
+        let factor =
+            match basePref with
+            | Dozenal -> 144
+            | Seximal -> 36
+            | Decimal -> 100
+
+        let genericFactor = (Seq.init factor (fun _ -> one)) |> Seq.sum
+
+        number * genericFactor
+
+    let inline print basePref precision number =
+        match basePref with
+        | Dozenal -> Dozenalize.Display.number dozenalConfig (byte precision) (decimal number)
+        | Seximal -> Seximalize.Display.number (byte precision) (decimal number)
+        | Decimal -> String.Format($"{{0:F{precision}}}", number)
 
 module Tuple2 =
     let mapFst f (x, y) = f x, y
