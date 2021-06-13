@@ -1,4 +1,4 @@
-﻿namespace MagicCollectionHelper.AvaloniaApp
+namespace MagicCollectionHelper.AvaloniaApp
 
 open Elmish
 open Avalonia
@@ -37,6 +37,7 @@ type MainWindow() as this =
 
         //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
         //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
+
 #if DEBUG
         DevTools.Attach(this, KeyGesture(Key.F12))
         |> ignore

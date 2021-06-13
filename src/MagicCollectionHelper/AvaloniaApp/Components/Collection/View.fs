@@ -6,6 +6,7 @@ open Avalonia.FuncUI.Types
 
 open MagicCollectionHelper.Core
 
+open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 open MagicCollectionHelper.AvaloniaApp.Elements
@@ -22,7 +23,7 @@ let topBar (state: State) (dispatch: Dispatch) : IView =
               subPatch = Never }
     ]
 
-let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
+let renderText prefs dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
     let loadInProgress = getl StateLenses.loadInProgress state
 
     let inventoryableAmount =
@@ -33,8 +34,6 @@ let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : I
              | None -> 0u)
             entries
 
-    let cardAmount = List.sumBy (fun (entry: DeckStatsCardEntry) -> entry.amount) dsEntries
-
     TextBlock.create [
         TextBlock.textWrapping TextWrapping.Wrap
         TextBlock.text (
@@ -42,29 +41,34 @@ let renderText dsEntries entries infoMap (state: State) (dispatch: Dispatch) : I
             | true, _ -> "Loading..."
             | false, true -> "Your collection is empty. Import it first."
             | false, false ->
+                let cardAmount =
+                    List.sumBy (fun (entry: DeckStatsCardEntry) -> entry.amount) dsEntries
+
                 let percent =
                     (double inventoryableAmount) / (double cardAmount)
                     * 100.
 
-                $"You have %i{cardAmount} cards in your collection.\n\n"
-                + $"From those you can use {inventoryableAmount} (%.1f{percent}%%) for inventory."
+                let inline pN p = Numbers.print prefs.dozenalize p
+
+                $"You have %s{pN 0 cardAmount} cards in your collection.\n\n"
+                + $"From those you can use {pN 0 inventoryableAmount} ({pN 1 percent}%%) for inventory."
                 + " If you need more, please extend the info in your collection. Especially important are set, collector number and language."
         )
     ]
     :> IView
 
-let content dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
+let content prefs dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
     Border.create [
         Border.padding 10.
-        Border.child (renderText dsEntries entries infoMap state dispatch)
+        Border.child (renderText prefs dsEntries entries infoMap state dispatch)
     ]
     :> IView
 
-let render dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
+let render prefs dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             topBar state dispatch
-            content dsEntries entries infoMap state dispatch
+            content prefs dsEntries entries infoMap state dispatch
         ]
     ]
     :> IView

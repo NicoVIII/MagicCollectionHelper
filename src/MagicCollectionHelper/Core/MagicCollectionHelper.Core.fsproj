@@ -46,7 +46,7 @@
     <Compile Include="Inventory.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\paket-files\NicoVIII\Dozenalize\src\Dozenalize\Dozenalize.fsproj" />
+    <ProjectReference Include="..\..\..\paket-files\NicoVIII\Basealize\src\Dozenalize\Dozenalize.fsproj" />
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />
 </Project>

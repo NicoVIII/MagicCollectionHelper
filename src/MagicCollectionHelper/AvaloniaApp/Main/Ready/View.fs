@@ -11,19 +11,21 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 let renderCollectionView state dispatch =
-    let cardInfo = getl StateLenses.cardInfo state
-    let dsEntries = getl StateLenses.dsEntries state
-    let entries = getl StateLenses.entries state
+    let prefs = state ^. StateLenses.prefs
+    let cardInfo = state ^. StateLenses.cardInfo
+    let dsEntries = state ^. StateLenses.dsEntries
+    let entries = state ^. StateLenses.entries
     let dispatch = CollectionMsg >> dispatch
 
-    Components.Collection.View.render dsEntries entries cardInfo state.collection dispatch
+    Components.Collection.View.render prefs dsEntries entries cardInfo state.collection dispatch
 
 let renderInventoryView state dispatch =
-    let entries = getl StateLenses.entries state
-    let setData = getl StateLenses.setData state
-    let cardInfo = getl StateLenses.cardInfo state
+    let prefs = state ^. StateLenses.prefs
+    let entries = state ^. StateLenses.entries
+    let setData = state ^. StateLenses.setData
+    let cardInfo = state ^. StateLenses.cardInfo
     let dispatch = InventoryMsg >> dispatch
-    Components.Inventory.View.render cardInfo setData entries state.inventory dispatch
+    Components.Inventory.View.render prefs cardInfo entries state.inventory dispatch
 
 let createTab (header: string) (content: IView) =
     let content =

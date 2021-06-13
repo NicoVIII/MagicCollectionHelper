@@ -22,4 +22,4 @@ nuget Expecto.FsCheck >= 9.0
 nuget Microsoft.NET.Test.Sdk >= 16.0
 nuget YoloDev.Expecto.TestSdk
 
-github NicoVIII/Dozenalize:main
+github NicoVIII/Basealize:main

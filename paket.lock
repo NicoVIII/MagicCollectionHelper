@@ -670,8 +670,8 @@ NUGET
       FSharp.Core (>= 4.6)
       System.Collections.Immutable (>= 1.5 < 5.1)
 GITHUB
-  remote: NicoVIII/Dozenalize
-    FULLPROJECT (b5f8a8b1c3b4a7eebf23baa5895f16b6e4b2b447)
+  remote: NicoVIII/Basealize
+    FULLPROJECT (b3eaa201632bdcd6e576213ec9dbce7fb141886a)
       Expecto
       Expecto.FsCheck
       FsCheck

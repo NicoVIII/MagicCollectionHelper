@@ -21,13 +21,15 @@ module TryParser =
     let (|Double|_|) = parseDouble
     let (|Uint|_|) = parseUint
 
-open Dozenalize
-
 module Set =
     let inline ofListList set = set |> Set.ofSeq |> Set.map Set.ofSeq
 
 module Numbers =
-    let config = Types.Config.PreConf.pitman
+    open Dozenalize
+
+    // I would want to use pitman, but it looks like Avalonia has problems with
+    // those unicode characters :(
+    let config = Config.andrews
 
     let inline print dozenal precision number =
         if dozenal then

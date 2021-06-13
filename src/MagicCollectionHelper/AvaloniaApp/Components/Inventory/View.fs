@@ -33,7 +33,7 @@ type LocCards =
       amount: uint
       cards: string seq }
 
-let cardItem (state: State) (entry: AgedEntryWithInfo) =
+let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
     let amount = entry ^. AgedEntryWithInfoLenses.amount
     let amountOld = entry ^. AgedEntryWithInfoLenses.amountOld
     let foil = entry ^. AgedEntryWithInfoLenses.foil
@@ -63,14 +63,16 @@ let cardItem (state: State) (entry: AgedEntryWithInfo) =
         | true, false -> Brushes.LimeGreen
         | false, false -> Brushes.DarkGreen
 
-    let added = if not old then $"(+%2i{amount - amountOld})" else "     "
+    let inline pN p = Numbers.print prefs.dozenalize p
+
+    let added = if not old then $"(+%2s{pN 0 (amount - amountOld)})" else "     "
 
     CheckBox.create [
         CheckBox.fontFamily Config.monospaceFont
         CheckBox.foreground brush
         CheckBox.content (
             $"{star}[%5s{setValue}-%s{numberValue.PadLeft(3, '0')}]-{langValue}"
-            + $" {added}%2i{amount} {name}"
+            + $" {added}%2s{pN 0 amount} {name}"
         )
     ]
 
@@ -91,14 +93,14 @@ let wrapLayer withBorder children =
     else
         stack
 
-let renderEntryList state entries =
+let renderEntryList prefs state entries =
     wrapLayer
         true
         [ for entry in entries do
-              cardItem state entry ]
+              cardItem prefs state entry ]
 
-let rec renderEntryTree state dispatch first tree =
-    let renderEntryTree = renderEntryTree state dispatch false
+let rec renderEntryTree prefs state dispatch first tree =
+    let renderEntryTree = renderEntryTree prefs state dispatch false
 
     match tree with
     // If we have only one node, we skip it
@@ -116,20 +118,20 @@ let rec renderEntryTree state dispatch first tree =
                       Expander.isExpanded (amount > 0u)
                       Expander.content (renderEntryTree child)
                   ] ]
-    | Leaf entries -> renderEntryList state entries
+    | Leaf entries -> renderEntryList prefs state entries
 
-let renderEntryTreeForLocation state dispatch (location: InventoryLocation) trees =
+let renderEntryTreeForLocation prefs state dispatch (location: InventoryLocation) trees =
     ScrollViewer.create [
         ScrollViewer.horizontalScrollBarVisibility ScrollBarVisibility.Disabled
         ScrollViewer.content (
             Border.create [
                 Border.padding (10., 10.)
-                Border.child (renderEntryTree state dispatch true trees)
+                Border.child (renderEntryTree prefs state dispatch true trees)
             ]
         )
     ]
 
-let locationItem state dispatch (location: InventoryLocation) tree =
+let locationItem prefs state dispatch (location: InventoryLocation) tree =
     Border.create [
         Border.borderThickness (1., 0., 0., 0.)
         Border.borderBrush Config.lineColor
@@ -137,14 +139,14 @@ let locationItem state dispatch (location: InventoryLocation) tree =
             DockPanel.create [
                 DockPanel.children [
                     SearchBar.render state.search dispatch
-                    renderEntryTreeForLocation state dispatch location tree
+                    renderEntryTreeForLocation prefs state dispatch location tree
                 ]
             ]
         )
     ]
     :> IView
 
-let content (state: State) (dispatch: Dispatch) : IView =
+let content prefs (state: State) (dispatch: Dispatch) : IView =
     match state.viewMode with
     | Empty ->
         Border.create [
@@ -186,17 +188,17 @@ let content (state: State) (dispatch: Dispatch) : IView =
 
         TabView.renderFromList
             (nameFromLocation locationMap)
-            (locationItem state dispatch)
+            (locationItem prefs state dispatch)
             (ChangeLocation >> dispatch)
             TabView.Left
             locations
             current
 
-let render (infoMap: CardInfoMap) setData entries (state: State) (dispatch: Dispatch) : IView =
+let render prefs (infoMap: CardInfoMap) entries (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             actionBar infoMap entries state dispatch
-            content state dispatch
+            content prefs state dispatch
         ]
     ]
     :> IView
