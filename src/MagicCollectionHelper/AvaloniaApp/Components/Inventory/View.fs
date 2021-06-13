@@ -102,6 +102,8 @@ let renderEntryList prefs state entries =
 let rec renderEntryTree prefs state dispatch first tree =
     let renderEntryTree = renderEntryTree prefs state dispatch false
 
+    let inline pN p = Numbers.print prefs.dozenalize p
+
     match tree with
     // If we have only one node, we skip it
     | Nodes [ (_, child) ] -> renderEntryTree child
@@ -111,7 +113,7 @@ let rec renderEntryTree prefs state dispatch first tree =
             [ for (name: string, child) in nodes do
                   // We want to add the amount
                   let amount = ExpanderTree.sumUpCards state.search child
-                  let name = $"{name} ({amount})"
+                  let name = $"{name} ({pN 0 amount})"
 
                   Expander.create [
                       Expander.header name
@@ -173,10 +175,13 @@ let content prefs (state: State) (dispatch: Dispatch) : IView =
         let locations = state.filteredInventory
         let locationMap = locations |> Map.ofList
 
+        let inline pN p = Numbers.print prefs.dozenalize p
+
         let nameFromLocation map (location: InventoryLocation) =
             let amount =
                 Map.find location map
                 |> ExpanderTree.sumUpCards state.search
+                |> pN 0
 
             match location with
             | Custom location -> $"{location.name} ({amount})"
