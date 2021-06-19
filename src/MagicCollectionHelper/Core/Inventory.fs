@@ -115,8 +115,8 @@ module Inventory =
             let date =
                 Map.tryFind set setData
                 |> function
-                | Some setData -> setData.date
-                | None -> "0000-00-00"
+                    | Some setData -> setData.date
+                    | None -> "0000-00-00"
 
             let extension =
                 match setValue with
@@ -148,9 +148,7 @@ module Inventory =
 
             rarities
             |> List.indexed
-            |> List.tryPick
-                (fun (index, raritySet) ->
-                    if Set.contains rarity raritySet then Some index else None)
+            |> List.tryPick (fun (index, raritySet) -> if Set.contains rarity raritySet then Some index else None)
             |> Option.defaultValue (List.length rarities)
             |> string
         | ByLanguage languages ->
@@ -158,8 +156,7 @@ module Inventory =
 
             languages
             |> List.indexed
-            |> List.tryPick
-                (fun (index, sLanguage) -> if sLanguage = language then Some index else None)
+            |> List.tryPick (fun (index, sLanguage) -> if sLanguage = language then Some index else None)
             |> Option.defaultValue (List.length languages)
             |> string
 
@@ -250,11 +247,8 @@ module Inventory =
                     |> determineLocation locCardMap locations
 
                 match location with
-                | Some location ->
-                    locCardMap <-
-                        Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
-                | None ->
-                    locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
+                | Some location -> locCardMap <- Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
+                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
 
                 i <- i + 1u
 
@@ -266,6 +260,13 @@ module Inventory =
                 |> AgedEntryWithInfo.fromCardList
                 |> sortEntries setData location
                 |> List.map (getl AgedEntryWithInfoLenses.agedEntry))
+        // If the Fallback is empty, we don't need it
+        |> Map.change
+            Fallback
+            (function
+            | None
+            | Some [] -> None
+            | Some lst -> Some lst)
         // We now convert the map back into a list (order matters!) and sort it
         |> Map.toList
         |> List.sortBy
