@@ -194,8 +194,16 @@ NUGET
       Myriad.Core (>= 0.5.3)
     Myriad.Sdk (0.5.3)
     Newtonsoft.Json (12.0.3)
+    NicoVIII.Basealize (0.1)
+      FSharp.Core (>= 5.0)
+    NicoVIII.Dozenalize (0.1)
+      FSharp.Core (>= 5.0)
+      NicoVIII.Basealize (>= 0.1)
     NicoVIII.FSharp.Json (0.5.0-rc.2)
       FSharp.Core (>= 4.3.4)
+    NicoVIII.Seximalize (0.1)
+      FSharp.Core (>= 5.0)
+      NicoVIII.Basealize (>= 0.1)
     NicoVIII.TypedPersistence.Core (0.6.0-alpha.7)
       FSharp.Core (>= 5.0)
     NicoVIII.TypedPersistence.Json (0.6.0-alpha.7)
@@ -679,7 +687,7 @@ NUGET
       System.Collections.Immutable (>= 1.5 < 5.1)
 GITHUB
   remote: NicoVIII/Basealize
-    FULLPROJECT (b432a9fea5e77fc924cd142439851911717db029)
+    FULLPROJECT (97b368e116b1d0dcabf1bbbb2153f0efd6ec358d)
       Expecto
       Expecto.FsCheck
       FsCheck

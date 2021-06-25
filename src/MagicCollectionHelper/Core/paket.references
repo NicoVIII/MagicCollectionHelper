@@ -2,5 +2,7 @@ FSharp.Data
 Myriad.Plugins
 Myriad.Sdk
 Newtonsoft.Json
+NicoVIII.Dozenalize
+NicoVIII.Seximalize
 NicoVIII.TypedPersistence.Json
 SchlenkR.FsHttp
