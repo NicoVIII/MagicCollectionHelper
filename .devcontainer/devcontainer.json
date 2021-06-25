@@ -21,7 +21,6 @@
     "extensions": [
         "editorconfig.editorconfig",
         "ionide.ionide-fsharp",
-        "ionide.ionide-fake",
         "ionide.ionide-paket",
         "ms-dotnettools.csharp",
         "eamodio.gitlens",

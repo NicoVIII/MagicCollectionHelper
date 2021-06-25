@@ -7,5 +7,9 @@ tasks:
 
 vscode:
   extensions:
-    - muhammad-sammy.csharp@1.23.9:BMArOoGwWqKRrH6s4E2/AQ==
-    - ionide.ionide-fsharp@5.3.2:ktwOdXq2H8VHS6SX8scVIw==
+    - ionide.ionide-fsharp
+    - editorconfig.editorconfig
+    - muhammad-sammy.csharp
+    - eamodio.gitlens
+    - ybaumes.highlight-trailing-white-spaces
+    - gruntfuggly.todo-tree
