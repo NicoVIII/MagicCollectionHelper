@@ -10,6 +10,7 @@ open MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 let perform
+    (prefs: Prefs)
     (setData: SetDataMap)
     (infoMap: CardInfoMap)
     (entries: OldAmountable<Entry> list)
@@ -29,9 +30,8 @@ let perform
 
         state, cmd
     | FilterInventory inventory ->
-        // TODO: move to prefs
-        let minSize = 20
-        let maxSize = 40
+        let minSize = prefs.cardGroupMinSize |> int
+        let maxSize = prefs.cardGroupMaxSize |> int
 
         /// This function traverses through the tree and collapses leafes which are too small
         let rec shrinkTreeHelper tree =
@@ -93,8 +93,7 @@ let perform
                                 let entry = agedEntry.data
 
                                 Map.tryFind (entry.card.set, entry.card.number) infoMap
-                                |> Option.map
-                                    (fun cardInfo -> AgedEntryWithInfo.create cardInfo agedEntry))
+                                |> Option.map (fun cardInfo -> AgedEntryWithInfo.create cardInfo agedEntry))
 
                     (location, cards))
             |> List.choose
@@ -132,12 +131,12 @@ let perform
 
                                     List.tryFind (Set.contains rarity) rarities
                                     |> function
-                                    | Some set ->
-                                        set
-                                        |> Set.map Rarity.toString
-                                        |> Set.toSeq
-                                        |> String.concat " / "
-                                    | None -> "Other"
+                                        | Some set ->
+                                            set
+                                            |> Set.map Rarity.toString
+                                            |> Set.toSeq
+                                            |> String.concat " / "
+                                        | None -> "Other"
                                 | ByTypeContains types ->
                                     let typeLine = entry ^. AgedEntryWithInfoLenses.typeLine
 

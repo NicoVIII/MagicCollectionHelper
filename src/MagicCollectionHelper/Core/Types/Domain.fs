@@ -14,7 +14,9 @@ module DomainTypes =
     [<Generator.Lenses("core", "Lens")>]
     [<Generator.Fields("core")>]
     type Prefs =
-        { numBase: NumBase
+        { cardGroupMinSize: uint
+          cardGroupMaxSize: uint
+          numBase: NumBase
           missingPercent: float
           setWithFoils: bool }
 

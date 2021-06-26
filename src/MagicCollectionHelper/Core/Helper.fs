@@ -7,8 +7,8 @@ module TryParser =
     let tryParseWith (tryParseFunc: string -> bool * _) =
         tryParseFunc
         >> function
-        | true, v -> Some v
-        | false, _ -> None
+            | true, v -> Some v
+            | false, _ -> None
 
     let parseInt = tryParseWith System.Int32.TryParse
     let parseSingle = tryParseWith System.Single.TryParse

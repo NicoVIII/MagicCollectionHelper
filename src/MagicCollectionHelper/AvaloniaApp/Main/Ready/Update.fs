@@ -73,11 +73,11 @@ module Update =
         | InventoryMsg msg ->
             let cardInfo = getl StateLenses.cardInfo state
             let setData = getl StateLenses.setData state
-
             let entries = getl StateLenses.entries state
+            let prefs = getl StateLenses.prefs state
 
             let (iState, iCmd) =
-                Inventory.Update.perform setData cardInfo entries msg state.inventory
+                Inventory.Update.perform prefs setData cardInfo entries msg state.inventory
 
             let state = setl StateLenses.inventory iState state
             let cmd = iCmd |> Cmd.map InventoryMsg

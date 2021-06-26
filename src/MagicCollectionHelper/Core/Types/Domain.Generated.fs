@@ -6,6 +6,18 @@ namespace rec MagicCollectionHelper.Core
 
 module PrefsLenses =
     open MagicCollectionHelper.Core.DomainTypes
+    let cardGroupMinSize =
+        Lens(
+            (fun (x: Prefs) -> x.cardGroupMinSize),
+            (fun (x: Prefs) (value: uint) -> { x with cardGroupMinSize = value })
+        )
+
+    let cardGroupMaxSize =
+        Lens(
+            (fun (x: Prefs) -> x.cardGroupMaxSize),
+            (fun (x: Prefs) (value: uint) -> { x with cardGroupMaxSize = value })
+        )
+
     let numBase =
         Lens((fun (x: Prefs) -> x.numBase), (fun (x: Prefs) (value: NumBase) -> { x with numBase = value }))
 
@@ -36,21 +48,35 @@ namespace rec MagicCollectionHelper.Core
 
 module Prefs =
     open MagicCollectionHelper.Core.DomainTypes
+    let cardGroupMinSize (x: Prefs) = x.cardGroupMinSize
+    let cardGroupMaxSize (x: Prefs) = x.cardGroupMaxSize
     let numBase (x: Prefs) = x.numBase
     let missingPercent (x: Prefs) = x.missingPercent
     let setWithFoils (x: Prefs) = x.setWithFoils
-    let create (numBase: NumBase) (missingPercent: float) (setWithFoils: bool) : Prefs =
-        { numBase = numBase
+    let create
+        (cardGroupMinSize: uint)
+        (cardGroupMaxSize: uint)
+        (numBase: NumBase)
+        (missingPercent: float)
+        (setWithFoils: bool)
+        : Prefs =
+        { cardGroupMinSize = cardGroupMinSize
+          cardGroupMaxSize = cardGroupMaxSize
+          numBase = numBase
           missingPercent = missingPercent
           setWithFoils = setWithFoils }
 
     let map
+        (mapcardGroupMinSize: uint -> uint)
+        (mapcardGroupMaxSize: uint -> uint)
         (mapnumBase: NumBase -> NumBase)
         (mapmissingPercent: float -> float)
         (mapsetWithFoils: bool -> bool)
         (record': Prefs)
         =
         { record' with
+              cardGroupMinSize = mapcardGroupMinSize record'.cardGroupMinSize
+              cardGroupMaxSize = mapcardGroupMaxSize record'.cardGroupMaxSize
               numBase = mapnumBase record'.numBase
               missingPercent = mapmissingPercent record'.missingPercent
               setWithFoils = mapsetWithFoils record'.setWithFoils }

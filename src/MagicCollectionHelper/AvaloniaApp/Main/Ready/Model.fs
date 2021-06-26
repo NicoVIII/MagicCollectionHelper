@@ -68,7 +68,7 @@ module Model =
 
         let prefs =
             Persistence.Prefs.load ()
-            |> Option.defaultValue (Prefs.create Decimal Config.missingPercentDefault false)
+            |> Option.defaultValue (Prefs.create 20u 40u Decimal Config.missingPercentDefault false)
 
         let state =
             { analyseText = arrow
