@@ -11,6 +11,18 @@ module StateLenses =
             (fun (x: State) -> x.loadInProgress),
             (fun (x: State) (value: bool) -> { x with loadInProgress = value })
         )
+
+    let limit =
+        MagicCollectionHelper.Core.Lens(
+            (fun (x: State) -> x.limit),
+            (fun (x: State) (value: int) -> { x with limit = value })
+        )
+
+    let offset =
+        MagicCollectionHelper.Core.Lens(
+            (fun (x: State) -> x.offset),
+            (fun (x: State) (value: int) -> { x with offset = value })
+        )
 namespace rec MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 
 module Msg =

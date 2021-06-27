@@ -17,7 +17,12 @@ let renderCollectionView state dispatch =
     let entries = state ^. StateLenses.entries
     let dispatch = CollectionMsg >> dispatch
 
-    Components.Collection.View.render prefs dsEntries entries cardInfo state.collection dispatch
+    let agedEntriesWithInfo =
+        entries
+        |> List.map (AgedEntryWithInfo.fromEntry cardInfo)
+        |> List.choose id
+
+    Components.Collection.View.render prefs dsEntries agedEntriesWithInfo state.collection dispatch
 
 let renderInventoryView state dispatch =
     let prefs = state ^. StateLenses.prefs

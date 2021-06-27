@@ -5,7 +5,10 @@ open Myriad.Plugins
 open MagicCollectionHelper.Core
 
 [<Generator.Lenses("components-collection", "MagicCollectionHelper.Core.Lens")>]
-type State = { loadInProgress: bool }
+type State =
+    { loadInProgress: bool
+      limit: int
+      offset: int }
 
 [<Generator.DuCases("components-collection")>]
 type Msg =
@@ -20,4 +23,7 @@ type Intent =
 type Dispatch = Msg -> unit
 
 module Model =
-    let init () = { loadInProgress = false }
+    let init () =
+        { loadInProgress = false
+          limit = 50
+          offset = 0 }

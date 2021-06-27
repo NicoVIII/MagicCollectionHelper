@@ -6,7 +6,6 @@ open Avalonia.FuncUI.Types
 
 open MagicCollectionHelper.Core
 
-open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 open MagicCollectionHelper.AvaloniaApp.Elements
@@ -23,21 +22,15 @@ let topBar (state: State) (dispatch: Dispatch) : IView =
               subPatch = Never }
     ]
 
-let renderText prefs dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
+let renderText prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
     let loadInProgress = getl StateLenses.loadInProgress state
 
-    let inventoryableAmount =
-        List.sumBy
-            (AgedEntryWithInfo.fromEntry infoMap
-             >> function
-             | Some entry -> entry ^. AgedEntryWithInfoLenses.amount
-             | None -> 0u)
-            entries
+    let inventoryableAmount = List.sumBy (getl AgedEntryWithInfoLenses.amount) agedEntriesWithInfo
 
     TextBlock.create [
         TextBlock.textWrapping TextWrapping.Wrap
         TextBlock.text (
-            match loadInProgress, List.isEmpty entries with
+            match loadInProgress, List.isEmpty agedEntriesWithInfo with
             | true, _ -> "Loading..."
             | false, true -> "Your collection is empty. Import it first."
             | false, false ->
@@ -57,18 +50,91 @@ let renderText prefs dsEntries entries infoMap (state: State) (dispatch: Dispatc
     ]
     :> IView
 
-let content prefs dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
+let headerItem column label =
     Border.create [
-        Border.padding 10.
-        Border.child (renderText prefs dsEntries entries infoMap state dispatch)
+        Border.row 0
+        Border.column column
+        Border.borderThickness (0., 0., 0., 2.)
+        Border.child (
+            Button.create [
+                Button.content (label: string)
+            ]
+        )
     ]
     :> IView
 
-let render prefs dsEntries entries infoMap (state: State) (dispatch: Dispatch) : IView =
+let entryRow columns i entry =
+    [ for (j, (_, get)) in List.indexed columns do
+          Border.create [
+              Border.row i
+              Border.column (2 * j)
+              Border.padding 5.
+              Border.child (
+                  TextBlock.create [
+                      TextBlock.text (get entry)
+                  ]
+              )
+          ]
+          :> IView ]
+
+let tableView entries state =
+    let columns =
+        [ "Name", getl AgedEntryWithInfoLenses.name
+          "Set",
+          (getl AgedEntryWithInfoLenses.set
+           >> MagicSet.unwrap) ]
+
+    // Paging
+    let entries =
+        entries
+        |> List.skip state.offset
+        |> List.take state.limit
+
+    Grid.create [
+        Grid.columnDefinitions (
+            List.replicate (List.length columns) "1*"
+            |> String.concat ",Auto,"
+        )
+        Grid.rowDefinitions (
+            List.replicate (List.length entries + 1) "Auto"
+            |> String.concat ","
+        )
+        Grid.children [
+            // Header
+            for (i, (name, _)) in List.indexed columns do
+                headerItem (2 * i) name
+
+                if i < List.length columns - 1 then
+                    GridSplitter.create [
+                        GridSplitter.column (2 * i + 1)
+                    ]
+
+            // Rows
+            for (i, entry) in List.indexed entries do
+                yield! entryRow columns (i + 1) entry
+        ]
+    ]
+    :> IView
+
+let content prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
+    StackPanel.create [
+        StackPanel.children [
+            Border.create [
+                Border.padding 10.
+                Border.child (renderText prefs dsEntries agedEntriesWithInfo state dispatch)
+            ]
+            ScrollViewer.create [
+                ScrollViewer.content (tableView agedEntriesWithInfo state)
+            ]
+        ]
+    ]
+    :> IView
+
+let render prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
             topBar state dispatch
-            content prefs dsEntries entries infoMap state dispatch
+            content prefs dsEntries agedEntriesWithInfo state dispatch
         ]
     ]
     :> IView
