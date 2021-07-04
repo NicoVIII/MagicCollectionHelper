@@ -98,59 +98,63 @@ let perform
                     (location, cards))
             |> List.choose
                 (fun (location, entries) ->
-                    let groupBy sortBy entries =
+                    let groupBy nameOffset sortBy entries =
                         entries
                         |> List.groupBy
                             (fun (entry: AgedEntryWithInfo) ->
-                                match sortBy with
-                                | ByCmc ->
-                                    entry ^. AgedEntryWithInfoLenses.cmc
-                                    |> sprintf "CmC %i"
-                                | BySet ->
-                                    entry ^. AgedEntryWithInfoLenses.set
-                                    |> MagicSet.unwrap
-                                    |> sprintf "Set %s"
-                                | ByColorIdentity ->
-                                    entry ^. AgedEntryWithInfoLenses.colorIdentity
-                                    |> ColorIdentity.toString
-                                | ByName ->
+                                if nameOffset > 0 then
                                     (entry ^. AgedEntryWithInfoLenses.name)
-                                        .Substring(0, 1)
-                                | ByCollectorNumber ->
-                                    entry ^. AgedEntryWithInfoLenses.number
-                                    |> CollectorNumber.unwrap
-                                | ByLanguage langList ->
-                                    let language = entry ^. AgedEntryWithInfoLenses.language
+                                        .Substring(0, nameOffset + 1)
+                                else
+                                    match sortBy with
+                                    | ByCmc ->
+                                        entry ^. AgedEntryWithInfoLenses.cmc
+                                        |> sprintf "CmC %i"
+                                    | BySet ->
+                                        entry ^. AgedEntryWithInfoLenses.set
+                                        |> MagicSet.unwrap
+                                        |> sprintf "Set %s"
+                                    | ByColorIdentity ->
+                                        entry ^. AgedEntryWithInfoLenses.colorIdentity
+                                        |> ColorIdentity.toString
+                                    | ByName ->
+                                        (entry ^. AgedEntryWithInfoLenses.name)
+                                            .Substring(0, 1)
+                                    | ByCollectorNumber ->
+                                        entry ^. AgedEntryWithInfoLenses.number
+                                        |> CollectorNumber.unwrap
+                                    | ByLanguage langList ->
+                                        let language = entry ^. AgedEntryWithInfoLenses.language
 
-                                    if List.contains language langList then
-                                        Language.unwrap language
-                                    else
-                                        "Other"
-                                | ByRarity rarities ->
-                                    let rarity = entry ^. AgedEntryWithInfoLenses.rarity
+                                        if List.contains language langList then
+                                            Language.unwrap language
+                                        else
+                                            "Other"
+                                    | ByRarity rarities ->
+                                        let rarity = entry ^. AgedEntryWithInfoLenses.rarity
 
-                                    List.tryFind (Set.contains rarity) rarities
-                                    |> function
-                                        | Some set ->
-                                            set
-                                            |> Set.map Rarity.toString
-                                            |> Set.toSeq
-                                            |> String.concat " / "
-                                        | None -> "Other"
-                                | ByTypeContains types ->
-                                    let typeLine = entry ^. AgedEntryWithInfoLenses.typeLine
+                                        List.tryFind (Set.contains rarity) rarities
+                                        |> function
+                                            | Some set ->
+                                                set
+                                                |> Set.map Rarity.toString
+                                                |> Set.toSeq
+                                                |> String.concat " / "
+                                            | None -> "Other"
+                                    | ByTypeContains types ->
+                                        let typeLine = entry ^. AgedEntryWithInfoLenses.typeLine
 
-                                    List.tryFind (fun (typ: string) -> typeLine.Contains typ) types
-                                    |> Option.defaultValue "Other")
+                                        List.tryFind (fun (typ: string) -> typeLine.Contains typ) types
+                                        |> Option.defaultValue "Other")
 
-                    let rec createTree sortBy entries =
+                    let rec createTree nameOffset sortBy entries =
                         // Check conditions for the recursive call
                         let createTree lastSortBy sortBy entries =
                             // Some groupings are only using part of the sorting information
                             // therefore after them you can't group further without destroying order
                             match lastSortBy with
-                            | ByName -> Leaf entries
-                            | _ -> createTree sortBy entries
+                            | ByName -> createTree (nameOffset + 1) sortBy entries
+                            | _ -> createTree nameOffset sortBy entries
 
                         match sortBy, entries with
                         // The list is so small that further grouping has no benefit
@@ -159,7 +163,7 @@ let perform
                         | [], _ -> Leaf entries
                         | sortBy :: tail, entries ->
                             // We try to group some more
-                            let groups = groupBy sortBy entries
+                            let groups = groupBy nameOffset sortBy entries
 
                             match groups with
                             // With just one group, grouping makes no sense
@@ -174,7 +178,7 @@ let perform
                         | Fallback -> []
                         | Custom location -> location.sortBy
 
-                    (location, createTree sortBy entries) |> Some)
+                    (location, createTree 0 sortBy entries) |> Some)
             // We shrink the tree and merge small groups of cards
             |> List.map (Tuple2.mapSnd (shrinkTree))
 
