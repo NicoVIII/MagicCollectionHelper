@@ -1,0 +1,145 @@
+{
+    "data": [
+        {
+            "name": "Collection ZNR",
+            "rules": {
+                "inSet": [
+                    "TZNR",
+                    "ZNR"
+                ],
+                "inLanguage": "en",
+                "isFoil": false,
+                "isToken": null,
+                "typeContains": null,
+                "typeNotContains": null,
+                "limit": null,
+                "limitExact": 1,
+                "rarity": null,
+                "colorIdentity": null
+            },
+            "sortBy": [
+                "BySet",
+                "ByCollectorNumber"
+            ]
+        },
+        {
+            "name": "Foil basic lands",
+            "rules": {
+                "inSet": null,
+                "inLanguage": null,
+                "isFoil": true,
+                "isToken": null,
+                "typeContains": [
+                    "Basic Land"
+                ],
+                "typeNotContains": null,
+                "limit": null,
+                "limitExact": 1,
+                "rarity": null,
+                "colorIdentity": null
+            },
+            "sortBy": [
+                "ByColorIdentity",
+                "BySet",
+                "ByCollectorNumber"
+            ]
+        },
+        {
+            "name": "Lookup (Lands)",
+            "rules": {
+                "inSet": null,
+                "inLanguage": null,
+                "isFoil": null,
+                "isToken": null,
+                "typeContains": [
+                    "Land"
+                ],
+                "typeNotContains": [
+                    "Basic Land",
+                    "Creature",
+                    "Sorcery",
+                    "Instant"
+                ],
+                "limit": 1,
+                "limitExact": null,
+                "rarity": [
+                    "Rare",
+                    "Mythic",
+                    "Special",
+                    "Bonus"
+                ],
+                "colorIdentity": null
+            },
+            "sortBy": [
+                "ByColorIdentity",
+                "BySet"
+            ]
+        },
+        {
+            "name": "Lookup (Colorless)",
+            "rules": {
+                "inSet": null,
+                "inLanguage": null,
+                "isFoil": null,
+                "isToken": false,
+                "typeContains": null,
+                "typeNotContains": [
+                    "Land"
+                ],
+                "limit": 1,
+                "limitExact": null,
+                "rarity": [
+                    "Rare",
+                    "Mythic",
+                    "Special",
+                    "Bonus"
+                ],
+                "colorIdentity": [
+                    []
+                ]
+            },
+            "sortBy": [
+                {
+                    "ByTypeContains": [
+                        "Creature",
+                        "Sorcery",
+                        "Instant",
+                        "Enchantment",
+                        "Artifact",
+                        "Planeswalker"
+                    ]
+                },
+                "ByCmc",
+                "BySet"
+            ]
+        },
+        {
+            "name": "Storage (Token)",
+            "rules": {
+                "inSet": null,
+                "inLanguage": null,
+                "isFoil": null,
+                "isToken": true,
+                "typeContains": null,
+                "typeNotContains": null,
+                "limit": null,
+                "limitExact": null,
+                "rarity": null,
+                "colorIdentity": null
+            },
+            "sortBy": [
+                "ByColorIdentity",
+                "ByName",
+                {
+                    "ByLanguage": [
+                        "en",
+                        "de"
+                    ]
+                },
+                "BySet",
+                "ByCollectorNumber"
+            ]
+        }
+    ],
+    "version": 1
+}
