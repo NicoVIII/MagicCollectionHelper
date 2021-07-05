@@ -1,4 +1,4 @@
-#!/bin/dotnet fsi
+#!/usr/bin/env -S dotnet fsi
 
 #r "nuget: Fake.DotNet.Cli"
 #r "nuget: Fake.IO.FileSystem"
@@ -12,6 +12,10 @@ open Fake.IO
 
 module Config =
     let dataFolder = "data"
+
+    let startProject =
+        "src/MagicCollectionHelper/AvaloniaApp/MagicCollectionHelper.AvaloniaApp.fsproj"
+
     let testFolder = "tests"
 
 // kleisli composition operator for chaining
@@ -60,6 +64,9 @@ module Commands =
 
     let build = dotnet "build" ""
 
+    let run =
+        dotnet "run" $"--project {Config.startProject}"
+
     let test () =
         Directory.EnumerateDirectories Config.testFolder
         |> Directories.enumerateAllFiles
@@ -106,6 +113,7 @@ let execute args =
     |> function
         | "restore", [] -> Commands.restore
         | "build", [] -> Commands.build
+        | "run", [] -> Commands.run
         | "test", [] -> Commands.build >=> Commands.test
         | "setup-testdata", [] -> Commands.setupTestdata
         | _ ->

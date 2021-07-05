@@ -2,8 +2,7 @@ image:
   file: .devcontainer/.gitpod.Dockerfile
 
 tasks:
-  - init: "./run.fsx build"
-    command: "./run.fsx setup-testdata && dotnet watch --project src/MagicCollectionHelper/AvaloniaApp/ run"
+  - init: "./run.fsx setup-testdata && ./run.fsx build"
 
 vscode:
   extensions:
