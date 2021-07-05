@@ -3,7 +3,6 @@
     "build": {
         "dockerfile": "Dockerfile",
         "args": {
-            "VERSION": "0.200.0",
             "VARIANT": "5.0",
         }
     },
