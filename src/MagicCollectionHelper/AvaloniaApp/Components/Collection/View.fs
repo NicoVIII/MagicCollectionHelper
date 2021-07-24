@@ -1,15 +1,17 @@
 module MagicCollectionHelper.AvaloniaApp.Components.Collection.View
 
 open Avalonia.Controls
+open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
+open Avalonia.Layout
+open Avalonia.Media
 
 open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 open MagicCollectionHelper.AvaloniaApp.Elements
-open Avalonia.Media
 
 let topBar (state: State) (dispatch: Dispatch) : IView =
     let loadInProgress = getl StateLenses.loadInProgress state
@@ -77,6 +79,25 @@ let entryRow columns i entry =
           ]
           :> IView ]
 
+let pagingBar entries (state: State) dispatch =
+    StackPanel.create [
+        StackPanel.dock Dock.Bottom
+        StackPanel.orientation Orientation.Horizontal
+        StackPanel.children [
+            Button.create [
+                Button.content "<"
+                Button.isEnabled (state.pageOffset > 0)
+                Button.onClick (fun _ -> PrevPage |> dispatch)
+            ]
+            Button.create [
+                Button.content ">"
+                Button.isEnabled ((state.pageOffset + 1) * state.pageSize < List.length entries)
+                Button.onClick (fun _ -> NextPage |> dispatch)
+            ]
+        ]
+    ]
+    :> IView
+
 let tableView entries state =
     let columns =
         [ "Name", getl AgedEntryWithInfoLenses.name
@@ -86,9 +107,15 @@ let tableView entries state =
 
     // Paging
     let entries =
-        entries
-        |> List.skip state.offset
-        |> List.take state.limit
+        match List.length entries with
+        | length when length >= (state.pageOffset + 1) * state.pageSize ->
+            entries
+            |> List.skip (state.pageOffset * state.pageSize)
+            |> List.take state.pageSize
+        | length when length > state.pageOffset * state.pageSize ->
+            entries
+            |> List.skip (state.pageOffset * state.pageSize)
+        | _ -> []
 
     Grid.create [
         Grid.columnDefinitions (
@@ -117,13 +144,16 @@ let tableView entries state =
     :> IView
 
 let content prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
-    StackPanel.create [
-        StackPanel.children [
+    DockPanel.create [
+        DockPanel.children [
             Border.create [
+                Border.dock Dock.Top
                 Border.padding 10.
                 Border.child (renderText prefs dsEntries agedEntriesWithInfo state dispatch)
             ]
+            pagingBar agedEntriesWithInfo state dispatch
             ScrollViewer.create [
+                ScrollViewer.verticalScrollBarVisibility ScrollBarVisibility.Visible
                 ScrollViewer.content (tableView agedEntriesWithInfo state)
             ]
         ]

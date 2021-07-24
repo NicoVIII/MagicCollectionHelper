@@ -31,3 +31,11 @@ let perform (msg: Msg) (state: State) =
         let state = setl StateLenses.loadInProgress false state
 
         state, Cmd.none, SaveEntries import
+    | PrevPage ->
+        let state = state |> StateLenses.pageOffset %-> (+) -1
+
+        state, Cmd.none, DoNothing
+    | NextPage ->
+        let state = state |> StateLenses.pageOffset %-> (+) 1
+
+        state, Cmd.none, DoNothing

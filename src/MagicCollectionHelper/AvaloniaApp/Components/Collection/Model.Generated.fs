@@ -12,16 +12,16 @@ module StateLenses =
             (fun (x: State) (value: bool) -> { x with loadInProgress = value })
         )
 
-    let limit =
+    let pageSize =
         MagicCollectionHelper.Core.Lens(
-            (fun (x: State) -> x.limit),
-            (fun (x: State) (value: int) -> { x with limit = value })
+            (fun (x: State) -> x.pageSize),
+            (fun (x: State) (value: int) -> { x with pageSize = value })
         )
 
-    let offset =
+    let pageOffset =
         MagicCollectionHelper.Core.Lens(
-            (fun (x: State) -> x.offset),
-            (fun (x: State) (value: int) -> { x with offset = value })
+            (fun (x: State) -> x.pageOffset),
+            (fun (x: State) (value: int) -> { x with pageOffset = value })
         )
 namespace rec MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 
@@ -32,10 +32,14 @@ module Msg =
         | ImportCollection -> "ImportCollection"
         | WriteCollection _ -> "WriteCollection"
         | SaveCollection _ -> "SaveCollection"
+        | PrevPage -> "PrevPage"
+        | NextPage -> "NextPage"
 
     let fromString (x: string) =
         match x with
         | "ImportCollection" -> Some ImportCollection
+        | "PrevPage" -> Some PrevPage
+        | "NextPage" -> Some NextPage
         | _ -> None
 
     let toTag (x: Msg) =
@@ -43,6 +47,8 @@ module Msg =
         | ImportCollection -> 0
         | WriteCollection _ -> 1
         | SaveCollection _ -> 2
+        | PrevPage -> 3
+        | NextPage -> 4
 
     let isImportCollection (x: Msg) =
         match x with
@@ -57,4 +63,14 @@ module Msg =
     let isSaveCollection (x: Msg) =
         match x with
         | SaveCollection _ -> true
+        | _ -> false
+
+    let isPrevPage (x: Msg) =
+        match x with
+        | PrevPage -> true
+        | _ -> false
+
+    let isNextPage (x: Msg) =
+        match x with
+        | NextPage -> true
         | _ -> false
