@@ -1,5 +1,5 @@
 STORAGE: NONE
-RESTRICTION: == net50
+RESTRICTION: == net5.0
 NUGET
   remote: https://api.nuget.org/v3/index.json
     Avalonia (0.10.6)
@@ -93,10 +93,10 @@ NUGET
     FSharp.Core (5.0)
     FSharp.Data (4.1.1)
       FSharp.Core (>= 4.7.2)
-    HarfBuzzSharp (2.6.1.7)
+    HarfBuzzSharp (2.6.1.8)
       System.Memory (>= 4.5.3)
-    HarfBuzzSharp.NativeAssets.Linux (2.6.1.7)
-      HarfBuzzSharp (>= 2.6.1.7)
+    HarfBuzzSharp.NativeAssets.Linux (2.6.1.8)
+      HarfBuzzSharp (>= 2.6.1.8)
     JaggerJo.Avalonia.FuncUI (0.5.0-beta)
       Avalonia.Desktop (>= 0.10.0-rc1)
       FSharp.Core (>= 4.7.2)
@@ -109,7 +109,7 @@ NUGET
       Elmish (>= 3.1)
       FSharp.Core (>= 4.7.2)
       JaggerJo.Avalonia.FuncUI (>= 0.5.0-beta)
-    JetBrains.Annotations (2021.1)
+    JetBrains.Annotations (2021.2)
     Microsoft.Build.Framework (16.10)
       System.Security.Permissions (>= 4.7)
     Microsoft.Build.Tasks.Core (16.10)
@@ -181,7 +181,7 @@ NUGET
       System.Security.Principal.Windows (>= 5.0)
     Microsoft.Win32.SystemEvents (5.0)
       Microsoft.NETCore.Platforms (>= 5.0)
-    Mono.Cecil (0.11.3)
+    Mono.Cecil (0.11.4)
     Myriad.Core (0.5.3)
       Fantomas (>= 4.4)
       FsAst (>= 0.8)
@@ -194,12 +194,12 @@ NUGET
       Myriad.Core (>= 0.5.3)
     Myriad.Sdk (0.5.3)
     Newtonsoft.Json (12.0.3)
-    NicoVIII.Basealize (0.1)
+    NicoVIII.Basealize (0.2)
       FSharp.Core (>= 5.0)
     NicoVIII.Dozenalize (0.1)
       FSharp.Core (>= 5.0)
       NicoVIII.Basealize (>= 0.1)
-    NicoVIII.FSharp.Json (0.5.0-rc.2)
+    NicoVIII.FSharp.Json (0.5)
       FSharp.Core (>= 4.3.4)
     NicoVIII.Seximalize (0.1)
       FSharp.Core (>= 5.0)
@@ -210,7 +210,7 @@ NUGET
       FSharp.Core (>= 5.0)
       NicoVIII.FSharp.Json (>= 0.5.0-rc.2)
       NicoVIII.TypedPersistence.Core (>= 0.6.0-alpha.7)
-    NuGet.Frameworks (5.9.1)
+    NuGet.Frameworks (5.10)
     runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3)
     runtime.debian.9-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3)
     runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3)
@@ -257,10 +257,10 @@ NUGET
     SchlenkR.FsHttp (5.1)
       FSharp.Core (>= 5.0)
       FSharp.Data (>= 4.0.1)
-    SkiaSharp (2.80.2)
+    SkiaSharp (2.80.3)
       System.Memory (>= 4.5.3)
-    SkiaSharp.NativeAssets.Linux (2.80.2)
-      SkiaSharp (>= 2.80.2)
+    SkiaSharp.NativeAssets.Linux (2.80.3)
+      SkiaSharp (>= 2.80.3)
     System.Buffers (4.5.1)
     System.CodeDom (5.0)
     System.Collections (4.3)
@@ -681,13 +681,7 @@ NUGET
     Tmds.DBus (0.9.1)
       System.Reflection.Emit (>= 4.7)
       System.Security.Principal.Windows (>= 4.7)
-    YoloDev.Expecto.TestSdk (0.11.1)
+    YoloDev.Expecto.TestSdk (0.12.4)
       Expecto (>= 9.0 < 10.0)
       FSharp.Core (>= 4.6)
       System.Collections.Immutable (>= 1.5 < 5.1)
-GITHUB
-  remote: NicoVIII/Basealize
-    FULLPROJECT (97b368e116b1d0dcabf1bbbb2153f0efd6ec358d)
-      Expecto
-      Expecto.FsCheck
-      FsCheck
