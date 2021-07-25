@@ -1,5 +1,7 @@
 module MagicCollectionHelper.AvaloniaApp.Components.Collection.View
 
+open System
+
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
@@ -9,11 +11,12 @@ open Avalonia.Media
 
 open MagicCollectionHelper.Core
 
+open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 open MagicCollectionHelper.AvaloniaApp.Elements
 
-let topBar (state: State) (dispatch: Dispatch) : IView =
+let buttonBar (state: State) (dispatch: Dispatch) : IView =
     let loadInProgress = getl StateLenses.loadInProgress state
 
     ActionButtonBar.create [
@@ -80,21 +83,45 @@ let entryRow columns i entry =
           :> IView ]
 
 let pagingBar entries (state: State) dispatch =
-    StackPanel.create [
-        StackPanel.dock Dock.Bottom
-        StackPanel.orientation Orientation.Horizontal
-        StackPanel.children [
-            Button.create [
-                Button.content "<"
-                Button.isEnabled (state.pageOffset > 0)
-                Button.onClick (fun _ -> PrevPage |> dispatch)
+    let pageAmount =
+        (List.length entries |> double)
+        / (state.pageSize |> double)
+        |> Math.Ceiling
+        |> int
+
+    Border.create [
+        Border.borderBrush Config.lineColor
+        Border.borderThickness (0., 1., 0., 0.)
+        Border.dock Dock.Bottom
+        Border.child (
+            DockPanel.create [
+                DockPanel.dock Dock.Bottom
+                DockPanel.children [
+                    TextBlock.create [
+                        TextBlock.dock Dock.Right
+                        TextBlock.margin (0., 0., 5., 0.)
+                        TextBlock.text $"{state.pageOffset + 1} / {pageAmount}"
+                        TextBlock.verticalAlignment VerticalAlignment.Center
+                    ]
+                    StackPanel.create [
+                        StackPanel.orientation Orientation.Horizontal
+                        StackPanel.horizontalAlignment HorizontalAlignment.Center
+                        StackPanel.children [
+                            Button.create [
+                                Button.content "<"
+                                Button.isEnabled (state.pageOffset > 0)
+                                Button.onClick (fun _ -> PrevPage |> dispatch)
+                            ]
+                            Button.create [
+                                Button.content ">"
+                                Button.isEnabled ((state.pageOffset + 1) * state.pageSize < List.length entries)
+                                Button.onClick (fun _ -> NextPage |> dispatch)
+                            ]
+                        ]
+                    ]
+                ]
             ]
-            Button.create [
-                Button.content ">"
-                Button.isEnabled ((state.pageOffset + 1) * state.pageSize < List.length entries)
-                Button.onClick (fun _ -> NextPage |> dispatch)
-            ]
-        ]
+        )
     ]
     :> IView
 
@@ -148,7 +175,7 @@ let content prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispat
         DockPanel.children [
             Border.create [
                 Border.dock Dock.Top
-                Border.padding 10.
+                Border.padding (10., 10., 10., 20.)
                 Border.child (renderText prefs dsEntries agedEntriesWithInfo state dispatch)
             ]
             pagingBar agedEntriesWithInfo state dispatch
@@ -163,7 +190,7 @@ let content prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispat
 let render prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
-            topBar state dispatch
+            buttonBar state dispatch
             content prefs dsEntries agedEntriesWithInfo state dispatch
         ]
     ]
