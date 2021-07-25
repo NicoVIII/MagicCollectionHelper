@@ -7,11 +7,17 @@
         }
     },
     "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.profiles.linux": {
             "bash": {
-                "path": "/bin/bash"
+                "path": "bash"
             },
+            "zsh": {
+                "path": "zsh"
+            },
+            "pwsh": {
+                "path": "pwsh",
+                "icon": "terminal-powershell"
+            }
         },
         "FSharp.fsacRuntime": "netcore",
         "FSharp.useSdkScripts": true
