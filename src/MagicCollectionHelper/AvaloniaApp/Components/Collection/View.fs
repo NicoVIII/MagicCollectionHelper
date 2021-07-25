@@ -125,12 +125,14 @@ let pagingBar entries (state: State) dispatch =
     ]
     :> IView
 
+module Lenses = AgedEntryWithInfoLenses
+
 let tableView entries state =
     let columns =
-        [ "Name", getl AgedEntryWithInfoLenses.name
-          "Set",
-          (getl AgedEntryWithInfoLenses.set
-           >> MagicSet.unwrap) ]
+        [ "Name", getl Lenses.name
+          "Set", (getl Lenses.set) >> MagicSet.unwrap
+          "Nr.", (getl Lenses.number) >> CollectorNumber.unwrap
+          "Language", (getl Lenses.language) >> Language.unwrap ]
 
     // Paging
     let entries =
