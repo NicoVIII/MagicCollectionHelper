@@ -32,14 +32,12 @@ module Msg =
         | ImportCollection -> "ImportCollection"
         | WriteCollection _ -> "WriteCollection"
         | SaveCollection _ -> "SaveCollection"
-        | PrevPage -> "PrevPage"
-        | NextPage -> "NextPage"
+        | ChangePage _ -> "ChangePage"
+        | SetPageSize _ -> "SetPageSize"
 
     let fromString (x: string) =
         match x with
         | "ImportCollection" -> Some ImportCollection
-        | "PrevPage" -> Some PrevPage
-        | "NextPage" -> Some NextPage
         | _ -> None
 
     let toTag (x: Msg) =
@@ -47,8 +45,8 @@ module Msg =
         | ImportCollection -> 0
         | WriteCollection _ -> 1
         | SaveCollection _ -> 2
-        | PrevPage -> 3
-        | NextPage -> 4
+        | ChangePage _ -> 3
+        | SetPageSize _ -> 4
 
     let isImportCollection (x: Msg) =
         match x with
@@ -65,12 +63,12 @@ module Msg =
         | SaveCollection _ -> true
         | _ -> false
 
-    let isPrevPage (x: Msg) =
+    let isChangePage (x: Msg) =
         match x with
-        | PrevPage -> true
+        | ChangePage _ -> true
         | _ -> false
 
-    let isNextPage (x: Msg) =
+    let isSetPageSize (x: Msg) =
         match x with
-        | NextPage -> true
+        | SetPageSize _ -> true
         | _ -> false

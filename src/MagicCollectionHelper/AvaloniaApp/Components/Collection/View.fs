@@ -110,12 +110,23 @@ let pagingBar entries (state: State) dispatch =
                             Button.create [
                                 Button.content "<"
                                 Button.isEnabled (state.pageOffset > 0)
-                                Button.onClick (fun _ -> PrevPage |> dispatch)
+                                Button.onClick (fun _ -> (+) -1 |> ChangePage |> dispatch)
+                            ]
+                            ComboBox.create [
+                                ComboBox.dataItems [
+                                    10
+                                    25
+                                    50
+                                    100
+                                    250
+                                ]
+                                ComboBox.selectedItem state.pageSize
+                                ComboBox.onSelectedItemChanged (unbox<int> >> SetPageSize >> dispatch)
                             ]
                             Button.create [
                                 Button.content ">"
                                 Button.isEnabled ((state.pageOffset + 1) * state.pageSize < List.length entries)
-                                Button.onClick (fun _ -> NextPage |> dispatch)
+                                Button.onClick (fun _ -> (+) 1 |> ChangePage |> dispatch)
                             ]
                         ]
                     ]
@@ -172,6 +183,24 @@ let tableView entries state =
     ]
     :> IView
 
+let collectionView entries state dispatch =
+    Border.create [
+        Border.borderBrush Config.lineColor
+        Border.borderThickness (0., 1., 0., 0.)
+        Border.child (
+            DockPanel.create [
+                DockPanel.children [
+                    pagingBar entries state dispatch
+                    ScrollViewer.create [
+                        ScrollViewer.verticalScrollBarVisibility ScrollBarVisibility.Visible
+                        ScrollViewer.content (tableView entries state)
+                    ]
+                ]
+            ]
+        )
+    ]
+    :> IView
+
 let content prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
         DockPanel.children [
@@ -180,11 +209,7 @@ let content prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispat
                 Border.padding (10., 10., 10., 20.)
                 Border.child (renderText prefs dsEntries agedEntriesWithInfo state dispatch)
             ]
-            pagingBar agedEntriesWithInfo state dispatch
-            ScrollViewer.create [
-                ScrollViewer.verticalScrollBarVisibility ScrollBarVisibility.Visible
-                ScrollViewer.content (tableView agedEntriesWithInfo state)
-            ]
+            collectionView agedEntriesWithInfo state dispatch
         ]
     ]
     :> IView

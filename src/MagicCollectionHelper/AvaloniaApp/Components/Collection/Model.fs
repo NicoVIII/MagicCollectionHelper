@@ -15,8 +15,8 @@ type Msg =
     | ImportCollection
     | WriteCollection of DeckStatsCardEntry seq option
     | SaveCollection of DeckStatsCardEntry list option
-    | PrevPage
-    | NextPage
+    | ChangePage of (int -> int)
+    | SetPageSize of int
 
 type Intent =
     | DoNothing
