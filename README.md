@@ -402,3 +402,6 @@ The json is located at ~/.local/share/magic-collection-helper/locations.json
 ```
 
 Maybe this can help creating your own locations.
+
+## Development
+![Visualization](images/diagram.svg)
