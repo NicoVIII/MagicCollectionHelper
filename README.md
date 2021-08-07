@@ -1,4 +1,6 @@
 # MagicCollectionHelper
+[![GitHub Actions Build](https://img.shields.io/github/workflow/status/NicoVIII/MagicCollectionHelper/Build)](https://github.com/NicoVIII/MagicCollectionHelper/actions/workflows/build.yml)
+![Last commit](https://img.shields.io/github/last-commit/NicoVIII/MagicCollectionHelper)
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/NicoVIII/MagicCollectionHelper)
 
 This is (for now) a small tool which helps analysing MTG collections exported as CSV
