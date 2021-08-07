@@ -27,7 +27,7 @@ module Set =
 module Numbers =
     // I would want to use pitman, but it looks like Avalonia has problems with
     // those unicode characters :(
-    let dozenalConfig = Dozenalize.Config.andrews
+    let dozenalConfig = Dozenalize.Config.createAndrews ()
 
     let inline percent basePref number =
         let one = LanguagePrimitives.GenericOne
