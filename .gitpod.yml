@@ -2,7 +2,7 @@ image:
   file: .devcontainer/.gitpod.Dockerfile
 
 tasks:
-  - init: "./run.fsx setup-testdata && ./run.fsx build"
+  - init: "dotnet run setup-testdata && dotnet run build"
 
 vscode:
   extensions:
