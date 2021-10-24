@@ -46,7 +46,7 @@
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
     // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "./run.fsx setup-testdata && ./run.fsx restore",
+    "postCreateCommand": "dotnet run setup-testdata && dotnet run restore",
     // Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
     "remoteUser": "vscode",
     "mounts": []
