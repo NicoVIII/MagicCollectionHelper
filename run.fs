@@ -44,35 +44,30 @@ type JobBuilder() =
 
 let job = JobBuilder()
 
+[<RequireQualifiedAccess>]
 module Config =
     let dataFolder = "data"
 
-    let startProject =
+    let mainProject =
         "src/MagicCollectionHelper/AvaloniaApp/MagicCollectionHelper.AvaloniaApp.fsproj"
 
     let testFolder = "tests"
 
-let isFsproj (file: string) = file.EndsWith ".fsproj"
 
 module Task =
     let restore () =
-        let solution = Directory.EnumerateFiles(".", "*.sln") |> Seq.head
-
-        printfn "%s" solution
-
         job {
             dotnet [ "tool"; "restore" ]
-            dotnet [ "restore"; solution ]
+            dotnet [ "restore"; Config.mainProject ]
         }
 
-    let build () = dotnet [ "build" ]
-
+    let build () = dotnet [ "build"; Config.mainProject ]
 
     let run () =
         dotnet [
             "run"
             "--project"
-            Config.startProject
+            Config.mainProject
         ]
 
     let test () =
