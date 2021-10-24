@@ -1,4 +1,4 @@
-name: Deployment
+name: Deploy
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -24,7 +24,7 @@ jobs:
       - name: Run tests
         run: dotnet run test
       - name: Bundle releases
-        run: dotnet fsi ./scripts/bundle.fsx
+        run: dotnet run publish
       # For now I simply make a continuous build
       - name: Release files
         uses: marvinpinto/action-automatic-releases@latest
