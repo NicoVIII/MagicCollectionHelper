@@ -2,6 +2,7 @@ bin/
 obj/
 paket-files/
 .ionide/
+.fake
 deploy/
 /collection*.csv
 default-cards*.json

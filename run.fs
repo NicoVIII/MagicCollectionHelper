@@ -61,7 +61,12 @@ module Task =
             dotnet [ "restore"; Config.mainProject ]
         }
 
-    let build () = dotnet [ "build"; Config.mainProject ]
+    let build () =
+        dotnet [
+            "build"
+            Config.mainProject
+            "--no-restore"
+        ]
 
     let run () =
         dotnet [
