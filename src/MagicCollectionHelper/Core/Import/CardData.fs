@@ -25,22 +25,20 @@ module CardData =
         }
 
     let private tokenToColorSet (jToken: JToken) =
-        match jToken with
-        | null -> Set.empty
-        | jToken ->
-            jToken.Children()
-            |> Seq.map
-                (fun c ->
-                    c
-                    |> string
-                    |> function
-                    | "W" -> White
-                    | "U" -> Blue
-                    | "B" -> Black
-                    | "R" -> Red
-                    | "G" -> Green
-                    | c -> failwith $"Unknown color string: {c}")
-            |> Set.ofSeq
+        jToken.Children()
+        |> Seq.map (fun c ->
+            c
+            |> string
+            |> function
+                | "W" -> White
+                | "U" -> Blue
+                | "B" -> Black
+                | "R" -> Red
+                | "G" -> Green
+                | c -> failwith $"Unknown color string: {c}")
+        |> Set.ofSeq
+
+    let private prepareToken fnc token = token |> Option.ofObj |> Option.map fnc
 
     let private lineToInfo (line: string) : CardInfo option =
         let line' = line.Trim(' ', ',', '[', ']')
@@ -50,42 +48,56 @@ module CardData =
         else
             let jObject = JObject.Parse line'
 
+            let typeLine = jObject.["type_line"] |> prepareToken string
+
+            let cmc = jObject.["cmc"] |> prepareToken uint
+
             let collectorNumber =
                 jObject.["collector_number"]
-                |> string
+                |> prepareToken string
                 |> function
-                // There are "dead" entries in the json from scryfall. We don't want them
-                | nr when nr.EndsWith "†" -> None
-                | "" -> None
-                | nr -> nr |> CollectorNumber.fromString |> Some
+                    | None -> None
+                    // There are "dead" entries in the json from scryfall. We don't want them
+                    | Some nr when nr.EndsWith "†" -> None
+                    | Some "" -> None
+                    | Some nr -> nr |> CollectorNumber.fromString |> Some
 
-            match collectorNumber with
-            | Some collectorNumber ->
+            match collectorNumber, typeLine, cmc with
+            | Some collectorNumber, Some typeLine, Some cmc ->
                 { name = jObject.["name"] |> string
                   set = jObject.["set"] |> string |> MagicSet.create
                   collectorNumber = collectorNumber
-                  colors = jObject.["colors"] |> tokenToColorSet
+                  colors =
+                    Option.ofObj jObject.["colors"]
+                    |> function
+                        | Some token -> tokenToColorSet token
+                        | None -> Set.empty
                   colorIdentity = jObject.["color_identity"] |> tokenToColorSet
                   oracleId = jObject.["oracle_id"] |> string
                   rarity =
-                      jObject.["rarity"]
-                      |> string
-                      |> (Seq.mapi
-                              (fun i c ->
-                                  match i with
-                                  | 0 -> Char.ToUpper(c)
-                                  | _ -> c)
-                          >> String.Concat)
-                      |> Rarity.fromString
-                      |> function
-                      | Some rarity -> rarity
-                      | None ->
-                          let rarity = jObject.["rarity"] |> string
-                          failwith $"{rarity} is no valid rarity for now..."
-                  typeLine = jObject.["type_line"] |> string
-                  cmc = jObject.["cmc"] |> uint }
+                    jObject.["rarity"]
+                    |> Option.ofObj
+                    |> Option.map (string >> Option.ofObj)
+                    |> Option.flatten
+                    |> function
+                        | Some value ->
+                            value
+                            |> (fun s -> s.Trim())
+                            // Capitalize
+                            |> Seq.mapi (fun i c ->
+                                match i with
+                                | 0 -> Char.ToUpper(c)
+                                | _ -> c)
+                            |> String.Concat
+                            |> Rarity.fromString
+                            |> function
+                                | Some rarity -> rarity
+                                | None -> failwith "We have no valid rarity for now.."
+                        | None -> failwith "Got no rarity for some reason.."
+                  typeLine = typeLine
+                  cmc = cmc }
                 |> Some
-            | None -> None
+            | _ -> None
 
     let prepareImportFile () =
         let filePath =
