@@ -1,10 +1,8 @@
 {
-    "name": "F# (.NET Core)",
+    "name": "F# (.NET)",
     "build": {
         "dockerfile": "Dockerfile",
-        "args": {
-            "VARIANT": "5.0",
-        }
+        "args": {}
     },
     "settings": {
         "terminal.integrated.profiles.linux": {
@@ -19,34 +17,26 @@
                 "icon": "terminal-powershell"
             }
         },
-        "FSharp.fsacRuntime": "netcore",
-        "FSharp.useSdkScripts": true
     },
     // Add the IDs of extensions you want installed when the container is created.
     "extensions": [
         "editorconfig.editorconfig",
-        "ionide.ionide-fsharp",
-        "ionide.ionide-paket",
-        "ms-dotnettools.csharp",
         "ybaumes.highlight-trailing-white-spaces",
         "aaron-bond.better-comments",
         "gruntfuggly.todo-tree",
-        "cschleiden.vscode-github-actions"
-    ],
-    // To run the application we need to expose XServer to the container
-    "runArgs": [
-        "--net",
-        "host",
-        "-e",
-        "DISPLAY=${env:DISPLAY}",
-        "-v",
-        "/tmp/.X11-unix:/tmp/.X11-unix"
+        "ms-dotnettools.csharp",
+        "ionide.ionide-fsharp",
     ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    // "forwardPorts": [],
+    "forwardPorts": [
+        5901,
+        6080
+    ],
     // Use 'postCreateCommand' to run commands after the container is created.
     "postCreateCommand": "dotnet run setup-testdata && dotnet run restore",
-    // Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
+    // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
     "remoteUser": "vscode",
-    "mounts": []
+    "features": {
+        "desktop-lite": "latest"
+    }
 }

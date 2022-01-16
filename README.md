@@ -406,3 +406,28 @@ Maybe this can help creating your own locations.
 
 ## Development
 ![Visualization](images/diagram.svg)
+
+### How to start
+
+To develop I strongly suggest you use VScode and the provided devcontainer.
+You just need VScode and Docker installed on your machine, the rest is provided inside
+the devcontainer.
+
+Simply open the cloned folder and VScode should provide you with an option to reopen
+inside the container in the bottom right corner.
+If it does not, you can do that manually by triggering the "Rebuild and reopen
+in devcontainer" option in the "all commands" window (Strg + Shift + P on Windows and Linux).
+
+If Ionide doesn't start, type "dotnet run build" once. Then close VScode and reopen it.
+After a few reopens this way Ionide should work. I don't know why it struggles lately.
+
+### How to work
+
+To build the application you can use `dotnet run build`.
+To run the tests you can use `dotnet run test`.
+To run the application you can use `dotnet run` or the launch configuration of
+VScode. The application is run inside a lite-desktop inside the container you can
+connect with via VNC (Port 5901).
+If you don't have a VNC client installed, you can simply browse to http://localhost:6080
+and see the desktop there. The password is "vscode" (for more information on that
+see https://github.com/microsoft/vscode-dev-containers/blob/main/script-library/docs/desktop-lite.md).
