@@ -2,8 +2,9 @@ name: Build
 
 on:
   push:
-    branches-ignore:
-      - main
+    paths:
+      - "**"
+      - "!**.md"
   pull_request:
 
 jobs:
