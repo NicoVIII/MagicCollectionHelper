@@ -5,7 +5,7 @@ open System.Runtime.InteropServices
 open Fake.IO
 
 open RunHelpers
-open RunHelpers.BasicShortcuts
+open RunHelpers.Templates
 
 [<RequireQualifiedAccess>]
 module Config =
@@ -20,24 +20,10 @@ module Config =
 
 module Task =
     let restore () =
-        job {
-            Template.DotNet.toolRestore ()
-            Template.DotNet.restore Config.mainProject
-        }
+        DotNet.restoreWithTools Config.mainProject
 
-    let build () =
-        dotnet [
-            "build"
-            Config.mainProject
-            "--no-restore"
-        ]
-
-    let run () =
-        dotnet [
-            "run"
-            "--project"
-            Config.mainProject
-        ]
+    let build () = DotNet.build Config.mainProject Debug
+    let run () = DotNet.run Config.mainProject
 
     let test () =
         let projects =
@@ -47,7 +33,7 @@ module Task =
             for project in projects do
                 printfn "\nRun tests in %s:" project
 
-                dotnet [ "run"; "--project"; project ]
+                DotNet.run project
         }
 
     let setupTestdata () =
@@ -74,94 +60,52 @@ module Task =
             Ok
 
     let publish () =
-        let commonArgs =
-            [ "-v"
-              "minimal"
-              "-c"
-              "Release"
-              "-o"
-              Config.packPath
-              "--self-contained"
-              "/p:PublishSingleFile=true"
-              "/p:PublishTrimmed=true"
-              "/p:EnableCompressionInSingleFile=true"
-              "/p:IncludeNativeLibrariesForSelfExtract=true"
-              "/p:DebugType=None"
-              Config.mainProject ]
-
         Shell.rm Config.packPath
         Shell.mkdir Config.packPath
 
         job {
-            // Linux
-            dotnet [
-                "publish"
-                "-r"
-                "linux-x64"
-                yield! commonArgs
-            ]
+            DotNet.publishSelfContained Config.packPath Config.mainProject LinuxX64
 
             Shell.mv
                 $"{Config.packPath}/MagicCollectionHelper.AvaloniaApp"
                 $"{Config.packPath}/MagicCollectionHelper-linux-x64"
 
             // Windows
-            dotnet [
-                "publish"
-                "-r"
-                "win-x64"
-                yield! commonArgs
-            ]
+            DotNet.publishSelfContained Config.packPath Config.mainProject WindowsX64
 
             Shell.mv
                 $"{Config.packPath}/MagicCollectionHelper.AvaloniaApp.exe"
                 $"{Config.packPath}/MagicCollectionHelper-win-x64.exe"
-
-        // macOS single-file publishing is not working, there are dylibs generated while publishing for some reason
-        //dotnet [ "publish"; "-r"; "osx-x64"; yield! commonArgs ]
         }
-
-module Command =
-    let restore () = Task.restore ()
-
-    let build () =
-        job {
-            restore ()
-            Task.build ()
-        }
-
-    let run () =
-        job {
-            restore ()
-            Task.run ()
-        }
-
-    let test () =
-        job {
-            restore ()
-            Task.test ()
-        }
-
-    let publish () =
-        job {
-            restore ()
-            Task.publish ()
-        }
-
-    let setupTestdata () = Task.setupTestdata ()
 
 [<EntryPoint>]
 let main args =
     args
     |> List.ofArray
     |> function
-        | [ "restore" ] -> Command.restore ()
-        | [ "build" ] -> Command.build ()
+        | [ "restore" ] -> Task.restore ()
+        | [ "build" ] ->
+            job {
+                Task.restore ()
+                Task.build ()
+            }
         | []
-        | [ "run" ] -> Command.run ()
-        | [ "test" ] -> Command.test ()
-        | [ "publish" ] -> Command.publish ()
-        | [ "setup-testdata" ] -> Command.setupTestdata ()
+        | [ "run" ] ->
+            job {
+                Task.restore ()
+                Task.run ()
+            }
+        | [ "test" ] ->
+            job {
+                Task.restore ()
+                Task.test ()
+            }
+        | [ "publish" ] ->
+            job {
+                Task.restore ()
+                Task.publish ()
+            }
+        | [ "setup-testdata" ] -> Task.setupTestdata ()
         | _ ->
             let msg =
                 [ "Usage: dotnet run [<command>]"
