@@ -6,6 +6,7 @@ namespace rec MagicCollectionHelper.Core
 
 module CardLenses =
     open MagicCollectionHelper.Core.CardTypes
+
     let foil =
         Lens((fun (x: Card) -> x.foil), (fun (x: Card) (value: bool) -> { x with foil = value }))
 
@@ -21,6 +22,7 @@ namespace rec MagicCollectionHelper.Core
 
 module EntryLenses =
     open MagicCollectionHelper.Core.CardTypes
+
     let amount =
         Lens((fun (x: Entry) -> x.amount), (fun (x: Entry) (value: uint) -> { x with amount = value }))
 
@@ -30,6 +32,7 @@ namespace rec MagicCollectionHelper.Core
 
 module CardInfoLenses =
     open MagicCollectionHelper.Core.CardTypes
+
     let name =
         Lens((fun (x: CardInfo) -> x.name), (fun (x: CardInfo) (value: string) -> { x with name = value }))
 
@@ -62,6 +65,7 @@ module CardInfoLenses =
 
     let cmc =
         Lens((fun (x: CardInfo) -> x.cmc), (fun (x: CardInfo) (value: uint) -> { x with cmc = value }))
+
 namespace rec MagicCollectionHelper.Core
 
 module Card =
@@ -70,6 +74,7 @@ module Card =
     let language (x: Card) = x.language
     let number (x: Card) = x.number
     let set (x: Card) = x.set
+
     let create (foil: bool) (language: Language) (number: CollectorNumber) (set: MagicSet) : Card =
         { foil = foil
           language = language
@@ -95,6 +100,7 @@ module Entry =
     let amount (x: Entry) = x.amount
     let card (x: Entry) = x.card
     let create (amount: uint) (card: Card) : Entry = { amount = amount; card = card }
+
     let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': Entry) =
         { record' with
               amount = mapamount record'.amount
@@ -112,6 +118,7 @@ module CardInfo =
     let rarity (x: CardInfo) = x.rarity
     let typeLine (x: CardInfo) = x.typeLine
     let cmc (x: CardInfo) = x.cmc
+
     let create
         (name: string)
         (set: MagicSet)
@@ -155,3 +162,5 @@ module CardInfo =
               rarity = maprarity record'.rarity
               typeLine = maptypeLine record'.typeLine
               cmc = mapcmc record'.cmc }
+
+

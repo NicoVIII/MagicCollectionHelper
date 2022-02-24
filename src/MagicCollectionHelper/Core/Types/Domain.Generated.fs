@@ -6,6 +6,7 @@ namespace rec MagicCollectionHelper.Core
 
 module PrefsLenses =
     open MagicCollectionHelper.Core.DomainTypes
+
     let cardGroupMinSize =
         Lens(
             (fun (x: Prefs) -> x.cardGroupMinSize),
@@ -30,6 +31,7 @@ namespace rec MagicCollectionHelper.Core
 
 module CustomLocationLenses =
     open MagicCollectionHelper.Core.DomainTypes
+
     let name =
         Lens(
             (fun (x: CustomLocation) -> x.name),
@@ -44,6 +46,7 @@ module CustomLocationLenses =
             (fun (x: CustomLocation) -> x.sortBy),
             (fun (x: CustomLocation) (value: SortRules) -> { x with sortBy = value })
         )
+
 namespace rec MagicCollectionHelper.Core
 
 module Prefs =
@@ -53,6 +56,7 @@ module Prefs =
     let numBase (x: Prefs) = x.numBase
     let missingPercent (x: Prefs) = x.missingPercent
     let setWithFoils (x: Prefs) = x.setWithFoils
+
     let create
         (cardGroupMinSize: uint)
         (cardGroupMaxSize: uint)
@@ -80,10 +84,12 @@ module Prefs =
               numBase = mapnumBase record'.numBase
               missingPercent = mapmissingPercent record'.missingPercent
               setWithFoils = mapsetWithFoils record'.setWithFoils }
+
 namespace rec MagicCollectionHelper.Core
 
 module NumBase =
     open MagicCollectionHelper.Core.DomainTypes
+
     let toString (x: NumBase) =
         match x with
         | Decimal -> "Decimal"
@@ -117,3 +123,4 @@ module NumBase =
         match x with
         | Seximal -> true
         | _ -> false
+

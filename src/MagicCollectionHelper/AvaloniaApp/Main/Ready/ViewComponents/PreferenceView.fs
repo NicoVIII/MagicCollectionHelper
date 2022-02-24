@@ -3,7 +3,7 @@ namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 open Avalonia.Controls
 open Avalonia.Layout
 
-open Avalonia.FuncUI.Components
+open Avalonia.FuncUI
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
 
@@ -108,14 +108,13 @@ module PreferenceView =
                                                     TextBlock.text (NumBase.toString numBase)
                                                 ])
                                     )
-                                    ComboBox.onSelectedItemChanged
-                                        (fun v ->
-                                            if v <> null then
-                                                v
-                                                |> unbox<NumBase>
-                                                |> setl PrefsLenses.numBase
-                                                |> ChangePrefs
-                                                |> dispatch)
+                                    ComboBox.onSelectedItemChanged (fun v ->
+                                        if v <> null then
+                                            v
+                                            |> unbox<NumBase>
+                                            |> setl PrefsLenses.numBase
+                                            |> ChangePrefs
+                                            |> dispatch)
                                 ]
                             ]
                         ]

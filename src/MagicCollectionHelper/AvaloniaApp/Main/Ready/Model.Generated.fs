@@ -6,6 +6,7 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Main.Ready.Generated
 
 module CommonStateLenses =
     open MagicCollectionHelper.AvaloniaApp.Main.Ready
+
     let analyseText =
         MagicCollectionHelper.Core.Lens(
             (fun (x: CommonState) -> x.analyseText),
@@ -55,6 +56,7 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Main.Ready.Generated
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Main.Ready
+
     let common =
         MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.common),
@@ -74,10 +76,13 @@ module StateLenses =
             (fun (x: State) (value: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State) ->
                 { x with inventory = value })
         )
+
+
 namespace rec MagicCollectionHelper.AvaloniaApp.Main.Ready.Generated
 
 module Msg =
     open MagicCollectionHelper.AvaloniaApp.Main.Ready
+
     let toString (x: Msg) =
         match x with
         | AsyncError _ -> "AsyncError"
@@ -145,3 +150,4 @@ module Msg =
         match x with
         | CollectionMsg _ -> true
         | _ -> false
+

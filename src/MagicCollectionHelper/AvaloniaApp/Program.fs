@@ -3,11 +3,9 @@ namespace MagicCollectionHelper.AvaloniaApp
 open Elmish
 open Avalonia
 open Avalonia.Controls.ApplicationLifetimes
-open Avalonia.Diagnostics
 open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
-open Avalonia.FuncUI.Components.Hosts
-open Avalonia.Input
+open Avalonia.FuncUI.Hosts
 
 open MagicCollectionHelper.AvaloniaApp.Main
 open MagicCollectionHelper.AvaloniaApp.Components
@@ -31,17 +29,13 @@ type MainWindow() as this =
 #endif
 
     do
+#if DEBUG
+        this.AttachDevTools()
+#endif
+
         base.Title <- "MagicCollectionHelper"
         base.Width <- 800.0
         base.Height <- 600.0
-
-        //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
-        //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
-
-#if DEBUG
-        DevTools.Attach(this, KeyGesture(Key.F12))
-        |> ignore
-#endif
 
         Program.mkProgram Model.init Update.perform View.render
         |> Program.withHost this

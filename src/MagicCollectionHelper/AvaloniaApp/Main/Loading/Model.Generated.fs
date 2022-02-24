@@ -6,6 +6,7 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Main.Loading.Generated
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Main.Loading
+
     let cardInfo =
         MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.cardInfo),
@@ -33,10 +34,13 @@ module StateLenses =
             (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap>) ->
                 { x with setData = value })
         )
+
+
 namespace rec MagicCollectionHelper.AvaloniaApp.Main.Loading.Generated
 
 module Msg =
     open MagicCollectionHelper.AvaloniaApp.Main.Loading
+
     let toString (x: Msg) =
         match x with
         | AsyncError _ -> "AsyncError"
@@ -142,3 +146,4 @@ module Msg =
         match x with
         | CheckLoadingState -> true
         | _ -> false
+

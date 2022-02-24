@@ -6,6 +6,7 @@ namespace rec MagicCollectionHelper.AvaloniaApp
 
 module SearchLenses =
     open MagicCollectionHelper.AvaloniaApp.DomainTypes
+
     let text =
         MagicCollectionHelper.Core.Lens(
             (fun (x: Search) -> x.text),
@@ -17,6 +18,7 @@ module SearchLenses =
             (fun (x: Search) -> x.old),
             (fun (x: Search) (value: bool option) -> { x with old = value })
         )
+
 namespace rec MagicCollectionHelper.AvaloniaApp
 
 module Search =
@@ -24,7 +26,10 @@ module Search =
     let text (x: Search) = x.text
     let old (x: Search) = x.old
     let create (text: string) (old: bool option) : Search = { text = text; old = old }
+
     let map (maptext: string -> string) (mapold: bool option -> bool option) (record': Search) =
         { record' with
               text = maptext record'.text
               old = mapold record'.old }
+
+

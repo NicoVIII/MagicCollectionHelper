@@ -6,6 +6,7 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Collection
+
     let loadInProgress =
         MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.loadInProgress),
@@ -23,10 +24,13 @@ module StateLenses =
             (fun (x: State) -> x.pageOffset),
             (fun (x: State) (value: int) -> { x with pageOffset = value })
         )
+
+
 namespace rec MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 
 module Msg =
     open MagicCollectionHelper.AvaloniaApp.Components.Collection
+
     let toString (x: Msg) =
         match x with
         | ImportCollection -> "ImportCollection"
@@ -72,3 +76,4 @@ module Msg =
         match x with
         | SetPageSize _ -> true
         | _ -> false
+

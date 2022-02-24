@@ -6,6 +6,7 @@ namespace rec MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 
 module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Inventory
+
     let filteredInventory =
         MagicCollectionHelper.Core.Lens(
             (fun (x: State) -> x.filteredInventory),
@@ -37,10 +38,13 @@ module StateLenses =
             (fun (x: State) -> x.viewMode),
             (fun (x: State) (value: ViewMode) -> { x with viewMode = value })
         )
+
+
 namespace rec MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 
 module Msg =
     open MagicCollectionHelper.AvaloniaApp.Components.Inventory
+
     let toString (x: Msg) =
         match x with
         | AsyncError _ -> "AsyncError"
@@ -116,3 +120,4 @@ module Msg =
         match x with
         | UpdateLocationRules _ -> true
         | _ -> false
+

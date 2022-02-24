@@ -3,22 +3,18 @@ source https://api.nuget.org/v3/index.json
 storage: none
 framework: auto-detect
 
-nuget FSharp.Core ~> 5.0
-nuget FSharp.Data ~> 4.0
-nuget NicoVIII.TypedPersistence.Json 0.6.0-alpha.7
-nuget Avalonia 0.10.6
-nuget Avalonia.Diagnostics ~> 0.10.0
-nuget FSharp.Compiler.Service ~> 38.0
-nuget JaggerJo.Avalonia.FuncUI ~> 0.5.0-beta
-nuget JaggerJo.Avalonia.FuncUI.DSL ~> 0.5.0-beta
-nuget JaggerJo.Avalonia.FuncUI.Elmish ~> 0.5.0-beta
-nuget Myriad.Core ~> 0.5.0
-nuget Myriad.Sdk ~> 0.5.0
-nuget Myriad.Plugins ~> 0.5.0
-nuget Newtonsoft.Json ~> 12.0
-nuget NicoVIII.Dozenalize ~> 0.3.0
-nuget NicoVIII.Seximalize ~> 0.3.0
-nuget SchlenkR.FsHttp ~> 5.1
+nuget FSharp.Data
+nuget NicoVIII.TypedPersistence.Json prerelease
+nuget Avalonia.Diagnostics 0.10.12
+nuget Myriad.Core
+nuget Myriad.Sdk
+nuget Myriad.Plugins
+nuget Newtonsoft.Json
+nuget NicoVIII.Dozenalize
+nuget NicoVIII.Seximalize
+nuget SchlenkR.FsHttp
+
+github fsprojects/Avalonia.FuncUI
 
 nuget Expecto.FsCheck >= 9.0
 nuget Microsoft.NET.Test.Sdk >= 16.0
