@@ -71,10 +71,6 @@
     <EmbeddedResource Remove=".template.config\**" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\paket-files\fsprojects\Avalonia.FuncUI\src\Avalonia.FuncUI.DSL\Avalonia.FuncUI.DSL.fsproj" />
-    <ProjectReference Include="..\..\..\paket-files\fsprojects\Avalonia.FuncUI\src\Avalonia.FuncUI.Elmish\Avalonia.FuncUI.Elmish.fsproj" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Core\MagicCollectionHelper.Core.fsproj" />
   </ItemGroup>
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />

@@ -5,7 +5,10 @@ framework: auto-detect
 
 nuget FSharp.Data
 nuget NicoVIII.TypedPersistence.Json prerelease
-nuget Avalonia.Diagnostics 0.10.12
+nuget Avalonia.Diagnostics
+nuget Elmish
+nuget JaggerJo.Avalonia.FuncUI.DSL
+nuget JaggerJo.Avalonia.FuncUI.Elmish
 nuget Myriad.Core
 nuget Myriad.Sdk
 nuget Myriad.Plugins
@@ -13,8 +16,6 @@ nuget Newtonsoft.Json
 nuget NicoVIII.Dozenalize
 nuget NicoVIII.Seximalize
 nuget SchlenkR.FsHttp
-
-github fsprojects/Avalonia.FuncUI
 
 nuget Expecto.FsCheck >= 9.0
 nuget Microsoft.NET.Test.Sdk >= 16.0
