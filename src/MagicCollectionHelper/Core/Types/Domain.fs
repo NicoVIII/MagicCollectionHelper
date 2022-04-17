@@ -11,7 +11,7 @@ module DomainTypes =
         | Seximal
 
     /// Type which holds user preferences so the user can customize some behaviors
-    [<Generator.Lenses("core", "Lens")>]
+    [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     [<Generator.Fields("core")>]
     type Prefs =
         { cardGroupMinSize: uint
@@ -71,7 +71,7 @@ module DomainTypes =
           rarity: Set<Rarity> option
           colorIdentity: Set<ColorIdentity> option }
 
-    [<Generator.Lenses("core", "Lens")>]
+    [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type CustomLocation =
         { name: CustomLocationName
           rules: Rules

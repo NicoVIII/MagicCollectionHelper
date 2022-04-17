@@ -8,47 +8,47 @@ module CommonStateLenses =
     open MagicCollectionHelper.AvaloniaApp.Main.Ready
 
     let analyseText =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: CommonState) -> x.analyseText),
             (fun (x: CommonState) (value: string) -> { x with analyseText = value })
         )
 
     let cardInfo =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: CommonState) -> x.cardInfo),
             (fun (x: CommonState) (value: MagicCollectionHelper.Core.CardTypes.CardInfoMap) ->
                 { x with cardInfo = value })
         )
 
     let dsEntries =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: CommonState) -> x.dsEntries),
             (fun (x: CommonState) (value: MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list) ->
                 { x with dsEntries = value })
         )
 
     let entries =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: CommonState) -> x.entries),
             (fun (x: CommonState) (value: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.Entry> list) ->
                 { x with entries = value })
         )
 
     let prefs =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: CommonState) -> x.prefs),
             (fun (x: CommonState) (value: MagicCollectionHelper.Core.DomainTypes.Prefs) -> { x with prefs = value })
         )
 
     let setData =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: CommonState) -> x.setData),
             (fun (x: CommonState) (value: MagicCollectionHelper.Core.DomainTypes.SetDataMap) ->
                 { x with setData = value })
         )
 
     let viewMode =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: CommonState) -> x.viewMode),
             (fun (x: CommonState) (value: ViewMode) -> { x with viewMode = value })
         )
@@ -58,20 +58,20 @@ module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Main.Ready
 
     let common =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.common),
             (fun (x: State) (value: CommonState) -> { x with common = value })
         )
 
     let collection =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.collection),
             (fun (x: State) (value: MagicCollectionHelper.AvaloniaApp.Components.Collection.State) ->
                 { x with collection = value })
         )
 
     let inventory =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.inventory),
             (fun (x: State) (value: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State) ->
                 { x with inventory = value })

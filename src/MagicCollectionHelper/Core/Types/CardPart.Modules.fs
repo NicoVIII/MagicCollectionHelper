@@ -1,7 +1,5 @@
 namespace MagicCollectionHelper.Core
 
-open Myriad.Plugins
-
 [<AutoOpen>]
 module CardPartTypesModules =
     module Language =

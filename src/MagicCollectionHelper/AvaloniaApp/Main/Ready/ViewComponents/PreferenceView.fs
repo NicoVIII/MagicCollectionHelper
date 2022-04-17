@@ -2,6 +2,7 @@ namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 open Avalonia.Controls
 open Avalonia.Layout
+open SimpleOptics
 
 open Avalonia.FuncUI
 open Avalonia.FuncUI.DSL
@@ -14,7 +15,7 @@ open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 module PreferenceView =
     let numInputProps dispatch (min, max) lens prefs =
-        let currentValue = getl lens prefs |> double
+        let currentValue = Optic.get lens prefs |> double
 
         [ NumericUpDown.margin (10., 0., 0., 0.)
           NumericUpDown.maximum max
@@ -23,7 +24,10 @@ module PreferenceView =
           NumericUpDown.onValueChanged (
               (fun newValue ->
                   if currentValue <> newValue then
-                      newValue |> setl lens |> ChangePrefs |> dispatch),
+                      newValue
+                      |> Optic.set lens
+                      |> ChangePrefs
+                      |> dispatch),
               OnChangeOf currentValue
           ) ]
 
@@ -35,7 +39,7 @@ module PreferenceView =
     let render (state: State) (dispatch: Dispatch) : IView =
         let numInputProps = numInputProps dispatch
 
-        let prefs = getl StateLenses.prefs state
+        let prefs = Optic.get StateLenses.prefs state
 
         // Lens to convert uintToDouble
         let uintDoubleLens = Lens(double, (fun _ v -> uint v))
@@ -62,13 +66,17 @@ module PreferenceView =
                                     StackPanel.children [
                                         numInputProps
                                             (0., 200.)
-                                            (PrefsLenses.cardGroupMinSize << uintDoubleLens)
+                                            (Optic.compose
+                                                PrefsLenses.cardGroupMinSize
+                                                uintDoubleLens)
                                             prefs
                                         |> NumericUpDown.create
 
                                         numInputProps
                                             (0., 200.)
-                                            (PrefsLenses.cardGroupMaxSize << uintDoubleLens)
+                                            (Optic.compose
+                                                PrefsLenses.cardGroupMaxSize
+                                                uintDoubleLens)
                                             prefs
                                         |> NumericUpDown.create
                                     ]
@@ -85,7 +93,7 @@ module PreferenceView =
                                         (fun value ->
                                             if value <> prefs.missingPercent * 100. then
                                                 value / 100.
-                                                |> setl PrefsLenses.missingPercent
+                                                |> Optic.set PrefsLenses.missingPercent
                                                 |> ChangePrefs
                                                 |> dispatch),
                                         OnChangeOf prefs.missingPercent
@@ -112,7 +120,7 @@ module PreferenceView =
                                         if v <> null then
                                             v
                                             |> unbox<NumBase>
-                                            |> setl PrefsLenses.numBase
+                                            |> Optic.set PrefsLenses.numBase
                                             |> ChangePrefs
                                             |> dispatch)
                                 ]
@@ -123,14 +131,14 @@ module PreferenceView =
                             CheckBox.isChecked prefs.setWithFoils
                             CheckBox.onChecked (
                                 (fun _ ->
-                                    (PrefsLenses.setWithFoils .-> true)
+                                    (Optic.set PrefsLenses.setWithFoils true)
                                     |> ChangePrefs
                                     |> dispatch),
                                 Never
                             )
                             CheckBox.onUnchecked (
                                 (fun _ ->
-                                    (PrefsLenses.setWithFoils .-> false)
+                                    (Optic.set PrefsLenses.setWithFoils false)
                                     |> ChangePrefs
                                     |> dispatch),
                                 Never

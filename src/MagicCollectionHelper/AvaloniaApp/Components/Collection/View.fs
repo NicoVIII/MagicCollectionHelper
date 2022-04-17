@@ -1,5 +1,6 @@
 module MagicCollectionHelper.AvaloniaApp.Components.Collection.View
 
+open SimpleOptics
 open System
 
 open Avalonia.Controls
@@ -17,7 +18,7 @@ open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 open MagicCollectionHelper.AvaloniaApp.Elements
 
 let buttonBar (state: State) (dispatch: Dispatch) : IView =
-    let loadInProgress = getl StateLenses.loadInProgress state
+    let loadInProgress = Optic.get StateLenses.loadInProgress state
 
     ActionButtonBar.create [
         ActionButton.create
@@ -28,9 +29,10 @@ let buttonBar (state: State) (dispatch: Dispatch) : IView =
     ]
 
 let renderText prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
-    let loadInProgress = getl StateLenses.loadInProgress state
+    let loadInProgress = Optic.get StateLenses.loadInProgress state
 
-    let inventoryableAmount = List.sumBy (getl AgedEntryWithInfoLenses.amount) agedEntriesWithInfo
+    let inventoryableAmount =
+        List.sumBy (Optic.get AgedEntryWithInfoLenses.amount) agedEntriesWithInfo
 
     TextBlock.create [
         TextBlock.textWrapping TextWrapping.Wrap
@@ -121,11 +123,15 @@ let pagingBar entries (state: State) dispatch =
                                     250
                                 ]
                                 ComboBox.selectedItem state.pageSize
-                                ComboBox.onSelectedItemChanged (unbox<int> >> SetPageSize >> dispatch)
+                                ComboBox.onSelectedItemChanged (
+                                    unbox<int> >> SetPageSize >> dispatch
+                                )
                             ]
                             Button.create [
                                 Button.content ">"
-                                Button.isEnabled ((state.pageOffset + 1) * state.pageSize < List.length entries)
+                                Button.isEnabled (
+                                    (state.pageOffset + 1) * state.pageSize < List.length entries
+                                )
                                 Button.onClick (fun _ -> (+) 1 |> ChangePage |> dispatch)
                             ]
                         ]
@@ -140,10 +146,12 @@ module Lenses = AgedEntryWithInfoLenses
 
 let tableView entries state =
     let columns =
-        [ "Name", getl Lenses.name
-          "Set", (getl Lenses.set) >> MagicSet.unwrap
-          "Nr.", (getl Lenses.number) >> CollectorNumber.unwrap
-          "Language", (getl Lenses.language) >> Language.unwrap ]
+        [ "Name", Optic.get Lenses.name
+          "Set", (Optic.get Lenses.set) >> MagicSet.unwrap
+          "Nr.",
+          (Optic.get Lenses.number)
+          >> CollectorNumber.unwrap
+          "Language", (Optic.get Lenses.language) >> Language.unwrap ]
 
     // Paging
     let entries =

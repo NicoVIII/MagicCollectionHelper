@@ -8,33 +8,33 @@ module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 
     let filteredInventory =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.filteredInventory),
             (fun (x: State) (value: LocationWithHungTree list) -> { x with filteredInventory = value })
         )
 
     let inventory =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.inventory),
             (fun (x: State) (value: MagicCollectionHelper.Core.DomainTypes.LocationWithCards) ->
                 { x with inventory = value })
         )
 
     let locations =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.locations),
             (fun (x: State) (value: MagicCollectionHelper.Core.DomainTypes.CustomLocation list) ->
                 { x with locations = value })
         )
 
     let search =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.search),
             (fun (x: State) (value: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search) -> { x with search = value })
         )
 
     let viewMode =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.viewMode),
             (fun (x: State) (value: ViewMode) -> { x with viewMode = value })
         )

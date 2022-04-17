@@ -1,5 +1,7 @@
 namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
+open SimpleOptics
+
 open Avalonia.Controls
 open Avalonia.Controls.Primitives
 open Avalonia.FuncUI.DSL
@@ -14,7 +16,7 @@ open MagicCollectionHelper.AvaloniaApp.Main.Ready
 
 module AnalyseView =
     let topBar (state: State) (dispatch: Dispatch) : IView =
-        let entries = getl StateLenses.dsEntries state
+        let entries = Optic.get StateLenses.dsEntries state
 
         ActionButtonBar.create [
             ActionButton.create
@@ -25,7 +27,7 @@ module AnalyseView =
         ]
 
     let content (state: State) (dispatch: Dispatch) : IView =
-        let analyseText = getl StateLenses.analyseText state
+        let analyseText = Optic.get StateLenses.analyseText state
 
         Border.create [
             Border.background "black"

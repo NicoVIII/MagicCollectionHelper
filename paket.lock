@@ -201,6 +201,8 @@ NUGET
     NicoVIII.Seximalize (0.3)
       FSharp.Core (>= 5.0)
       NicoVIII.Basealize (>= 0.3)
+    NicoVIII.SimpleOptics (0.2)
+      FSharp.Core (>= 6.0)
     NicoVIII.TypedPersistence.Core (0.6.0-alpha.8)
       FSharp.Core (>= 5.0)
     NicoVIII.TypedPersistence.Json (0.6.0-alpha.8)

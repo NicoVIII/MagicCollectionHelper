@@ -1,5 +1,6 @@
 namespace MagicCollectionHelper.Core
 
+open SimpleOptics
 open System
 
 [<RequireQualifiedAccess>]
@@ -47,9 +48,8 @@ module Inventory =
         let fitsColorIdentity cardWithInfo rules =
             let colorIdentity = cardWithInfo ^. CardWithInfoLenses.colorIdentity
 
-            fitsRule
-                rules.colorIdentity
-                (fun colorIdentities -> Set.contains colorIdentity colorIdentities)
+            fitsRule rules.colorIdentity (fun colorIdentities ->
+                Set.contains colorIdentity colorIdentities)
 
         let fitsLimit cardsInLoc cardWithInfo rules =
             let rule limit =
@@ -91,7 +91,7 @@ module Inventory =
     let fitsInLocation (locCardMap: Map<InventoryLocation, AgedCardWithInfo list>) card location =
         let cardList =
             locCardMap.Item(Custom location)
-            |> List.map (WithInfo.map (getl AgedCardLenses.card))
+            |> List.map (WithInfo.map (Optic.get AgedCardLenses.card))
 
         Rules.fitsAll cardList card location.rules
 
@@ -148,7 +148,8 @@ module Inventory =
 
             rarities
             |> List.indexed
-            |> List.tryPick (fun (index, raritySet) -> if Set.contains rarity raritySet then Some index else None)
+            |> List.tryPick (fun (index, raritySet) ->
+                if Set.contains rarity raritySet then Some index else None)
             |> Option.defaultValue (List.length rarities)
             |> string
         | ByLanguage languages ->
@@ -156,7 +157,8 @@ module Inventory =
 
             languages
             |> List.indexed
-            |> List.tryPick (fun (index, sLanguage) -> if sLanguage = language then Some index else None)
+            |> List.tryPick (fun (index, sLanguage) ->
+                if sLanguage = language then Some index else None)
             |> Option.defaultValue (List.length languages)
             |> string
 
@@ -179,7 +181,7 @@ module Inventory =
         entries |> List.sortBy sortBy
 
     let take (setData: SetDataMap) (infoMap: CardInfoMap) locations (entries: AgedEntry list) =
-        let mutable locCardMap : Map<InventoryLocation, AgedCardWithInfo list> =
+        let mutable locCardMap: Map<InventoryLocation, AgedCardWithInfo list> =
             let mutable map = Map.empty
             map <- Map.add Fallback [] map
 
@@ -196,32 +198,31 @@ module Inventory =
             // We can consider a card only for inventory, if we have the info
             |> List.choose (AgedEntryWithInfo.fromEntry infoMap)
             // TODO: generalize and make configurable
-            |> List.sortBy
-                (fun entry ->
-                    let foil = entry ^. AgedEntryWithInfoLenses.foil
+            |> List.sortBy (fun entry ->
+                let foil = entry ^. AgedEntryWithInfoLenses.foil
 
-                    let language =
-                        entry ^. AgedEntryWithInfoLenses.language
-                        |> Language.unwrap
+                let language =
+                    entry ^. AgedEntryWithInfoLenses.language
+                    |> Language.unwrap
 
-                    let number =
-                        entry ^. AgedEntryWithInfoLenses.number
-                        |> CollectorNumber.unwrap
+                let number =
+                    entry ^. AgedEntryWithInfoLenses.number
+                    |> CollectorNumber.unwrap
 
-                    let set = entry ^. AgedEntryWithInfoLenses.set
+                let set = entry ^. AgedEntryWithInfoLenses.set
 
-                    [ // Language
-                      match language with
-                      | "en" -> "0"
-                      | "de" -> "1"
-                      | _ -> "2"
-                      // Foil
-                      if foil then "0" else "1"
-                      // Set
-                      (Map.find set setData).date
-                      number
-                      // Random
-                      random.Next(0, 10000) |> string ])
+                [ // Language
+                  match language with
+                  | "en" -> "0"
+                  | "de" -> "1"
+                  | _ -> "2"
+                  // Foil
+                  if foil then "0" else "1"
+                  // Set
+                  (Map.find set setData).date
+                  number
+                  // Random
+                  random.Next(0, 10000) |> string ])
 
         for agedEntryWithInfo in agedEntriesWithInfo do
             let getCard old =
@@ -247,33 +248,32 @@ module Inventory =
                     |> determineLocation locCardMap locations
 
                 match location with
-                | Some location -> locCardMap <- Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
-                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
+                | Some location ->
+                    locCardMap <-
+                        Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
+                | None ->
+                    locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
 
                 i <- i + 1u
 
         // Collapse into entries again and sort by location rules
         locCardMap
-        |> Map.map
-            (fun location cardList ->
-                cardList
-                |> AgedEntryWithInfo.fromCardList
-                |> sortEntries setData location
-                |> List.map (getl AgedEntryWithInfoLenses.agedEntry))
+        |> Map.map (fun location cardList ->
+            cardList
+            |> AgedEntryWithInfo.fromCardList
+            |> sortEntries setData location
+            |> List.map (Optic.get AgedEntryWithInfoLenses.agedEntry))
         // If the Fallback is empty, we don't need it
-        |> Map.change
-            Fallback
-            (function
+        |> Map.change Fallback (function
             | None
             | Some [] -> None
             | Some lst -> Some lst)
         // We now convert the map back into a list (order matters!) and sort it
         |> Map.toList
-        |> List.sortBy
-            (fun (location, _) ->
-                match location with
-                | Fallback -> 9999
-                | Custom location -> List.findIndex (fun l -> location = l) locations)
+        |> List.sortBy (fun (location, _) ->
+            match location with
+            | Fallback -> 9999
+            | Custom location -> List.findIndex (fun l -> location = l) locations)
 
     // Because this process can take some time, we provide an async version
     let takeAsync setData infoMap locations entries =

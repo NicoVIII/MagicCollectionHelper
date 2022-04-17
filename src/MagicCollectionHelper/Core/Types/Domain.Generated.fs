@@ -8,41 +8,53 @@ module PrefsLenses =
     open MagicCollectionHelper.Core.DomainTypes
 
     let cardGroupMinSize =
-        Lens(
+        SimpleOptics.Lens(
             (fun (x: Prefs) -> x.cardGroupMinSize),
             (fun (x: Prefs) (value: uint) -> { x with cardGroupMinSize = value })
         )
 
     let cardGroupMaxSize =
-        Lens(
+        SimpleOptics.Lens(
             (fun (x: Prefs) -> x.cardGroupMaxSize),
             (fun (x: Prefs) (value: uint) -> { x with cardGroupMaxSize = value })
         )
 
     let numBase =
-        Lens((fun (x: Prefs) -> x.numBase), (fun (x: Prefs) (value: NumBase) -> { x with numBase = value }))
+        SimpleOptics.Lens(
+            (fun (x: Prefs) -> x.numBase),
+            (fun (x: Prefs) (value: NumBase) -> { x with numBase = value })
+        )
 
     let missingPercent =
-        Lens((fun (x: Prefs) -> x.missingPercent), (fun (x: Prefs) (value: float) -> { x with missingPercent = value }))
+        SimpleOptics.Lens(
+            (fun (x: Prefs) -> x.missingPercent),
+            (fun (x: Prefs) (value: float) -> { x with missingPercent = value })
+        )
 
     let setWithFoils =
-        Lens((fun (x: Prefs) -> x.setWithFoils), (fun (x: Prefs) (value: bool) -> { x with setWithFoils = value }))
+        SimpleOptics.Lens(
+            (fun (x: Prefs) -> x.setWithFoils),
+            (fun (x: Prefs) (value: bool) -> { x with setWithFoils = value })
+        )
 namespace rec MagicCollectionHelper.Core
 
 module CustomLocationLenses =
     open MagicCollectionHelper.Core.DomainTypes
 
     let name =
-        Lens(
+        SimpleOptics.Lens(
             (fun (x: CustomLocation) -> x.name),
             (fun (x: CustomLocation) (value: CustomLocationName) -> { x with name = value })
         )
 
     let rules =
-        Lens((fun (x: CustomLocation) -> x.rules), (fun (x: CustomLocation) (value: Rules) -> { x with rules = value }))
+        SimpleOptics.Lens(
+            (fun (x: CustomLocation) -> x.rules),
+            (fun (x: CustomLocation) (value: Rules) -> { x with rules = value })
+        )
 
     let sortBy =
-        Lens(
+        SimpleOptics.Lens(
             (fun (x: CustomLocation) -> x.sortBy),
             (fun (x: CustomLocation) (value: SortRules) -> { x with sortBy = value })
         )

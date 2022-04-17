@@ -1,5 +1,7 @@
 namespace MagicCollectionHelper.Core
 
+open SimpleOptics
+
 [<AutoOpen>]
 module CardTypesModules =
     module Card =
@@ -62,7 +64,7 @@ module CardTypesModules =
         let create card info : CardWithInfo = { data = card; info = info }
 
         let fromCard infoMap =
-            WithInfo.addInfo infoMap (getl CardLenses.set) (getl CardLenses.number)
+            WithInfo.addInfo infoMap (Optic.get CardLenses.set) (Optic.get CardLenses.number)
 
         /// Checks if those two cards are rulewise the same. They do not have to be from the same set
         let isSame (card1: CardWithInfo) (card2: CardWithInfo) = WithInfo.isSame card1 card2
@@ -74,7 +76,7 @@ module CardTypesModules =
         let create entry info : EntryWithInfo = { data = entry; info = info }
 
         let fromEntry infoMap =
-            WithInfo.addInfo infoMap (getl EntryLenses.set) (getl EntryLenses.number)
+            WithInfo.addInfo infoMap (Optic.get EntryLenses.set) (Optic.get EntryLenses.number)
 
     module AgedCard =
         let create old card : AgedCard = Oldable.create old card
@@ -90,30 +92,35 @@ module CardTypesModules =
                 |> Map.ofList
 
             newList
-            |> List.map
-                (fun (entry: Entry) ->
-                    let amountOld =
-                        match Map.tryFind entry.card oldMap with
-                        | Some entry -> entry.amount
-                        | None -> 0u
+            |> List.map (fun (entry: Entry) ->
+                let amountOld =
+                    match Map.tryFind entry.card oldMap with
+                    | Some entry -> entry.amount
+                    | None -> 0u
 
-                    OldAmountable.create amountOld entry)
+                OldAmountable.create amountOld entry)
 
     module AgedCardWithInfo =
         let create info card : AgedCardWithInfo = WithInfo.create info card
 
         let fromCard infoMap =
-            WithInfo.addInfo infoMap (getl AgedCardLenses.set) (getl AgedCardLenses.number)
+            WithInfo.addInfo
+                infoMap
+                (Optic.get AgedCardLenses.set)
+                (Optic.get AgedCardLenses.number)
 
-        let removeAge = WithInfo.map (getl AgedCardLenses.card)
+        let removeAge = WithInfo.map (Optic.get AgedCardLenses.card)
 
     module AgedEntryWithInfo =
         let create info entry : AgedEntryWithInfo = WithInfo.create info entry
 
         let fromEntry infoMap =
-            WithInfo.addInfo infoMap (getl AgedEntryLenses.set) (getl AgedEntryLenses.number)
+            WithInfo.addInfo
+                infoMap
+                (Optic.get AgedEntryLenses.set)
+                (Optic.get AgedEntryLenses.number)
 
-        let removeAge = WithInfo.map (getl AgedEntryLenses.entry)
+        let removeAge = WithInfo.map (Optic.get AgedEntryLenses.entry)
 
         /// Takes a list of cards and creates entry out of equal cards
         let fromCardList (cardList: AgedCardWithInfo list) =
@@ -130,9 +137,8 @@ module CardTypesModules =
                         cardAmountMap)
                 Map.empty
             |> Map.toList
-            |> List.map
-                (fun (cardWithInfo: CardWithInfo, (amount, amountOld)) ->
-                    cardWithInfo.data
-                    |> Entry.create amount
-                    |> AgedEntry.create amountOld
-                    |> create cardWithInfo.info)
+            |> List.map (fun (cardWithInfo: CardWithInfo, (amount, amountOld)) ->
+                cardWithInfo.data
+                |> Entry.create amount
+                |> AgedEntry.create amountOld
+                |> create cardWithInfo.info)

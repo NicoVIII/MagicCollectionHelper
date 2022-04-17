@@ -1,5 +1,7 @@
 namespace MagicCollectionHelper.Core
 
+open SimpleOptics
+
 [<AutoOpen>]
 module DomainTypesModules =
     module DeckStatsCardEntry =
@@ -13,10 +15,9 @@ module DomainTypesModules =
             | Some set, None, Some lang ->
                 cardInfoMap
                 |> Map.tryFind (entry.name, set)
-                |> Option.map
-                    (fun info ->
-                        Card.create entry.foil lang info.collectorNumber set
-                        |> Entry.create entry.amount)
+                |> Option.map (fun info ->
+                    Card.create entry.foil lang info.collectorNumber set
+                    |> Entry.create entry.amount)
             | _ -> None
 
         let listToEntries cardInfoMap (entries: DeckStatsCardEntry list) =
@@ -26,12 +27,11 @@ module DomainTypesModules =
                 |> Map.toList
                 |> List.map snd
                 |> List.groupBy (fun (info: CardInfo) -> (info.name, info.set))
-                |> List.choose
-                    (fun (key, infoList) ->
-                        match infoList with
-                        | [ info ] -> (key, info) |> Some
-                        // Kein (eindeutiges) Ergebnis gefunden
-                        | _ -> None)
+                |> List.choose (fun (key, infoList) ->
+                    match infoList with
+                    | [ info ] -> (key, info) |> Some
+                    // Kein (eindeutiges) Ergebnis gefunden
+                    | _ -> None)
                 |> Map.ofList
 
             entries
@@ -44,10 +44,9 @@ module DomainTypesModules =
                 []
             // We remove now all duplicates
             |> List.groupBy (fun entry -> entry.card)
-            |> List.map
-                (fun (card, entryList) ->
-                    { amount = List.sumBy (getl EntryLenses.amount) entryList
-                      card = card })
+            |> List.map (fun (card, entryList) ->
+                { amount = List.sumBy (Optic.get EntryLenses.amount) entryList
+                  card = card })
             |> List.rev
 
         let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =

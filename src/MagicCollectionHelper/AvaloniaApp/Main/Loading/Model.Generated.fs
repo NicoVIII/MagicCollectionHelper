@@ -8,28 +8,28 @@ module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Main.Loading
 
     let cardInfo =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.cardInfo),
             (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>) ->
                 { x with cardInfo = value })
         )
 
     let dsEntries =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.dsEntries),
             (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>) ->
                 { x with dsEntries = value })
         )
 
     let entries =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.entries),
             (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.CardTypes.Entry list>) ->
                 { x with entries = value })
         )
 
     let setData =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.setData),
             (fun (x: State) (value: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap>) ->
                 { x with setData = value })

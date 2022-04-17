@@ -1,6 +1,7 @@
 module MagicCollectionHelper.AvaloniaApp.Components.Collection.Update
 
 open Elmish
+open SimpleOptics
 
 open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Import
@@ -10,7 +11,7 @@ open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
 let perform (msg: Msg) (state: State) =
     match msg with
     | ImportCollection ->
-        let state = setl StateLenses.loadInProgress true state
+        let state = Optic.set StateLenses.loadInProgress true state
 
         let fnc = Collection.importAsync
 
@@ -28,15 +29,15 @@ let perform (msg: Msg) (state: State) =
 
         state, Cmd.ofMsg (SaveCollection entryList), DoNothing
     | SaveCollection import ->
-        let state = setl StateLenses.loadInProgress false state
+        let state = Optic.set StateLenses.loadInProgress false state
 
         state, Cmd.none, SaveEntries import
     | ChangePage change ->
-        let state = state |> StateLenses.pageOffset %-> change
+        let state = state |> Optic.map StateLenses.pageOffset change
 
         state, Cmd.none, DoNothing
     | SetPageSize size ->
-        let state = state |> StateLenses.pageSize .-> size
+        let state = state |> Optic.set StateLenses.pageSize size
 
         // Set page back to 0
         let cmd = (fun _ -> 0) |> ChangePage |> Cmd.ofMsg

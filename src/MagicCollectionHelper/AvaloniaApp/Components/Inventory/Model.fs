@@ -11,7 +11,7 @@ type ViewMode =
 type LocationWithHungTree =
     MagicCollectionHelper.Core.DomainTypes.InventoryLocation * MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.CardTypes.AgedEntryWithInfo list>
 
-[<Generator.Lenses("components.inventory", "MagicCollectionHelper.Core.Lens")>]
+[<Generator.Lenses("components.inventory", "SimpleOptics.Lens")>]
 type State =
     { filteredInventory: LocationWithHungTree list
       inventory: MagicCollectionHelper.Core.DomainTypes.LocationWithCards

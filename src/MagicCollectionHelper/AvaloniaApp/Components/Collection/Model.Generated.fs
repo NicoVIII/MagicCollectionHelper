@@ -8,19 +8,16 @@ module StateLenses =
     open MagicCollectionHelper.AvaloniaApp.Components.Collection
 
     let loadInProgress =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.loadInProgress),
             (fun (x: State) (value: bool) -> { x with loadInProgress = value })
         )
 
     let pageSize =
-        MagicCollectionHelper.Core.Lens(
-            (fun (x: State) -> x.pageSize),
-            (fun (x: State) (value: int) -> { x with pageSize = value })
-        )
+        SimpleOptics.Lens((fun (x: State) -> x.pageSize), (fun (x: State) (value: int) -> { x with pageSize = value }))
 
     let pageOffset =
-        MagicCollectionHelper.Core.Lens(
+        SimpleOptics.Lens(
             (fun (x: State) -> x.pageOffset),
             (fun (x: State) (value: int) -> { x with pageOffset = value })
         )

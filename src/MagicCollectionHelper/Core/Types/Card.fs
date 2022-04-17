@@ -6,7 +6,7 @@ open Myriad.Plugins
 module CardTypes =
     /// A card identified by as few properties as possible
     [<Generator.Fields("core")>]
-    [<Generator.Lenses("core", "Lens")>]
+    [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type Card =
         { foil: bool
           language: Language
@@ -15,12 +15,12 @@ module CardTypes =
 
     /// A card entry, which is used to condense multiple cards into one card object and an amount
     [<Generator.Fields("core")>]
-    [<Generator.Lenses("core", "Lens")>]
+    [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type Entry = { amount: uint; card: Card }
 
     /// Additional info for a card
     [<Generator.Fields("core")>]
-    [<Generator.Lenses("core", "Lens")>]
+    [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type CardInfo =
         { name: string
           set: MagicSet

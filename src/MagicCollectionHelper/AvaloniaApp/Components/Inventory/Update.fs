@@ -1,6 +1,7 @@
 module MagicCollectionHelper.AvaloniaApp.Components.Inventory.Update
 
 open Elmish
+open SimpleOptics
 
 open MagicCollectionHelper.Core
 
@@ -21,7 +22,7 @@ let perform
     | AsyncError error -> raise error
     | ChangeState map -> map state, Cmd.none
     | TakeInventory ->
-        let state = state |> (StateLenses.viewMode .-> Loading)
+        let state = state |> (Optic.set StateLenses.viewMode Loading)
 
         let fnc () =
             Inventory.takeAsync setData infoMap state.locations entries
@@ -74,8 +75,7 @@ let perform
             tree
             |> HungTree.mapKey (List.singleton)
             |> shrinkTreeHelper
-            |> HungTree.mapKey
-                (function
+            |> HungTree.mapKey (function
                 | [] -> failwith "Namelist was empty!"
                 | [ name ] -> name
                 // List is in reverse order, we merge the names
@@ -84,101 +84,97 @@ let perform
         // Sort and group inventory
         let grouped =
             inventory
-            |> List.map
-                (fun (location, entries) ->
-                    let cards =
-                        entries
-                        |> List.choose
-                            (fun agedEntry ->
-                                let entry = agedEntry.data
+            |> List.map (fun (location, entries) ->
+                let cards =
+                    entries
+                    |> List.choose (fun agedEntry ->
+                        let entry = agedEntry.data
 
-                                Map.tryFind (entry.card.set, entry.card.number) infoMap
-                                |> Option.map (fun cardInfo -> AgedEntryWithInfo.create cardInfo agedEntry))
+                        Map.tryFind (entry.card.set, entry.card.number) infoMap
+                        |> Option.map (fun cardInfo -> AgedEntryWithInfo.create cardInfo agedEntry))
 
-                    (location, cards))
-            |> List.choose
-                (fun (location, entries) ->
-                    let groupBy nameOffset sortBy entries =
-                        entries
-                        |> List.groupBy
-                            (fun (entry: AgedEntryWithInfo) ->
-                                if nameOffset > 0 then
-                                    (entry ^. AgedEntryWithInfoLenses.name)
-                                        .Substring(0, nameOffset + 1)
+                (location, cards))
+            |> List.choose (fun (location, entries) ->
+                let groupBy nameOffset sortBy entries =
+                    entries
+                    |> List.groupBy (fun (entry: AgedEntryWithInfo) ->
+                        if nameOffset > 0 then
+                            (entry ^. AgedEntryWithInfoLenses.name)
+                                .Substring(0, nameOffset + 1)
+                        else
+                            match sortBy with
+                            | ByCmc ->
+                                entry ^. AgedEntryWithInfoLenses.cmc
+                                |> sprintf "CmC %i"
+                            | BySet ->
+                                entry ^. AgedEntryWithInfoLenses.set
+                                |> MagicSet.unwrap
+                                |> sprintf "Set %s"
+                            | ByColorIdentity ->
+                                entry ^. AgedEntryWithInfoLenses.colorIdentity
+                                |> ColorIdentity.toString
+                            | ByName ->
+                                (entry ^. AgedEntryWithInfoLenses.name)
+                                    .Substring(0, 1)
+                            | ByCollectorNumber ->
+                                entry ^. AgedEntryWithInfoLenses.number
+                                |> CollectorNumber.unwrap
+                            | ByLanguage langList ->
+                                let language = entry ^. AgedEntryWithInfoLenses.language
+
+                                if List.contains language langList then
+                                    Language.unwrap language
                                 else
-                                    match sortBy with
-                                    | ByCmc ->
-                                        entry ^. AgedEntryWithInfoLenses.cmc
-                                        |> sprintf "CmC %i"
-                                    | BySet ->
-                                        entry ^. AgedEntryWithInfoLenses.set
-                                        |> MagicSet.unwrap
-                                        |> sprintf "Set %s"
-                                    | ByColorIdentity ->
-                                        entry ^. AgedEntryWithInfoLenses.colorIdentity
-                                        |> ColorIdentity.toString
-                                    | ByName ->
-                                        (entry ^. AgedEntryWithInfoLenses.name)
-                                            .Substring(0, 1)
-                                    | ByCollectorNumber ->
-                                        entry ^. AgedEntryWithInfoLenses.number
-                                        |> CollectorNumber.unwrap
-                                    | ByLanguage langList ->
-                                        let language = entry ^. AgedEntryWithInfoLenses.language
+                                    "Other"
+                            | ByRarity rarities ->
+                                let rarity = entry ^. AgedEntryWithInfoLenses.rarity
 
-                                        if List.contains language langList then
-                                            Language.unwrap language
-                                        else
-                                            "Other"
-                                    | ByRarity rarities ->
-                                        let rarity = entry ^. AgedEntryWithInfoLenses.rarity
+                                List.tryFind (Set.contains rarity) rarities
+                                |> function
+                                    | Some set ->
+                                        set
+                                        |> Set.map Rarity.toString
+                                        |> Set.toSeq
+                                        |> String.concat " / "
+                                    | None -> "Other"
+                            | ByTypeContains types ->
+                                let typeLine = entry ^. AgedEntryWithInfoLenses.typeLine
 
-                                        List.tryFind (Set.contains rarity) rarities
-                                        |> function
-                                            | Some set ->
-                                                set
-                                                |> Set.map Rarity.toString
-                                                |> Set.toSeq
-                                                |> String.concat " / "
-                                            | None -> "Other"
-                                    | ByTypeContains types ->
-                                        let typeLine = entry ^. AgedEntryWithInfoLenses.typeLine
+                                List.tryFind (fun (typ: string) -> typeLine.Contains typ) types
+                                |> Option.defaultValue "Other")
 
-                                        List.tryFind (fun (typ: string) -> typeLine.Contains typ) types
-                                        |> Option.defaultValue "Other")
+                let rec createTree nameOffset sortBy entries =
+                    // Check conditions for the recursive call
+                    let createTree lastSortBy sortBy entries =
+                        // Some groupings are only using part of the sorting information
+                        // therefore after them you can't group further without destroying order
+                        match lastSortBy with
+                        | ByName -> createTree (nameOffset + 1) sortBy entries
+                        | _ -> createTree nameOffset sortBy entries
 
-                    let rec createTree nameOffset sortBy entries =
-                        // Check conditions for the recursive call
-                        let createTree lastSortBy sortBy entries =
-                            // Some groupings are only using part of the sorting information
-                            // therefore after them you can't group further without destroying order
-                            match lastSortBy with
-                            | ByName -> createTree (nameOffset + 1) sortBy entries
-                            | _ -> createTree nameOffset sortBy entries
+                    match sortBy, entries with
+                    // The list is so small that further grouping has no benefit
+                    | _, entries when List.length entries <= maxSize -> Leaf entries
+                    // We have nothing more to group by
+                    | [], _ -> Leaf entries
+                    | sortBy :: tail, entries ->
+                        // We try to group some more
+                        let groups = groupBy nameOffset sortBy entries
 
-                        match sortBy, entries with
-                        // The list is so small that further grouping has no benefit
-                        | _, entries when List.length entries <= maxSize -> Leaf entries
-                        // We have nothing more to group by
-                        | [], _ -> Leaf entries
-                        | sortBy :: tail, entries ->
-                            // We try to group some more
-                            let groups = groupBy nameOffset sortBy entries
+                        match groups with
+                        // With just one group, grouping makes no sense
+                        | [ (_, entries) ] -> createTree sortBy tail entries
+                        | groups ->
+                            groups
+                            |> List.map (Tuple2.mapSnd (createTree sortBy tail))
+                            |> Nodes
 
-                            match groups with
-                            // With just one group, grouping makes no sense
-                            | [ (_, entries) ] -> createTree sortBy tail entries
-                            | groups ->
-                                groups
-                                |> List.map (Tuple2.mapSnd (createTree sortBy tail))
-                                |> Nodes
+                let sortBy =
+                    match location with
+                    | Fallback -> []
+                    | Custom location -> location.sortBy
 
-                    let sortBy =
-                        match location with
-                        | Fallback -> []
-                        | Custom location -> location.sortBy
-
-                    (location, createTree 0 sortBy entries) |> Some)
+                (location, createTree 0 sortBy entries) |> Some)
             // We shrink the tree and merge small groups of cards
             |> List.map (Tuple2.mapSnd (shrinkTree))
 
@@ -190,39 +186,38 @@ let perform
 
         let state =
             state
-            |> (StateLenses.filteredInventory .-> grouped)
-            |> (StateLenses.viewMode .-> viewMode)
+            |> (Optic.set StateLenses.filteredInventory grouped)
+            |> (Optic.set StateLenses.viewMode viewMode)
 
         (state, Cmd.none)
     | SaveInventory inventory ->
-        let state = state |> setl StateLenses.inventory inventory
+        let state = state |> Optic.set StateLenses.inventory inventory
 
         (state, Cmd.ofMsg (FilterInventory inventory))
     | ChangeLocation location ->
         let state =
             state
-            |> setl StateLenses.viewMode (Some location |> Location)
+            |> Optic.set StateLenses.viewMode (Some location |> Location)
 
         state, Cmd.none
     | OpenLocationEdit ->
-        let state = state |> setl StateLenses.viewMode Edit
+        let state = state |> Optic.set StateLenses.viewMode Edit
 
         (state, Cmd.none)
     | CloseLocationEdit ->
-        let state = state |> setl StateLenses.viewMode (Location None)
+        let state =
+            state
+            |> Optic.set StateLenses.viewMode (Location None)
 
         (state, Cmd.none)
     | UpdateLocationRules (locationName, rulesMutation) ->
         let mutateRules location =
-            getl CustomLocationLenses.rules location
-            |> rulesMutation
-            |> setlr CustomLocationLenses.rules location
+            Optic.map CustomLocationLenses.rules rulesMutation location
 
         let state =
             state
-            |> getl StateLenses.locations
             // TODO: Update rules of location
-            //|> Map.change locationName (Option.map mutateRules)
-            |> setlr StateLenses.locations state
+            // (Map.change locationName (Option.map mutateRules))
+            |> Optic.map StateLenses.locations id
 
         (state, Cmd.none)

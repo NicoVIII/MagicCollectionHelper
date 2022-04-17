@@ -8,7 +8,7 @@ type Loadable<'a> =
     | Import
     | Ready of 'a
 
-[<Generator.Lenses("main.loading", "MagicCollectionHelper.Core.Lens")>]
+[<Generator.Lenses("main.loading", "SimpleOptics.Lens")>]
 type State =
     { cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
       dsEntries: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>

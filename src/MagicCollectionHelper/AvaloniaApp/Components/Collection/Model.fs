@@ -4,7 +4,7 @@ open Myriad.Plugins
 
 open MagicCollectionHelper.Core
 
-[<Generator.Lenses("components-collection", "MagicCollectionHelper.Core.Lens")>]
+[<Generator.Lenses("components-collection", "SimpleOptics.Lens")>]
 type State =
     { loadInProgress: bool
       pageSize: int

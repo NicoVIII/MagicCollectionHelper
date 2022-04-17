@@ -15,6 +15,7 @@ nuget Myriad.Plugins
 nuget Newtonsoft.Json
 nuget NicoVIII.Dozenalize
 nuget NicoVIII.Seximalize
+nuget NicoVIII.SimpleOptics
 nuget SchlenkR.FsHttp
 
 nuget Expecto.FsCheck >= 9.0

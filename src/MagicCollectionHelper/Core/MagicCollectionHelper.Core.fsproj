@@ -8,7 +8,6 @@
     <Compile Include="String.fs" />
 
     <!-- Types -->
-    <Compile Include="Types/Lenses.fs" />
     <Compile Include="Types/CardPart.fs" />
     <Compile Include="Types/CardPart.Generated.fs">
       <MyriadFile>Types/CardPart.fs</MyriadFile>

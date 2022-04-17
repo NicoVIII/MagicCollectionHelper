@@ -9,7 +9,7 @@ type ViewMode =
     | Inventory
     | Preferences
 
-[<Generator.Lenses("main.ready", "MagicCollectionHelper.Core.Lens")>]
+[<Generator.Lenses("main.ready", "SimpleOptics.Lens")>]
 type CommonState =
     { analyseText: string
       cardInfo: MagicCollectionHelper.Core.CardTypes.CardInfoMap
@@ -19,7 +19,7 @@ type CommonState =
       setData: MagicCollectionHelper.Core.DomainTypes.SetDataMap
       viewMode: ViewMode }
 
-[<Generator.Lenses("main.ready", "MagicCollectionHelper.Core.Lens")>]
+[<Generator.Lenses("main.ready", "SimpleOptics.Lens")>]
 type State =
     { common: CommonState
       collection: MagicCollectionHelper.AvaloniaApp.Components.Collection.State

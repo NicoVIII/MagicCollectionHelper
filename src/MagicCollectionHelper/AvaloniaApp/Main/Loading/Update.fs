@@ -1,6 +1,7 @@
 namespace MagicCollectionHelper.AvaloniaApp.Main.Loading
 
 open Elmish
+open SimpleOptics
 
 open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Import
@@ -23,17 +24,17 @@ module Update =
         | PrepareCardInfo ->
             CardData.prepareImportFile ()
             |> function
-            | FileExists path -> state, Cmd.ofMsg (ImportCardInfo path), DoNothing
-            | DownloadFile job ->
-                let state = state |> setl StateLenses.cardInfo Download
+                | FileExists path -> state, Cmd.ofMsg (ImportCardInfo path), DoNothing
+                | DownloadFile job ->
+                    let state = state |> Optic.set StateLenses.cardInfo Download
 
-                let fnc () = job
+                    let fnc () = job
 
-                let cmd = Cmd.OfAsync.either fnc () ImportCardInfo AsyncError
+                    let cmd = Cmd.OfAsync.either fnc () ImportCardInfo AsyncError
 
-                state, cmd, DoNothing
+                    state, cmd, DoNothing
         | ImportCardInfo filePath ->
-            let state = state |> setl StateLenses.cardInfo Import
+            let state = state |> Optic.set StateLenses.cardInfo Import
 
             let fnc () = CardData.importFile filePath
 
@@ -41,23 +42,25 @@ module Update =
 
             state, cmd, DoNothing
         | SaveCardInfo import ->
-            let state = state |> setl StateLenses.cardInfo (Ready import)
+            let state =
+                state
+                |> Optic.set StateLenses.cardInfo (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | PrepareSetData ->
             SetData.prepareImportFile ()
             |> function
-            | FileExists path -> state, Cmd.ofMsg (ImportSetData path), DoNothing
-            | DownloadFile job ->
-                let state = state |> setl StateLenses.setData Download
+                | FileExists path -> state, Cmd.ofMsg (ImportSetData path), DoNothing
+                | DownloadFile job ->
+                    let state = state |> Optic.set StateLenses.setData Download
 
-                let fnc () = job
+                    let fnc () = job
 
-                let cmd = Cmd.OfAsync.either fnc () ImportSetData AsyncError
+                    let cmd = Cmd.OfAsync.either fnc () ImportSetData AsyncError
 
-                state, cmd, DoNothing
+                    state, cmd, DoNothing
         | ImportSetData filePath ->
-            let state = state |> setl StateLenses.setData Import
+            let state = state |> Optic.set StateLenses.setData Import
 
             let fnc () = SetData.importFile filePath
 
@@ -65,7 +68,9 @@ module Update =
 
             state, cmd, DoNothing
         | SaveSetData import ->
-            let state = state |> setl StateLenses.setData (Ready import)
+            let state =
+                state
+                |> Optic.set StateLenses.setData (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | LoadCollection ->
@@ -76,14 +81,12 @@ module Update =
             state, cmd, DoNothing
         | SaveCollection collection ->
             let state =
-                collection
-                |> Option.defaultValue []
-                |> Ready
-                |> setlr StateLenses.dsEntries state
+                let value = collection |> Option.defaultValue [] |> Ready
+                Optic.set StateLenses.dsEntries value state
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | CalcEntries (cardInfo, entries) ->
-            let state = state |> setl StateLenses.entries Import
+            let state = state |> Optic.set StateLenses.entries Import
 
             let fnc () =
                 DeckStatsCardEntry.listToEntriesAsync cardInfo entries
@@ -92,7 +95,7 @@ module Update =
 
             state, cmd, DoNothing
         | SaveEntries entries ->
-            let state = state |> setl StateLenses.entries (Ready entries)
+            let state = Optic.set StateLenses.entries (Ready entries) state
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | CheckLoadingState ->
