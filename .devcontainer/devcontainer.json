@@ -27,6 +27,7 @@
         "gruntfuggly.todo-tree",
         "ms-dotnettools.csharp",
         "ionide.ionide-fsharp",
+        "Github.copilot",
     ],
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     "forwardPorts": [
