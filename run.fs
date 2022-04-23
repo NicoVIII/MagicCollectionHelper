@@ -38,7 +38,7 @@ module Task =
 
     let setupTestdata () =
         if not (RuntimeInformation.IsOSPlatform OSPlatform.Linux) then
-            Error(3, [ "Setup-testdata is only supported on linux!" ])
+            Job.error 3 [ "Setup-testdata is only supported on linux!" ]
         else
             // Move workspace files
             Path.Combine(Config.dataFolder, "workspace")
@@ -57,7 +57,7 @@ module Task =
                 )
             )
 
-            Ok
+            Job.ok
 
     let publish () =
         Shell.rm Config.packPath
@@ -107,9 +107,6 @@ let main args =
             }
         | [ "setup-testdata" ] -> Task.setupTestdata ()
         | _ ->
-            let msg =
-                [ "Usage: dotnet run [<command>]"
-                  "Look up available commands in run.fs" ]
-
-            Error(1, msg)
-    |> ProcessResult.wrapUp
+            Job.error 1 [ "Usage: dotnet run [<command>]"
+                          "Look up available commands in run.fs" ]
+    |> Job.execute
