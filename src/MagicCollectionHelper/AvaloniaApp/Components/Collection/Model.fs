@@ -1,10 +1,7 @@
 namespace MagicCollectionHelper.AvaloniaApp.Components.Collection
 
-open Myriad.Plugins
-
 open MagicCollectionHelper.Core
 
-[<Generator.Lenses("components-collection", "SimpleOptics.Lens")>]
 type State =
     {
         loadInProgress: bool
@@ -12,7 +9,6 @@ type State =
         pageOffset: int
     }
 
-[<Generator.DuCases("components-collection")>]
 type Msg =
     | ImportCollection
     | WriteCollection of DeckStatsCardEntry seq option

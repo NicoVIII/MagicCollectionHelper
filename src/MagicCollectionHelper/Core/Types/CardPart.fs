@@ -1,7 +1,5 @@
 namespace MagicCollectionHelper.Core
 
-open Myriad.Plugins
-
 [<AutoOpen>]
 module CardPartTypes =
     /// All colors which are important in Magic
@@ -23,7 +21,6 @@ module CardPartTypes =
 
     type ColorIdentity = Set<Color>
 
-    [<Generator.DuCases("core")>]
     type Rarity =
         | Common
         | Uncommon

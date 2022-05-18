@@ -1,8 +1,0 @@
-["core"]
-namespace = "MagicCollectionHelper.Core"
-
-["types"]
-namespace = "MagicCollectionHelper.Core.Types"
-
-["dus"]
-namespace = "MagicCollectionHelper.Core.Types.DUs"

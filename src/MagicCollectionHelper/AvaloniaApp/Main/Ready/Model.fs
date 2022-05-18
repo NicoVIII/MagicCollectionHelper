@@ -1,6 +1,5 @@
 namespace MagicCollectionHelper.AvaloniaApp.Main.Ready
 
-open Myriad.Plugins
 open System
 
 type ViewMode =
@@ -9,7 +8,6 @@ type ViewMode =
     | Inventory
     | Preferences
 
-[<Generator.Lenses("main.ready", "SimpleOptics.Lens")>]
 type CommonState =
     {
         analyseText: string
@@ -21,7 +19,6 @@ type CommonState =
         viewMode: ViewMode
     }
 
-[<Generator.Lenses("main.ready", "SimpleOptics.Lens")>]
 type State =
     {
         common: CommonState
@@ -34,7 +31,6 @@ open MagicCollectionHelper.Core
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components
 
-[<Generator.DuCases("main.ready")>]
 type Msg =
     | AsyncError of exn
     | Analyse
@@ -48,10 +44,6 @@ type Msg =
 type Dispatch = Msg -> unit
 
 module Model =
-    open Elmish
-
-    open MagicCollectionHelper.Core
-
     let arrow =
         [
             "     ."

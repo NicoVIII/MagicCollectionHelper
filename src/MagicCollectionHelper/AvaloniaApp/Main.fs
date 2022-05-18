@@ -2,13 +2,11 @@ namespace MagicCollectionHelper.AvaloniaApp.Main
 
 open Avalonia.FuncUI.Types
 open Elmish
-open Myriad.Plugins
 
 type State =
     | Loading of Loading.State
     | Ready of Ready.State
 
-[<Generator.DuCases("main")>]
 type Msg =
     | LoadingMsg of Loading.Msg
     | ReadyMsg of Ready.Msg

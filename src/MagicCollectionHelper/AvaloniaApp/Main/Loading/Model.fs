@@ -1,14 +1,11 @@
 namespace MagicCollectionHelper.AvaloniaApp.Main.Loading
 
-open Myriad.Plugins
-
 type Loadable<'a> =
     | Prepare
     | Download
     | Import
     | Ready of 'a
 
-[<Generator.Lenses("main.loading", "SimpleOptics.Lens")>]
 type State =
     {
         cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
@@ -21,7 +18,6 @@ open Elmish
 
 open MagicCollectionHelper.Core
 
-[<Generator.DuCases("main.loading")>]
 type Msg =
     | AsyncError of exn
     | StartUp

@@ -9,9 +9,6 @@ nuget Avalonia.Diagnostics
 nuget Elmish
 nuget JaggerJo.Avalonia.FuncUI.DSL
 nuget JaggerJo.Avalonia.FuncUI.Elmish
-nuget Myriad.Core
-nuget Myriad.Sdk
-nuget Myriad.Plugins
 nuget Newtonsoft.Json
 nuget NicoVIII.Dozenalize
 nuget NicoVIII.Seximalize

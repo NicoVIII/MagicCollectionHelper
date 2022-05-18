@@ -1,18 +1,13 @@
 namespace MagicCollectionHelper.Core
 
-open Myriad.Plugins
-
 [<AutoOpen>]
 module DomainTypes =
-    [<Generator.DuCases("core")>]
     type NumBase =
         | Decimal
         | Dozenal
         | Seximal
 
     /// Type which holds user preferences so the user can customize some behaviors
-    [<Generator.Lenses("core", "SimpleOptics.Lens")>]
-    [<Generator.Fields("core")>]
     type Prefs =
         {
             cardGroupMinSize: uint
@@ -81,7 +76,6 @@ module DomainTypes =
             colorIdentity: Set<ColorIdentity> option
         }
 
-    [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type CustomLocation =
         {
             name: CustomLocationName
