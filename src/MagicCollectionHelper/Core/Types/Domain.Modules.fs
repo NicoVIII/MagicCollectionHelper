@@ -4,6 +4,15 @@ open SimpleOptics
 
 [<AutoOpen>]
 module DomainTypesModules =
+    [<RequireQualifiedAccess>]
+    module NumBase =
+        let toString (numBase: NumBase) =
+            match numBase with
+            | Decimal -> "Decimal"
+            | Dozenal -> "Dozenal"
+            | Seximal -> "Seximal"
+
+    [<RequireQualifiedAccess>]
     module DeckStatsCardEntry =
         let toEntry cardInfoMap (entry: DeckStatsCardEntry) =
             match entry.set, entry.number, entry.language with
@@ -54,6 +63,7 @@ module DomainTypesModules =
         let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =
             async { return listToEntries cardInfoMap entries }
 
+    [<RequireQualifiedAccess>]
     module Analyser =
         let create emptyData collect postprocess print =
             {
@@ -63,6 +73,18 @@ module DomainTypesModules =
                 print = print
             }
 
+    [<RequireQualifiedAccess>]
+    module Prefs =
+        let create cardGroupMinSize cardGroupMaxSize numBase missingPercent setWithFoils : Prefs =
+            {
+                cardGroupMinSize = cardGroupMinSize
+                cardGroupMaxSize = cardGroupMaxSize
+                numBase = numBase
+                missingPercent = missingPercent
+                setWithFoils = setWithFoils
+            }
+
+    [<RequireQualifiedAccess>]
     module Rules =
         let empty =
             {

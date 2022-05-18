@@ -34,8 +34,6 @@ type Msg =
 type Dispatch = Msg -> unit
 
 module Model =
-    open MagicCollectionHelper.Core
-
     let init () : State =
         // Test Locations
         let locations =

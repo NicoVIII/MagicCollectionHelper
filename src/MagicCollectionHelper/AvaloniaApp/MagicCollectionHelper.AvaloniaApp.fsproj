@@ -13,9 +13,7 @@
 
     <!-- Types -->
     <Compile Include="Types/Types.fs" />
-    <Compile Include="Types/Types.Generated.fs">
-      <MyriadFile>Types/Types.fs</MyriadFile>
-    </Compile>
+    <Compile Include="Types/Types.Lenses.fs" />
     <Compile Include="Types/Types.Modules.fs" />
 
     <Compile Include="ViewHelper.fs" />
@@ -25,45 +23,33 @@
 
     <!-- Collection component -->
     <Compile Include="Components/Collection/Model.fs" />
-    <Compile Include="Components/Collection/Model.Generated.fs">
-      <MyriadFile>Components/Collection/Model.fs</MyriadFile>
-    </Compile>
+    <Compile Include="Components/Collection/Model.Lenses.fs" />
     <Compile Include="Components/Collection/ViewComponents/*.fs" />
     <Compile Include="Components/Collection/View.fs" />
     <Compile Include="Components/Collection/Update.fs" />
 
     <!-- Inventory component -->
     <Compile Include="Components/Inventory/Model.fs" />
-    <Compile Include="Components/Inventory/Model.Generated.fs">
-      <MyriadFile>Components/Inventory/Model.fs</MyriadFile>
-    </Compile>
+    <Compile Include="Components/Inventory/Model.Lenses.fs" />
     <Compile Include="Components/Inventory/ViewComponents/*.fs" />
     <Compile Include="Components/Inventory/View.fs" />
     <Compile Include="Components/Inventory/Update.fs" />
 
     <!-- Mainview Loading -->
     <Compile Include="Main/Loading/Model.fs" />
-    <Compile Include="Main/Loading/Model.Generated.fs">
-      <MyriadFile>Main/Loading/Model.fs</MyriadFile>
-    </Compile>
+    <Compile Include="Main/Loading/Model.Lenses.fs" />
     <Compile Include="Main/Loading/ViewComponents/*.fs" />
     <Compile Include="Main/Loading/View.fs" />
     <Compile Include="Main/Loading/Update.fs" />
 
     <!-- Mainview Ready -->
     <Compile Include="Main/Ready/Model.fs" />
-    <Compile Include="Main/Ready/Model.Generated.fs">
-      <MyriadFile>Main/Ready/Model.fs</MyriadFile>
-    </Compile>
     <Compile Include="Main/Ready/Model.Lenses.fs" />
     <Compile Include="Main/Ready/ViewComponents/*.fs" />
     <Compile Include="Main/Ready/View.fs" />
     <Compile Include="Main/Ready/Update.fs" />
 
     <Compile Include="Main.fs" />
-    <Compile Include="Main.Generated.fs">
-      <MyriadFile>Main.fs</MyriadFile>
-    </Compile>
 
     <Compile Include="Program.fs" />
   </ItemGroup>

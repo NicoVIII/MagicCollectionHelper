@@ -2,9 +2,11 @@ namespace MagicCollectionHelper.Core
 
 [<AutoOpen>]
 module CardPartTypesModules =
+    [<RequireQualifiedAccess>]
     module Language =
         let unwrap (Language l) = l
 
+    [<RequireQualifiedAccess>]
     module CollectorNumber =
         let fromString (s: string) =
             // We remove trailing zeros from the string
@@ -12,6 +14,28 @@ module CardPartTypesModules =
 
         let unwrap (CollectorNumber n) = n
 
+    [<RequireQualifiedAccess>]
+    module Rarity =
+        let fromString (x: string) =
+            match x with
+            | "Common" -> Some Common
+            | "Uncommon" -> Some Uncommon
+            | "Rare" -> Some Rare
+            | "Mythic" -> Some Mythic
+            | "Special" -> Some Special
+            | "Bonus" -> Some Bonus
+            | _ -> None
+
+        let toString (x: Rarity) =
+            match x with
+            | Common -> "Common"
+            | Uncommon -> "Uncommon"
+            | Rare -> "Rare"
+            | Mythic -> "Mythic"
+            | Special -> "Special"
+            | Bonus -> "Bonus"
+
+    [<RequireQualifiedAccess>]
     module MagicSet =
         /// Converts some old two letter set abbreviations to the new three letter counterpart
         /// New abbreviatens taken from https://mtg.gamepedia.com/Set#List_of_Magic_expansions_and_sets
@@ -67,6 +91,7 @@ module CardPartTypesModules =
 
         let unwrap (MagicSet v) = v
 
+    [<RequireQualifiedAccess>]
     module ColorIdentity =
         let colorless = Set.empty
 

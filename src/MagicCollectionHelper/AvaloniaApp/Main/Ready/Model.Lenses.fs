@@ -2,23 +2,50 @@ namespace MagicCollectionHelper.AvaloniaApp.Main.Ready
 
 open SimpleOptics
 
-open MagicCollectionHelper.AvaloniaApp.Main.Ready.Generated
+[<RequireQualifiedAccess>]
+module CommonStateLenses =
+    let analyseText =
+        Lens((fun (state: CommonState) -> state.analyseText), (fun state value -> { state with analyseText = value }))
 
+    let cardInfo =
+        Lens((fun (state: CommonState) -> state.cardInfo), (fun state value -> { state with cardInfo = value }))
+
+    let dsEntries =
+        Lens((fun (state: CommonState) -> state.dsEntries), (fun state value -> { state with dsEntries = value }))
+
+    let entries =
+        Lens((fun (state: CommonState) -> state.entries), (fun state value -> { state with entries = value }))
+
+    let prefs =
+        Lens((fun (state: CommonState) -> state.prefs), (fun state value -> { state with prefs = value }))
+
+    let setData =
+        Lens((fun (state: CommonState) -> state.setData), (fun state value -> { state with setData = value }))
+
+    let viewMode =
+        Lens((fun (state: CommonState) -> state.viewMode), (fun state value -> { state with viewMode = value }))
+
+[<RequireQualifiedAccess>]
 module StateLenses =
-    let analyseText = Optic.compose StateLenses.common CommonStateLenses.analyseText
+    let common =
+        Lens((fun (state: State) -> state.common), (fun (state: State) value -> { state with common = value }))
 
-    let cardInfo = Optic.compose StateLenses.common CommonStateLenses.cardInfo
+    let collection =
+        Lens((fun (state: State) -> state.collection), (fun (state: State) value -> { state with collection = value }))
 
-    let collection = StateLenses.collection
+    let inventory =
+        Lens((fun (state: State) -> state.inventory), (fun (state: State) value -> { state with inventory = value }))
 
-    let dsEntries = Optic.compose StateLenses.common CommonStateLenses.dsEntries
+    let analyseText = Optic.compose common CommonStateLenses.analyseText
 
-    let entries = Optic.compose StateLenses.common CommonStateLenses.entries
+    let cardInfo = Optic.compose common CommonStateLenses.cardInfo
 
-    let prefs = Optic.compose StateLenses.common CommonStateLenses.prefs
+    let dsEntries = Optic.compose common CommonStateLenses.dsEntries
 
-    let setData = Optic.compose StateLenses.common CommonStateLenses.setData
+    let entries = Optic.compose common CommonStateLenses.entries
 
-    let inventory = StateLenses.inventory
+    let prefs = Optic.compose common CommonStateLenses.prefs
 
-    let viewMode = Optic.compose StateLenses.common CommonStateLenses.viewMode
+    let setData = Optic.compose common CommonStateLenses.setData
+
+    let viewMode = Optic.compose common CommonStateLenses.viewMode

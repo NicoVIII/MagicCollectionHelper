@@ -6,8 +6,6 @@ open SimpleOptics
 open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Import
 
-open MagicCollectionHelper.AvaloniaApp.Main.Loading.Generated
-
 module Update =
     let perform msg state =
         match msg with

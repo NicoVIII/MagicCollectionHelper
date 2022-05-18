@@ -5,9 +5,7 @@ open SimpleOptics
 
 open MagicCollectionHelper.Core
 
-open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
-open MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 let perform

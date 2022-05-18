@@ -11,7 +11,6 @@ open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
-open MagicCollectionHelper.AvaloniaApp.Components.Inventory.Generated
 
 module SearchBar =
     let searchText search dispatch =

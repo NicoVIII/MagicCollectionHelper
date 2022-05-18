@@ -4,11 +4,55 @@ open SimpleOptics
 
 [<AutoOpen>]
 module CardTypesLenses =
+    module CardLenses =
+        let foil =
+            Lens((fun (card: Card) -> card.foil), (fun card value -> { card with foil = value }))
+
+        let language =
+            Lens((fun (card: Card) -> card.language), (fun card value -> { card with language = value }))
+
+        let number =
+            Lens((fun (card: Card) -> card.number), (fun card value -> { card with number = value }))
+
+        let set =
+            Lens((fun (card: Card) -> card.set), (fun card value -> { card with set = value }))
+
+    module CardInfoLenses =
+        let cmc =
+            Lens((fun (cardInfo: CardInfo) -> cardInfo.cmc), (fun cardInfo value -> { cardInfo with cmc = value }))
+
+        let colorIdentity =
+            Lens(
+                (fun (cardInfo: CardInfo) -> cardInfo.colorIdentity),
+                (fun cardInfo value -> { cardInfo with colorIdentity = value })
+            )
+
+        let name =
+            Lens((fun (cardInfo: CardInfo) -> cardInfo.name), (fun cardInfo value -> { cardInfo with name = value }))
+
+        let rarity =
+            Lens(
+                (fun (cardInfo: CardInfo) -> cardInfo.rarity),
+                (fun cardInfo value -> { cardInfo with rarity = value })
+            )
+
+        let typeLine =
+            Lens(
+                (fun (cardInfo: CardInfo) -> cardInfo.typeLine),
+                (fun cardInfo value -> { cardInfo with typeLine = value })
+            )
+
     module EntryLenses =
-        let foil = Optic.compose EntryLenses.card CardLenses.foil
-        let language = Optic.compose EntryLenses.card CardLenses.language
-        let number = Optic.compose EntryLenses.card CardLenses.number
-        let set = Optic.compose EntryLenses.card CardLenses.set
+        let amount =
+            Lens((fun (entry: Entry) -> entry.amount), (fun entry value -> { entry with amount = value }))
+
+        let card =
+            Lens((fun entry -> entry.card), (fun entry value -> { entry with card = value }))
+
+        let foil = Optic.compose card CardLenses.foil
+        let language = Optic.compose card CardLenses.language
+        let number = Optic.compose card CardLenses.number
+        let set = Optic.compose card CardLenses.set
 
     module OldableLenses =
         let old =

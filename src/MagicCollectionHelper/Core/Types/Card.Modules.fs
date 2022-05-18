@@ -4,7 +4,16 @@ open SimpleOptics
 
 [<AutoOpen>]
 module CardTypesModules =
+    [<RequireQualifiedAccess>]
     module Card =
+        let create foil language number set =
+            {
+                foil = foil
+                language = language
+                number = number
+                set = set
+            }
+
         let isExactSame (card1: Card) (card2: Card) =
             card1 ^. CardLenses.set = card2 ^. CardLenses.set
             && card1 ^. CardLenses.number = card2 ^. CardLenses.number
@@ -18,7 +27,10 @@ module CardTypesModules =
             ]
             |> List.forall (fun fnc -> fnc setValue)
 
+    [<RequireQualifiedAccess>]
     module Entry =
+        let create amount card : Entry = { amount = amount; card = card }
+
         /// Takes a list of cards and creates entry out of equal cards
         let collapseCardList cardList =
             cardList
@@ -36,18 +48,21 @@ module CardTypesModules =
             |> Map.toList
             |> List.map (fun (card, amount) -> { card = card; amount = amount })
 
+    [<RequireQualifiedAccess>]
     module Oldable =
         let create old data = { old = old; data = data }
 
         let map mapper wrapper =
             create wrapper.old (mapper wrapper.data)
 
+    [<RequireQualifiedAccess>]
     module OldAmountable =
         let create amountOld data : OldAmountable<'a> = { amountOld = amountOld; data = data }
 
         let inline map mapper (wrapper: OldAmountable<'a>) : OldAmountable<'b> =
             create wrapper.amountOld (mapper wrapper.data)
 
+    [<RequireQualifiedAccess>]
     module WithInfo =
         let create info data = { data = data; info = info }
 
@@ -62,6 +77,7 @@ module CardTypesModules =
         let isSame withInfo1 withInfo2 =
             withInfo1.info.oracleId = withInfo2.info.oracleId
 
+    [<RequireQualifiedAccess>]
     module CardWithInfo =
         let create card info : CardWithInfo = { data = card; info = info }
 
@@ -73,15 +89,18 @@ module CardTypesModules =
 
         let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) = Card.isExactSame card1.data card2.data
 
+    [<RequireQualifiedAccess>]
     module EntryWithInfo =
         let create entry info : EntryWithInfo = { data = entry; info = info }
 
         let fromEntry infoMap =
             WithInfo.addInfo infoMap (Optic.get EntryLenses.set) (Optic.get EntryLenses.number)
 
+    [<RequireQualifiedAccess>]
     module AgedCard =
         let create old card : AgedCard = Oldable.create old card
 
+    [<RequireQualifiedAccess>]
     module AgedEntry =
         let create amountOld entry : AgedEntry = OldAmountable.create amountOld entry
 
@@ -101,6 +120,7 @@ module CardTypesModules =
 
                 OldAmountable.create amountOld entry)
 
+    [<RequireQualifiedAccess>]
     module AgedCardWithInfo =
         let create info card : AgedCardWithInfo = WithInfo.create info card
 
@@ -109,6 +129,7 @@ module CardTypesModules =
 
         let removeAge = WithInfo.map (Optic.get AgedCardLenses.card)
 
+    [<RequireQualifiedAccess>]
     module AgedEntryWithInfo =
         let create info entry : AgedEntryWithInfo = WithInfo.create info entry
 

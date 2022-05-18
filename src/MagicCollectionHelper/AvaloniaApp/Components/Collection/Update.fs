@@ -6,7 +6,7 @@ open SimpleOptics
 open MagicCollectionHelper.Core
 open MagicCollectionHelper.Core.Import
 
-open MagicCollectionHelper.AvaloniaApp.Components.Collection.Generated
+open MagicCollectionHelper.AvaloniaApp.Components.Collection
 
 let perform (msg: Msg) (state: State) =
     match msg with

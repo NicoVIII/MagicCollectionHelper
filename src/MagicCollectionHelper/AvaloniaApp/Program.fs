@@ -8,23 +8,9 @@ open Avalonia.FuncUI.Elmish
 open Avalonia.FuncUI.Hosts
 
 open MagicCollectionHelper.AvaloniaApp.Main
-open MagicCollectionHelper.AvaloniaApp.Components
 
 type MainWindow() as this =
     inherit HostWindow()
-
-#if DEBUG
-    let msgToString msg =
-        match msg with
-        | LoadingMsg subMsg -> $"{Generated.Msg.toString msg}-{Loading.Generated.Msg.toString subMsg}"
-        | ReadyMsg subMsg ->
-            let subSubMsgString =
-                match subMsg with
-                | Ready.Msg.InventoryMsg subSubMsg -> $"{Inventory.Generated.Msg.toString subSubMsg}"
-                | _ -> "???"
-
-            $"{Generated.Msg.toString msg}-{Ready.Generated.Msg.toString subMsg}-{subSubMsgString}"
-#endif
 
     do
 #if DEBUG
@@ -37,9 +23,6 @@ type MainWindow() as this =
 
         Program.mkProgram Model.init Update.perform View.render
         |> Program.withHost this
-#if DEBUG
-        |> Program.withTrace (fun msg _ -> printfn "Got message: %s" (msgToString msg))
-#endif
         |> Program.run
 
 type App() =
