@@ -107,10 +107,10 @@ module Card =
         (record': Card)
         =
         { record' with
-              foil = mapfoil record'.foil
-              language = maplanguage record'.language
-              number = mapnumber record'.number
-              set = mapset record'.set }
+            foil = mapfoil record'.foil
+            language = maplanguage record'.language
+            number = mapnumber record'.number
+            set = mapset record'.set }
 namespace rec MagicCollectionHelper.Core
 
 module Entry =
@@ -121,8 +121,8 @@ module Entry =
 
     let map (mapamount: uint -> uint) (mapcard: Card -> Card) (record': Entry) =
         { record' with
-              amount = mapamount record'.amount
-              card = mapcard record'.card }
+            amount = mapamount record'.amount
+            card = mapcard record'.card }
 namespace rec MagicCollectionHelper.Core
 
 module CardInfo =
@@ -171,14 +171,14 @@ module CardInfo =
         (record': CardInfo)
         =
         { record' with
-              name = mapname record'.name
-              set = mapset record'.set
-              collectorNumber = mapcollectorNumber record'.collectorNumber
-              colors = mapcolors record'.colors
-              colorIdentity = mapcolorIdentity record'.colorIdentity
-              oracleId = maporacleId record'.oracleId
-              rarity = maprarity record'.rarity
-              typeLine = maptypeLine record'.typeLine
-              cmc = mapcmc record'.cmc }
+            name = mapname record'.name
+            set = mapset record'.set
+            collectorNumber = mapcollectorNumber record'.collectorNumber
+            colors = mapcolors record'.colors
+            colorIdentity = mapcolorIdentity record'.colorIdentity
+            oracleId = maporacleId record'.oracleId
+            rarity = maprarity record'.rarity
+            typeLine = maptypeLine record'.typeLine
+            cmc = mapcmc record'.cmc }
 
 

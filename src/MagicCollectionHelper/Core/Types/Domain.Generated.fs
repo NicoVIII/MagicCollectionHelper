@@ -91,11 +91,11 @@ module Prefs =
         (record': Prefs)
         =
         { record' with
-              cardGroupMinSize = mapcardGroupMinSize record'.cardGroupMinSize
-              cardGroupMaxSize = mapcardGroupMaxSize record'.cardGroupMaxSize
-              numBase = mapnumBase record'.numBase
-              missingPercent = mapmissingPercent record'.missingPercent
-              setWithFoils = mapsetWithFoils record'.setWithFoils }
+            cardGroupMinSize = mapcardGroupMinSize record'.cardGroupMinSize
+            cardGroupMaxSize = mapcardGroupMaxSize record'.cardGroupMaxSize
+            numBase = mapnumBase record'.numBase
+            missingPercent = mapmissingPercent record'.missingPercent
+            setWithFoils = mapsetWithFoils record'.setWithFoils }
 
 namespace rec MagicCollectionHelper.Core
 

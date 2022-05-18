@@ -23,7 +23,7 @@ module Search =
 
     let map (maptext: string -> string) (mapold: bool option -> bool option) (record': Search) =
         { record' with
-              text = maptext record'.text
-              old = mapold record'.old }
+            text = maptext record'.text
+            old = mapold record'.old }
 
 
