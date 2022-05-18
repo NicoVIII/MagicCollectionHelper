@@ -38,21 +38,21 @@ type LocCards =
     }
 
 let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
-    let amount = entry ^. AgedEntryWithInfoLenses.amount
-    let amountOld = entry ^. AgedEntryWithInfoLenses.amountOld
-    let foil = entry ^. AgedEntryWithInfoLenses.foil
-    let name = entry ^. AgedEntryWithInfoLenses.name
+    let amount = entry ^. AgedEntryWithInfoOptic.amount
+    let amountOld = entry ^. AgedEntryWithInfoOptic.amountOld
+    let foil = entry ^. AgedEntryWithInfoOptic.foil
+    let name = entry ^. AgedEntryWithInfoOptic.name
 
     let langValue =
-        entry ^. AgedEntryWithInfoLenses.language
+        entry ^. AgedEntryWithInfoOptic.language
         |> Language.unwrap
 
     let numberValue =
-        entry ^. AgedEntryWithInfoLenses.number
+        entry ^. AgedEntryWithInfoOptic.number
         |> CollectorNumber.unwrap
 
     let setValue =
-        entry ^. AgedEntryWithInfoLenses.set
+        entry ^. AgedEntryWithInfoOptic.set
         |> MagicSet.unwrap
 
     let star = if foil then "★" else " "

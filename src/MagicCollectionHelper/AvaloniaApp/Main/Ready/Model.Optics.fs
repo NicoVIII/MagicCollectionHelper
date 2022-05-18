@@ -3,7 +3,7 @@ namespace MagicCollectionHelper.AvaloniaApp.Main.Ready
 open SimpleOptics
 
 [<RequireQualifiedAccess>]
-module CommonStateLenses =
+module CommonStateOptic =
     let analyseText =
         Lens((fun (state: CommonState) -> state.analyseText), (fun state value -> { state with analyseText = value }))
 
@@ -26,7 +26,7 @@ module CommonStateLenses =
         Lens((fun (state: CommonState) -> state.viewMode), (fun state value -> { state with viewMode = value }))
 
 [<RequireQualifiedAccess>]
-module StateLenses =
+module StateOptic =
     let common =
         Lens((fun (state: State) -> state.common), (fun (state: State) value -> { state with common = value }))
 
@@ -36,16 +36,16 @@ module StateLenses =
     let inventory =
         Lens((fun (state: State) -> state.inventory), (fun (state: State) value -> { state with inventory = value }))
 
-    let analyseText = Optic.compose common CommonStateLenses.analyseText
+    let analyseText = Optic.compose common CommonStateOptic.analyseText
 
-    let cardInfo = Optic.compose common CommonStateLenses.cardInfo
+    let cardInfo = Optic.compose common CommonStateOptic.cardInfo
 
-    let dsEntries = Optic.compose common CommonStateLenses.dsEntries
+    let dsEntries = Optic.compose common CommonStateOptic.dsEntries
 
-    let entries = Optic.compose common CommonStateLenses.entries
+    let entries = Optic.compose common CommonStateOptic.entries
 
-    let prefs = Optic.compose common CommonStateLenses.prefs
+    let prefs = Optic.compose common CommonStateOptic.prefs
 
-    let setData = Optic.compose common CommonStateLenses.setData
+    let setData = Optic.compose common CommonStateOptic.setData
 
-    let viewMode = Optic.compose common CommonStateLenses.viewMode
+    let viewMode = Optic.compose common CommonStateOptic.viewMode

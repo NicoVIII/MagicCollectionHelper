@@ -3,9 +3,9 @@ namespace MagicCollectionHelper.AvaloniaApp.Components.Collection
 open SimpleOptics
 
 [<AutoOpen>]
-module ModelLenses =
+module ModelOptics =
     [<RequireQualifiedAccess>]
-    module StateLenses =
+    module StateOptic =
         let loadInProgress =
             Lens((fun state -> state.loadInProgress), (fun state value -> { state with loadInProgress = value }))
 

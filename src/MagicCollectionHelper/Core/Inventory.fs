@@ -12,41 +12,41 @@ module Inventory =
             | Some value -> rule value
 
         let fitsInSetRule cardWithInfo rules =
-            let set = cardWithInfo ^. CardWithInfoLenses.set
+            let set = cardWithInfo ^. CardWithInfoOptic.set
             fitsRule rules.inSet (Set.contains set)
 
         let fitsInLanguageRule cardWithInfo rules =
-            let language = cardWithInfo ^. CardWithInfoLenses.language
+            let language = cardWithInfo ^. CardWithInfoOptic.language
 
             fitsRule rules.inLanguage (fun language -> language = language)
 
         let fitsIsFoil cardWithInfo rules =
-            let foil = cardWithInfo ^. CardWithInfoLenses.foil
+            let foil = cardWithInfo ^. CardWithInfoOptic.foil
 
             fitsRule rules.isFoil (fun shouldBeFoil -> shouldBeFoil = foil)
 
         let fitsIsToken cardWithInfo rules =
-            let card = cardWithInfo ^. CardWithInfoLenses.card
+            let card = cardWithInfo ^. CardWithInfoOptic.card
 
             fitsRule rules.isToken (fun shouldBeToken -> shouldBeToken = Card.isToken card)
 
         let fitsTypeContains cardWithInfo rules =
-            let info = cardWithInfo ^. CardWithInfoLenses.info
+            let info = cardWithInfo ^. CardWithInfoOptic.info
 
             fitsRule rules.typeContains (Set.forall info.typeLine.Contains)
 
         let fitsTypeNotContains cardWithInfo rules =
-            let info = cardWithInfo ^. CardWithInfoLenses.info
+            let info = cardWithInfo ^. CardWithInfoOptic.info
 
             fitsRule rules.typeNotContains (Set.forall (info.typeLine.Contains >> not))
 
         let fitsRarity cardWithInfo rules =
-            let rarity = cardWithInfo ^. CardWithInfoLenses.rarity
+            let rarity = cardWithInfo ^. CardWithInfoOptic.rarity
 
             fitsRule rules.rarity (fun rarities -> Set.contains rarity rarities)
 
         let fitsColorIdentity cardWithInfo rules =
-            let colorIdentity = cardWithInfo ^. CardWithInfoLenses.colorIdentity
+            let colorIdentity = cardWithInfo ^. CardWithInfoOptic.colorIdentity
 
             fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains colorIdentity colorIdentities)
 
@@ -100,7 +100,7 @@ module Inventory =
     let fitsInLocation (locCardMap: Map<InventoryLocation, AgedCardWithInfo list>) card location =
         let cardList =
             locCardMap.Item(Custom location)
-            |> List.map (WithInfo.map (Optic.get AgedCardLenses.card))
+            |> List.map (WithInfo.map (Optic.get AgedCardOptic.card))
 
         Rules.fitsAll cardList card location.rules
 
@@ -112,13 +112,13 @@ module Inventory =
         match sortBy with
         | ByColorIdentity ->
             let pos =
-                entryWithInfo ^. EntryWithInfoLenses.colorIdentity
+                entryWithInfo ^. EntryWithInfoOptic.colorIdentity
                 |> ColorIdentity.getPosition
 
             sprintf "%02i" pos
-        | ByName -> entryWithInfo ^. EntryWithInfoLenses.name
+        | ByName -> entryWithInfo ^. EntryWithInfoOptic.name
         | BySet ->
-            let set = entryWithInfo ^. EntryWithInfoLenses.set
+            let set = entryWithInfo ^. EntryWithInfoOptic.set
             let setValue = set |> MagicSet.unwrap
 
             let date =
@@ -134,15 +134,15 @@ module Inventory =
 
             $"{date}{extension}"
         | ByCollectorNumber ->
-            (entryWithInfo ^. EntryWithInfoLenses.number
+            (entryWithInfo ^. EntryWithInfoOptic.number
              |> CollectorNumber.unwrap)
                 .PadLeft(3, '0')
             |> sprintf "%s"
         | ByCmc ->
-            entryWithInfo ^. EntryWithInfoLenses.cmc
+            entryWithInfo ^. EntryWithInfoOptic.cmc
             |> sprintf "%02i"
         | ByTypeContains typeContains ->
-            let typeLine = entryWithInfo ^. EntryWithInfoLenses.typeLine
+            let typeLine = entryWithInfo ^. EntryWithInfoOptic.typeLine
 
             typeContains
             |> List.fold
@@ -156,7 +156,7 @@ module Inventory =
                 (false, "")
             |> snd
         | ByRarity rarities ->
-            let rarity = entryWithInfo ^. EntryWithInfoLenses.rarity
+            let rarity = entryWithInfo ^. EntryWithInfoOptic.rarity
 
             rarities
             |> List.indexed
@@ -168,7 +168,7 @@ module Inventory =
             |> Option.defaultValue (List.length rarities)
             |> string
         | ByLanguage languages ->
-            let language = entryWithInfo ^. EntryWithInfoLenses.language
+            let language = entryWithInfo ^. EntryWithInfoOptic.language
 
             languages
             |> List.indexed
@@ -222,17 +222,17 @@ module Inventory =
             |> List.choose (AgedEntryWithInfo.fromEntry infoMap)
             // TODO: generalize and make configurable
             |> List.sortBy (fun entry ->
-                let foil = entry ^. AgedEntryWithInfoLenses.foil
+                let foil = entry ^. AgedEntryWithInfoOptic.foil
 
                 let language =
-                    entry ^. AgedEntryWithInfoLenses.language
+                    entry ^. AgedEntryWithInfoOptic.language
                     |> Language.unwrap
 
                 let number =
-                    entry ^. AgedEntryWithInfoLenses.number
+                    entry ^. AgedEntryWithInfoOptic.number
                     |> CollectorNumber.unwrap
 
-                let set = entry ^. AgedEntryWithInfoLenses.set
+                let set = entry ^. AgedEntryWithInfoOptic.set
 
                 [ // Language
                     match language with
@@ -252,7 +252,7 @@ module Inventory =
             let getCard old =
                 WithInfo.map
                     (fun agedEntry ->
-                        agedEntry ^. AgedEntryLenses.card
+                        agedEntry ^. AgedEntryOptic.card
                         |> AgedCard.create old)
                     agedEntryWithInfo
 
@@ -288,7 +288,7 @@ module Inventory =
             cardList
             |> AgedEntryWithInfo.fromCardList
             |> sortEntries setData location
-            |> List.map (Optic.get AgedEntryWithInfoLenses.agedEntry))
+            |> List.map (Optic.get AgedEntryWithInfoOptic.agedEntry))
         // If the Fallback is empty, we don't need it
         |> Map.change Fallback (function
             | None

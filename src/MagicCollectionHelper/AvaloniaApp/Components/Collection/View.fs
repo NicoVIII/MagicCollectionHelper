@@ -17,7 +17,7 @@ open MagicCollectionHelper.AvaloniaApp.Components.Collection
 open MagicCollectionHelper.AvaloniaApp.Elements
 
 let buttonBar (state: State) (dispatch: Dispatch) : IView =
-    let loadInProgress = Optic.get StateLenses.loadInProgress state
+    let loadInProgress = Optic.get StateOptic.loadInProgress state
 
     ActionButtonBar.create [
         ActionButton.create
@@ -30,10 +30,10 @@ let buttonBar (state: State) (dispatch: Dispatch) : IView =
     ]
 
 let renderText prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
-    let loadInProgress = Optic.get StateLenses.loadInProgress state
+    let loadInProgress = Optic.get StateOptic.loadInProgress state
 
     let inventoryableAmount =
-        List.sumBy (Optic.get AgedEntryWithInfoLenses.amount) agedEntriesWithInfo
+        List.sumBy (Optic.get AgedEntryWithInfoOptic.amount) agedEntriesWithInfo
 
     TextBlock.create [
         TextBlock.textWrapping TextWrapping.Wrap
@@ -141,17 +141,15 @@ let pagingBar entries (state: State) dispatch =
     ]
     :> IView
 
-module Lenses = AgedEntryWithInfoLenses
+module Optic = AgedEntryWithInfoOptic
 
 let tableView entries state =
     let columns =
         [
-            "Name", Optic.get Lenses.name
-            "Set", (Optic.get Lenses.set) >> MagicSet.unwrap
-            "Nr.",
-            (Optic.get Lenses.number)
-            >> CollectorNumber.unwrap
-            "Language", (Optic.get Lenses.language) >> Language.unwrap
+            "Name", Optic.get Optic.name
+            "Set", (Optic.get Optic.set) >> MagicSet.unwrap
+            "Nr.", (Optic.get Optic.number) >> CollectorNumber.unwrap
+            "Language", (Optic.get Optic.language) >> Language.unwrap
         ]
 
     // Paging

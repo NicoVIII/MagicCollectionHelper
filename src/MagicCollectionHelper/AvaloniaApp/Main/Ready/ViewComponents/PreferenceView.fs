@@ -43,7 +43,7 @@ module PreferenceView =
     let render (state: State) (dispatch: Dispatch) : IView =
         let numInputProps = numInputProps dispatch
 
-        let prefs = Optic.get StateLenses.prefs state
+        let prefs = Optic.get StateOptic.prefs state
 
         // Lens to convert uintToDouble
         let uintDoubleLens = Lens(double, (fun _ v -> uint v))
@@ -70,13 +70,13 @@ module PreferenceView =
                                     StackPanel.children [
                                         numInputProps
                                             (0., 200.)
-                                            (Optic.compose PrefsLenses.cardGroupMinSize uintDoubleLens)
+                                            (Optic.compose PrefsOptic.cardGroupMinSize uintDoubleLens)
                                             prefs
                                         |> NumericUpDown.create
 
                                         numInputProps
                                             (0., 200.)
-                                            (Optic.compose PrefsLenses.cardGroupMaxSize uintDoubleLens)
+                                            (Optic.compose PrefsOptic.cardGroupMaxSize uintDoubleLens)
                                             prefs
                                         |> NumericUpDown.create
                                     ]
@@ -93,7 +93,7 @@ module PreferenceView =
                                         (fun value ->
                                             if value <> prefs.missingPercent * 100. then
                                                 value / 100.
-                                                |> Optic.set PrefsLenses.missingPercent
+                                                |> Optic.set PrefsOptic.missingPercent
                                                 |> ChangePrefs
                                                 |> dispatch),
                                         OnChangeOf prefs.missingPercent
@@ -120,7 +120,7 @@ module PreferenceView =
                                         if v <> null then
                                             v
                                             |> unbox<NumBase>
-                                            |> Optic.set PrefsLenses.numBase
+                                            |> Optic.set PrefsOptic.numBase
                                             |> ChangePrefs
                                             |> dispatch)
                                 ]
@@ -131,14 +131,14 @@ module PreferenceView =
                             CheckBox.isChecked prefs.setWithFoils
                             CheckBox.onChecked (
                                 (fun _ ->
-                                    (Optic.set PrefsLenses.setWithFoils true)
+                                    (Optic.set PrefsOptic.setWithFoils true)
                                     |> ChangePrefs
                                     |> dispatch),
                                 Never
                             )
                             CheckBox.onUnchecked (
                                 (fun _ ->
-                                    (Optic.set PrefsLenses.setWithFoils false)
+                                    (Optic.set PrefsOptic.setWithFoils false)
                                     |> ChangePrefs
                                     |> dispatch),
                                 Never

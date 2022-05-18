@@ -3,9 +3,9 @@ namespace MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open SimpleOptics
 
 [<AutoOpen>]
-module ModelLenses =
+module ModelOptics =
     [<RequireQualifiedAccess>]
-    module StateLenses =
+    module StateOptic =
         let filteredInventory =
             Lens((fun state -> state.filteredInventory), (fun state value -> { state with filteredInventory = value }))
 

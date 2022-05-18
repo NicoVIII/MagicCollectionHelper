@@ -20,7 +20,7 @@ module SearchBar =
                 (fun text ->
                     if search.text <> text then
                         text
-                        |> Optic.set (Optic.compose StateLenses.search SearchLenses.text)
+                        |> Optic.set (Optic.compose StateOptic.search SearchOptic.text)
                         |> ChangeState
                         |> dispatch),
                 OnChangeOf search.text
@@ -32,7 +32,7 @@ module SearchBar =
             (fun (_: 'a) ->
                 if search.old <> value then
                     value
-                    |> Optic.set (Optic.compose StateLenses.search SearchLenses.old)
+                    |> Optic.set (Optic.compose StateOptic.search SearchOptic.old)
                     |> ChangeState
                     |> dispatch)
 

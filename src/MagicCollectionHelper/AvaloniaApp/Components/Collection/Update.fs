@@ -11,7 +11,7 @@ open MagicCollectionHelper.AvaloniaApp.Components.Collection
 let perform (msg: Msg) (state: State) =
     match msg with
     | ImportCollection ->
-        let state = Optic.set StateLenses.loadInProgress true state
+        let state = Optic.set StateOptic.loadInProgress true state
 
         let fnc = Collection.importAsync
 
@@ -29,15 +29,15 @@ let perform (msg: Msg) (state: State) =
 
         state, Cmd.ofMsg (SaveCollection entryList), DoNothing
     | SaveCollection import ->
-        let state = Optic.set StateLenses.loadInProgress false state
+        let state = Optic.set StateOptic.loadInProgress false state
 
         state, Cmd.none, SaveEntries import
     | ChangePage change ->
-        let state = state |> Optic.map StateLenses.pageOffset change
+        let state = state |> Optic.map StateOptic.pageOffset change
 
         state, Cmd.none, DoNothing
     | SetPageSize size ->
-        let state = state |> Optic.set StateLenses.pageSize size
+        let state = state |> Optic.set StateOptic.pageSize size
 
         // Set page back to 0
         let cmd = (fun _ -> 0) |> ChangePage |> Cmd.ofMsg

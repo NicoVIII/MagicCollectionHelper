@@ -8,11 +8,11 @@ open MagicCollectionHelper.AvaloniaApp
 module DomainTypeModules =
     module Search =
         let fits (search: Search) (entry: AgedEntryWithInfo) =
-            let amount = entry ^. AgedEntryWithInfoLenses.amount
+            let amount = entry ^. AgedEntryWithInfoOptic.amount
 
-            let amountOld = entry ^. AgedEntryWithInfoLenses.amountOld
+            let amountOld = entry ^. AgedEntryWithInfoOptic.amountOld
 
-            let name = entry ^. AgedEntryWithInfoLenses.name
+            let name = entry ^. AgedEntryWithInfoOptic.name
 
             let fitOld () =
                 match search.old with

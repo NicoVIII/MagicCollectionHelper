@@ -11,10 +11,10 @@
     <Compile Include="Types/CardPart.fs" />
     <Compile Include="Types/CardPart.Modules.fs" />
     <Compile Include="Types/Card.fs" />
-    <Compile Include="Types/Card.Lenses.fs"/>
+    <Compile Include="Types/Card.Optics.fs"/>
     <Compile Include="Types/Card.Modules.fs"/>
     <Compile Include="Types/Domain.fs" />
-    <Compile Include="Types/Domain.Lenses.fs"/>
+    <Compile Include="Types/Domain.Optics.fs"/>
     <Compile Include="Types/Domain.Modules.fs"/>
 
     <Compile Include="Helper.fs" />

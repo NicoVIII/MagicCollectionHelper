@@ -11,10 +11,10 @@ open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
 let renderCollectionView state dispatch =
-    let prefs = state ^. StateLenses.prefs
-    let cardInfo = state ^. StateLenses.cardInfo
-    let dsEntries = state ^. StateLenses.dsEntries
-    let entries = state ^. StateLenses.entries
+    let prefs = state ^. StateOptic.prefs
+    let cardInfo = state ^. StateOptic.cardInfo
+    let dsEntries = state ^. StateOptic.dsEntries
+    let entries = state ^. StateOptic.entries
     let dispatch = CollectionMsg >> dispatch
 
     let agedEntriesWithInfo =
@@ -25,10 +25,10 @@ let renderCollectionView state dispatch =
     Components.Collection.View.render prefs dsEntries agedEntriesWithInfo state.collection dispatch
 
 let renderInventoryView state dispatch =
-    let prefs = state ^. StateLenses.prefs
-    let entries = state ^. StateLenses.entries
-    let setData = state ^. StateLenses.setData
-    let cardInfo = state ^. StateLenses.cardInfo
+    let prefs = state ^. StateOptic.prefs
+    let entries = state ^. StateOptic.entries
+    let setData = state ^. StateOptic.setData
+    let cardInfo = state ^. StateOptic.cardInfo
     let dispatch = InventoryMsg >> dispatch
     Components.Inventory.View.render prefs cardInfo entries state.inventory dispatch
 

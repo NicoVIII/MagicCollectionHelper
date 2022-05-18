@@ -26,7 +26,7 @@ module Update =
             |> function
                 | FileExists path -> state, Cmd.ofMsg (ImportCardInfo path), DoNothing
                 | DownloadFile job ->
-                    let state = state |> Optic.set StateLenses.cardInfo Download
+                    let state = state |> Optic.set StateOptic.cardInfo Download
 
                     let fnc () = job
 
@@ -34,7 +34,7 @@ module Update =
 
                     state, cmd, DoNothing
         | ImportCardInfo filePath ->
-            let state = state |> Optic.set StateLenses.cardInfo Import
+            let state = state |> Optic.set StateOptic.cardInfo Import
 
             let fnc () = CardData.importFile filePath
 
@@ -44,7 +44,7 @@ module Update =
         | SaveCardInfo import ->
             let state =
                 state
-                |> Optic.set StateLenses.cardInfo (Ready import)
+                |> Optic.set StateOptic.cardInfo (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | PrepareSetData ->
@@ -52,7 +52,7 @@ module Update =
             |> function
                 | FileExists path -> state, Cmd.ofMsg (ImportSetData path), DoNothing
                 | DownloadFile job ->
-                    let state = state |> Optic.set StateLenses.setData Download
+                    let state = state |> Optic.set StateOptic.setData Download
 
                     let fnc () = job
 
@@ -60,7 +60,7 @@ module Update =
 
                     state, cmd, DoNothing
         | ImportSetData filePath ->
-            let state = state |> Optic.set StateLenses.setData Import
+            let state = state |> Optic.set StateOptic.setData Import
 
             let fnc () = SetData.importFile filePath
 
@@ -70,7 +70,7 @@ module Update =
         | SaveSetData import ->
             let state =
                 state
-                |> Optic.set StateLenses.setData (Ready import)
+                |> Optic.set StateOptic.setData (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | LoadCollection ->
@@ -82,11 +82,11 @@ module Update =
         | SaveCollection collection ->
             let state =
                 let value = collection |> Option.defaultValue [] |> Ready
-                Optic.set StateLenses.dsEntries value state
+                Optic.set StateOptic.dsEntries value state
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | CalcEntries (cardInfo, entries) ->
-            let state = state |> Optic.set StateLenses.entries Import
+            let state = state |> Optic.set StateOptic.entries Import
 
             let fnc () =
                 DeckStatsCardEntry.listToEntriesAsync cardInfo entries
@@ -95,7 +95,7 @@ module Update =
 
             state, cmd, DoNothing
         | SaveEntries entries ->
-            let state = Optic.set StateLenses.entries (Ready entries) state
+            let state = Optic.set StateOptic.entries (Ready entries) state
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | CheckLoadingState ->

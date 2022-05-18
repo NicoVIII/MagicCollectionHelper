@@ -15,11 +15,11 @@ module CardTypesModules =
             }
 
         let isExactSame (card1: Card) (card2: Card) =
-            card1 ^. CardLenses.set = card2 ^. CardLenses.set
-            && card1 ^. CardLenses.number = card2 ^. CardLenses.number
+            card1 ^. CardOptic.set = card2 ^. CardOptic.set
+            && card1 ^. CardOptic.number = card2 ^. CardOptic.number
 
         let isToken (card: Card) =
-            let setValue = card ^. CardLenses.set |> MagicSet.unwrap
+            let setValue = card ^. CardOptic.set |> MagicSet.unwrap
 
             [
                 String.length >> (=) 4
@@ -82,7 +82,7 @@ module CardTypesModules =
         let create card info : CardWithInfo = { data = card; info = info }
 
         let fromCard infoMap =
-            WithInfo.addInfo infoMap (Optic.get CardLenses.set) (Optic.get CardLenses.number)
+            WithInfo.addInfo infoMap (Optic.get CardOptic.set) (Optic.get CardOptic.number)
 
         /// Checks if those two cards are rulewise the same. They do not have to be from the same set
         let isSame (card1: CardWithInfo) (card2: CardWithInfo) = WithInfo.isSame card1 card2
@@ -94,7 +94,7 @@ module CardTypesModules =
         let create entry info : EntryWithInfo = { data = entry; info = info }
 
         let fromEntry infoMap =
-            WithInfo.addInfo infoMap (Optic.get EntryLenses.set) (Optic.get EntryLenses.number)
+            WithInfo.addInfo infoMap (Optic.get EntryOptic.set) (Optic.get EntryOptic.number)
 
     [<RequireQualifiedAccess>]
     module AgedCard =
@@ -125,18 +125,18 @@ module CardTypesModules =
         let create info card : AgedCardWithInfo = WithInfo.create info card
 
         let fromCard infoMap =
-            WithInfo.addInfo infoMap (Optic.get AgedCardLenses.set) (Optic.get AgedCardLenses.number)
+            WithInfo.addInfo infoMap (Optic.get AgedCardOptic.set) (Optic.get AgedCardOptic.number)
 
-        let removeAge = WithInfo.map (Optic.get AgedCardLenses.card)
+        let removeAge = WithInfo.map (Optic.get AgedCardOptic.card)
 
     [<RequireQualifiedAccess>]
     module AgedEntryWithInfo =
         let create info entry : AgedEntryWithInfo = WithInfo.create info entry
 
         let fromEntry infoMap =
-            WithInfo.addInfo infoMap (Optic.get AgedEntryLenses.set) (Optic.get AgedEntryLenses.number)
+            WithInfo.addInfo infoMap (Optic.get AgedEntryOptic.set) (Optic.get AgedEntryOptic.number)
 
-        let removeAge = WithInfo.map (Optic.get AgedEntryLenses.entry)
+        let removeAge = WithInfo.map (Optic.get AgedEntryOptic.entry)
 
         /// Takes a list of cards and creates entry out of equal cards
         let fromCardList (cardList: AgedCardWithInfo list) =

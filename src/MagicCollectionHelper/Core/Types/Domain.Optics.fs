@@ -3,9 +3,9 @@ namespace MagicCollectionHelper.Core
 open SimpleOptics
 
 [<AutoOpen>]
-module DomainLenses =
+module DomainOptics =
     [<RequireQualifiedAccess>]
-    module PrefsLenses =
+    module PrefsOptic =
         let cardGroupMinSize =
             Lens((fun prefs -> prefs.cardGroupMinSize), (fun prefs value -> { prefs with cardGroupMinSize = value }))
 
@@ -22,7 +22,7 @@ module DomainLenses =
             Lens((fun prefs -> prefs.setWithFoils), (fun prefs value -> { prefs with setWithFoils = value }))
 
     [<RequireQualifiedAccess>]
-    module CustomLocationLenses =
+    module CustomLocationOptic =
         let rules =
             Lens(
                 (fun (customLocation: CustomLocation) -> customLocation.rules),

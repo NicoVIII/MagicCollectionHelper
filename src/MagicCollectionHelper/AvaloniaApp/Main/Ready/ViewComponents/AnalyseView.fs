@@ -16,7 +16,7 @@ open MagicCollectionHelper.AvaloniaApp.Main.Ready
 
 module AnalyseView =
     let topBar (state: State) (dispatch: Dispatch) : IView =
-        let entries = Optic.get StateLenses.dsEntries state
+        let entries = Optic.get StateOptic.dsEntries state
 
         ActionButtonBar.create [
             ActionButton.create
@@ -29,7 +29,7 @@ module AnalyseView =
         ]
 
     let content (state: State) (dispatch: Dispatch) : IView =
-        let analyseText = Optic.get StateLenses.analyseText state
+        let analyseText = Optic.get StateOptic.analyseText state
 
         Border.create [
             Border.background "black"

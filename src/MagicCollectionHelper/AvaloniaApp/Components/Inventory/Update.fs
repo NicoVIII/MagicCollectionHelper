@@ -20,7 +20,7 @@ let perform
     | AsyncError error -> raise error
     | ChangeState map -> map state, Cmd.none
     | TakeInventory ->
-        let state = state |> (Optic.set StateLenses.viewMode Loading)
+        let state = state |> (Optic.set StateOptic.viewMode Loading)
 
         let fnc () =
             Inventory.takeAsync setData infoMap state.locations entries
@@ -99,35 +99,35 @@ let perform
                     entries
                     |> List.groupBy (fun (entry: AgedEntryWithInfo) ->
                         if nameOffset > 0 then
-                            (entry ^. AgedEntryWithInfoLenses.name)
+                            (entry ^. AgedEntryWithInfoOptic.name)
                                 .Substring(0, nameOffset + 1)
                         else
                             match sortBy with
                             | ByCmc ->
-                                entry ^. AgedEntryWithInfoLenses.cmc
+                                entry ^. AgedEntryWithInfoOptic.cmc
                                 |> sprintf "CmC %i"
                             | BySet ->
-                                entry ^. AgedEntryWithInfoLenses.set
+                                entry ^. AgedEntryWithInfoOptic.set
                                 |> MagicSet.unwrap
                                 |> sprintf "Set %s"
                             | ByColorIdentity ->
-                                entry ^. AgedEntryWithInfoLenses.colorIdentity
+                                entry ^. AgedEntryWithInfoOptic.colorIdentity
                                 |> ColorIdentity.toString
                             | ByName ->
-                                (entry ^. AgedEntryWithInfoLenses.name)
+                                (entry ^. AgedEntryWithInfoOptic.name)
                                     .Substring(0, 1)
                             | ByCollectorNumber ->
-                                entry ^. AgedEntryWithInfoLenses.number
+                                entry ^. AgedEntryWithInfoOptic.number
                                 |> CollectorNumber.unwrap
                             | ByLanguage langList ->
-                                let language = entry ^. AgedEntryWithInfoLenses.language
+                                let language = entry ^. AgedEntryWithInfoOptic.language
 
                                 if List.contains language langList then
                                     Language.unwrap language
                                 else
                                     "Other"
                             | ByRarity rarities ->
-                                let rarity = entry ^. AgedEntryWithInfoLenses.rarity
+                                let rarity = entry ^. AgedEntryWithInfoOptic.rarity
 
                                 List.tryFind (Set.contains rarity) rarities
                                 |> function
@@ -138,7 +138,7 @@ let perform
                                         |> String.concat " / "
                                     | None -> "Other"
                             | ByTypeContains types ->
-                                let typeLine = entry ^. AgedEntryWithInfoLenses.typeLine
+                                let typeLine = entry ^. AgedEntryWithInfoOptic.typeLine
 
                                 List.tryFind (fun (typ: string) -> typeLine.Contains typ) types
                                 |> Option.defaultValue "Other")
@@ -186,38 +186,38 @@ let perform
 
         let state =
             state
-            |> (Optic.set StateLenses.filteredInventory grouped)
-            |> (Optic.set StateLenses.viewMode viewMode)
+            |> (Optic.set StateOptic.filteredInventory grouped)
+            |> (Optic.set StateOptic.viewMode viewMode)
 
         (state, Cmd.none)
     | SaveInventory inventory ->
-        let state = state |> Optic.set StateLenses.inventory inventory
+        let state = state |> Optic.set StateOptic.inventory inventory
 
         (state, Cmd.ofMsg (FilterInventory inventory))
     | ChangeLocation location ->
         let state =
             state
-            |> Optic.set StateLenses.viewMode (Some location |> Location)
+            |> Optic.set StateOptic.viewMode (Some location |> Location)
 
         state, Cmd.none
     | OpenLocationEdit ->
-        let state = state |> Optic.set StateLenses.viewMode Edit
+        let state = state |> Optic.set StateOptic.viewMode Edit
 
         (state, Cmd.none)
     | CloseLocationEdit ->
         let state =
             state
-            |> Optic.set StateLenses.viewMode (Location None)
+            |> Optic.set StateOptic.viewMode (Location None)
 
         (state, Cmd.none)
     | UpdateLocationRules (locationName, rulesMutation) ->
         let mutateRules location =
-            Optic.map CustomLocationLenses.rules rulesMutation location
+            Optic.map CustomLocationOptic.rules rulesMutation location
 
         let state =
             state
             // TODO: Update rules of location
             // (Map.change locationName (Option.map mutateRules))
-            |> Optic.map StateLenses.locations id
+            |> Optic.map StateOptic.locations id
 
         (state, Cmd.none)

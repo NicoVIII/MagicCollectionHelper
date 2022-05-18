@@ -55,7 +55,7 @@ module DomainTypesModules =
             |> List.groupBy (fun entry -> entry.card)
             |> List.map (fun (card, entryList) ->
                 {
-                    amount = List.sumBy (Optic.get EntryLenses.amount) entryList
+                    amount = List.sumBy (Optic.get EntryOptic.amount) entryList
                     card = card
                 })
             |> List.rev

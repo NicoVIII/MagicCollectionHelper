@@ -3,9 +3,9 @@ namespace MagicCollectionHelper.AvaloniaApp.Main.Loading
 open SimpleOptics
 
 [<AutoOpen>]
-module ModelLenses =
+module ModelOptics =
     [<RequireQualifiedAccess>]
-    module StateLenses =
+    module StateOptic =
         let cardInfo =
             Lens((fun state -> state.cardInfo), (fun state value -> { state with cardInfo = value }))
 

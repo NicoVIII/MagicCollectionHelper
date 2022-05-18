@@ -3,9 +3,9 @@ namespace MagicCollectionHelper.AvaloniaApp
 open SimpleOptics
 
 [<AutoOpen>]
-module DomainLenses =
+module DomainOptics =
     [<RequireQualifiedAccess>]
-    module SearchLenses =
+    module SearchOptic =
         let text =
             Lens((fun (search: Search) -> search.text), (fun search value -> { search with text = value }))
 

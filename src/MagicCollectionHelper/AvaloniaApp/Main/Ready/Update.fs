@@ -15,10 +15,10 @@ module Update =
         | Collection.Intent.SaveEntries entries ->
             match entries with
             | Some entries ->
-                let state = state |> Optic.set StateLenses.dsEntries entries
+                let state = state |> Optic.set StateOptic.dsEntries entries
 
                 let fnc () =
-                    let cardInfo = Optic.get StateLenses.cardInfo state
+                    let cardInfo = Optic.get StateOptic.cardInfo state
                     DeckStatsCardEntry.listToEntriesAsync cardInfo entries
 
                 let cmd = Cmd.OfAsync.either fnc () SaveEntries AsyncError
@@ -31,60 +31,60 @@ module Update =
         match msg with
         | AsyncError x -> raise x
         | Analyse ->
-            let prefs = Optic.get StateLenses.prefs state
-            let setData = Optic.get StateLenses.setData state
-            let entries = Optic.get StateLenses.dsEntries state
+            let prefs = Optic.get StateOptic.prefs state
+            let setData = Optic.get StateOptic.setData state
+            let entries = Optic.get StateOptic.dsEntries state
 
             let state =
                 let value =
                     Analyser.analyse setData prefs (entries |> Seq.ofList)
                     |> String.concat Environment.NewLine
 
-                Optic.set StateLenses.analyseText value state
+                Optic.set StateOptic.analyseText value state
 
             state, Cmd.none
         | ChangeViewMode viewMode ->
-            let state = Optic.set StateLenses.viewMode viewMode state
+            let state = Optic.set StateOptic.viewMode viewMode state
 
             state, Cmd.none
         | ChangePrefs prefs ->
-            let state = (Optic.map StateLenses.prefs prefs) state
+            let state = (Optic.map StateOptic.prefs prefs) state
 
             state, Cmd.ofMsg SavePrefs
         | SavePrefs ->
-            state ^. StateLenses.prefs
+            state ^. StateOptic.prefs
             |> Persistence.Prefs.save
 
             state, Cmd.none
         | SaveEntries entries ->
             let oldEntries =
                 state
-                |> Optic.get StateLenses.entries
-                |> List.map (Optic.get AgedEntryLenses.entry)
+                |> Optic.get StateOptic.entries
+                |> List.map (Optic.get AgedEntryOptic.entry)
 
             let comparedEntries = AgedEntry.determineCardAge oldEntries entries
 
             let state =
                 state
-                |> Optic.set StateLenses.entries comparedEntries
+                |> Optic.set StateOptic.entries comparedEntries
 
             state, Cmd.none
         | CollectionMsg msg ->
             let (iState, iCmd, intent) = Collection.Update.perform msg state.collection
 
             (state, iCmd |> Cmd.map CollectionMsg)
-            |> Tuple2.mapFst (Optic.set StateLenses.collection iState)
+            |> Tuple2.mapFst (Optic.set StateOptic.collection iState)
             |> processCollectionIntent intent
         | InventoryMsg msg ->
-            let cardInfo = Optic.get StateLenses.cardInfo state
-            let setData = Optic.get StateLenses.setData state
-            let entries = Optic.get StateLenses.entries state
-            let prefs = Optic.get StateLenses.prefs state
+            let cardInfo = Optic.get StateOptic.cardInfo state
+            let setData = Optic.get StateOptic.setData state
+            let entries = Optic.get StateOptic.entries state
+            let prefs = Optic.get StateOptic.prefs state
 
             let (iState, iCmd) =
                 Inventory.Update.perform prefs setData cardInfo entries msg state.inventory
 
-            let state = Optic.set StateLenses.inventory iState state
+            let state = Optic.set StateOptic.inventory iState state
             let cmd = iCmd |> Cmd.map InventoryMsg
 
             state, cmd
