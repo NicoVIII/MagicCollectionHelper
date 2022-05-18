@@ -10,10 +10,12 @@ type Loadable<'a> =
 
 [<Generator.Lenses("main.loading", "SimpleOptics.Lens")>]
 type State =
-    { cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
-      dsEntries: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>
-      entries: Loadable<MagicCollectionHelper.Core.CardTypes.Entry list>
-      setData: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap> }
+    {
+        cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
+        dsEntries: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>
+        entries: Loadable<MagicCollectionHelper.Core.CardTypes.Entry list>
+        setData: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap>
+    }
 
 open Elmish
 
@@ -44,9 +46,11 @@ type Intent =
 module Model =
     let init () =
         let state =
-            { cardInfo = Prepare
-              dsEntries = Prepare
-              entries = Prepare
-              setData = Prepare }
+            {
+                cardInfo = Prepare
+                dsEntries = Prepare
+                entries = Prepare
+                setData = Prepare
+            }
 
         state, Cmd.ofMsg StartUp

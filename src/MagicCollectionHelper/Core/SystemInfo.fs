@@ -27,20 +27,24 @@ module SystemInfo =
         [ Linux; MacOS; Windows ]
         |> List.tryFind isOS
         |> function
-        | Some os -> os
-        | None -> failwith "I couldn't determine used OS..."
+            | Some os -> os
+            | None -> failwith "I couldn't determine used OS..."
 
     /// Path that should be used to save data to
     let savePath =
         match currentOs with
         | Linux
         | MacOS ->
-            [ Environment.GetEnvironmentVariable("HOME")
-              ".local"
-              "share"
-              Config.dataFolderName ]
+            [
+                Environment.GetEnvironmentVariable("HOME")
+                ".local"
+                "share"
+                Config.dataFolderName
+            ]
         | Windows ->
-            [ Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-              Config.dataFolderName
-              "save" ]
+            [
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+                Config.dataFolderName
+                "save"
+            ]
         |> Path.combine

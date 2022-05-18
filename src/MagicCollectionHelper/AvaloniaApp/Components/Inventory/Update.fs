@@ -52,8 +52,7 @@ let perform
                                 if (lastAmount + amount <= maxSize)
                                    || lastAmount < minSize then
                                     // We merge the leafs
-                                    (List.append lastNames names,
-                                     Leaf(List.append lastEntries entries))
+                                    (List.append lastNames names, Leaf(List.append lastEntries entries))
                                     :: tail
                                 else
                                     node :: nodes'
@@ -69,7 +68,10 @@ let perform
             // We repeat shrinking as long as there is something to shrink
             let shrunkTree = singleRun tree
 
-            if shrunkTree <> tree then shrinkTreeHelper shrunkTree else shrunkTree
+            if shrunkTree <> tree then
+                shrinkTreeHelper shrunkTree
+            else
+                shrunkTree
 
         let shrinkTree tree =
             tree

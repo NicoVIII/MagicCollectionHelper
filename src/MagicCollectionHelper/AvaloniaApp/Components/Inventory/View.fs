@@ -17,21 +17,25 @@ open MagicCollectionHelper.AvaloniaApp.ViewHelper
 let actionBar (infoMap: CardInfoMap) (entries: 'a list) (state: State) (dispatch: Dispatch) =
     ActionButtonBar.create [
         ActionButton.create
-            { text = "Take inventory"
-              isEnabled =
-                  (not (
-                      infoMap.IsEmpty
-                      || entries.IsEmpty
-                      || state.viewMode = Loading
-                  ))
-              action = (fun _ -> TakeInventory |> dispatch)
-              subPatch = Never }
+            {
+                text = "Take inventory"
+                isEnabled =
+                    (not (
+                        infoMap.IsEmpty
+                        || entries.IsEmpty
+                        || state.viewMode = Loading
+                    ))
+                action = (fun _ -> TakeInventory |> dispatch)
+                subPatch = Never
+            }
     ]
 
 type LocCards =
-    { location: InventoryLocation
-      amount: uint
-      cards: string seq }
+    {
+        location: InventoryLocation
+        amount: uint
+        cards: string seq
+    }
 
 let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
     let amount = entry ^. AgedEntryWithInfoLenses.amount
@@ -65,7 +69,11 @@ let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
 
     let inline pN p = Numbers.print prefs.numBase p
 
-    let added = if not old then $"(+%2s{pN 0 (amount - amountOld)})" else "     "
+    let added =
+        if not old then
+            $"(+%2s{pN 0 (amount - amountOld)})"
+        else
+            "     "
 
     CheckBox.create [
         CheckBox.fontFamily Config.monospaceFont
@@ -96,8 +104,10 @@ let wrapLayer withBorder children =
 let renderEntryList prefs state entries =
     wrapLayer
         true
-        [ for entry in entries do
-              cardItem prefs state entry ]
+        [
+            for entry in entries do
+                cardItem prefs state entry
+        ]
 
 let rec renderEntryTree prefs state dispatch first tree =
     let renderEntryTree = renderEntryTree prefs state dispatch false
@@ -110,16 +120,18 @@ let rec renderEntryTree prefs state dispatch first tree =
     | Nodes nodes ->
         wrapLayer
             (not first)
-            [ for (name: string, child) in nodes do
-                  // We want to add the amount
-                  let amount = ExpanderTree.sumUpCards state.search child
-                  let name = $"{name} ({pN 0 amount})"
+            [
+                for (name: string, child) in nodes do
+                    // We want to add the amount
+                    let amount = ExpanderTree.sumUpCards state.search child
+                    let name = $"{name} ({pN 0 amount})"
 
-                  Expander.create [
-                      Expander.header name
-                      Expander.isExpanded (amount > 0u)
-                      Expander.content (renderEntryTree child)
-                  ] ]
+                    Expander.create [
+                        Expander.header name
+                        Expander.isExpanded (amount > 0u)
+                        Expander.content (renderEntryTree child)
+                    ]
+            ]
     | Leaf entries -> renderEntryList prefs state entries
 
 let renderEntryTreeForLocation prefs state dispatch (location: InventoryLocation) trees =

@@ -14,36 +14,44 @@ module DomainTypes =
     [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     [<Generator.Fields("core")>]
     type Prefs =
-        { cardGroupMinSize: uint
-          cardGroupMaxSize: uint
-          numBase: NumBase
-          missingPercent: float
-          setWithFoils: bool }
+        {
+            cardGroupMinSize: uint
+            cardGroupMaxSize: uint
+            numBase: NumBase
+            missingPercent: float
+            setWithFoils: bool
+        }
 
     // TODO: condition
     // TODO: comment?
     // TODO: pinned?
     // TODO: added
     type DeckStatsCardEntry =
-        { amount: uint
-          name: string
-          number: CollectorNumber option
-          foil: bool
-          language: Language option
-          set: MagicSet option }
+        {
+            amount: uint
+            name: string
+            number: CollectorNumber option
+            foil: bool
+            language: Language option
+            set: MagicSet option
+        }
 
     type SetData =
-        { date: string
-          max: uint
-          name: string }
+        {
+            date: string
+            max: uint
+            name: string
+        }
 
     type SetDataMap = Map<MagicSet, SetData>
 
     type Analyser<'result, 'collect, 'settings> =
-        { emptyData: (unit -> 'collect)
-          collect: ('settings -> 'collect -> DeckStatsCardEntry -> 'collect)
-          postprocess: (SetDataMap -> 'collect -> 'result)
-          print: ('settings -> 'result -> string seq) }
+        {
+            emptyData: (unit -> 'collect)
+            collect: ('settings -> 'collect -> DeckStatsCardEntry -> 'collect)
+            postprocess: (SetDataMap -> 'collect -> 'result)
+            print: ('settings -> 'result -> string seq)
+        }
 
     type SortRule =
         | ByColorIdentity
@@ -60,22 +68,26 @@ module DomainTypes =
     type CustomLocationName = string
 
     type Rules =
-        { inSet: Set<MagicSet> option
-          inLanguage: Language option
-          isFoil: bool option
-          isToken: bool option
-          typeContains: Set<string> option
-          typeNotContains: Set<string> option
-          limit: uint option
-          limitExact: uint option
-          rarity: Set<Rarity> option
-          colorIdentity: Set<ColorIdentity> option }
+        {
+            inSet: Set<MagicSet> option
+            inLanguage: Language option
+            isFoil: bool option
+            isToken: bool option
+            typeContains: Set<string> option
+            typeNotContains: Set<string> option
+            limit: uint option
+            limitExact: uint option
+            rarity: Set<Rarity> option
+            colorIdentity: Set<ColorIdentity> option
+        }
 
     [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type CustomLocation =
-        { name: CustomLocationName
-          rules: Rules
-          sortBy: SortRules }
+        {
+            name: CustomLocationName
+            rules: Rules
+            sortBy: SortRules
+        }
 
     /// Location, where a part of the collection is
     type InventoryLocation =

@@ -4,24 +4,30 @@ open MagicCollectionHelper.Core.TryParser
 
 module SetAnalyser =
     type CardSetData =
-        { collected: uint32
-          missing: Set<CollectorNumber>
-          name: string
-          max: uint
-          percent: float }
+        {
+            collected: uint32
+            missing: Set<CollectorNumber>
+            name: string
+            max: uint
+            percent: float
+        }
 
     type ResultValue =
-        { cards: Set<CollectorNumber>
-          setData: CardSetData option }
+        {
+            cards: Set<CollectorNumber>
+            setData: CardSetData option
+        }
 
     type Result = Map<MagicSet, ResultValue>
 
     type CollectType = Map<MagicSet, Set<CollectorNumber>>
 
     type Preferences =
-        { missingPercent: float
-          numBase: NumBase
-          withFoils: bool }
+        {
+            missingPercent: float
+            numBase: NumBase
+            withFoils: bool
+        }
 
     let private createEmpty () : CollectType = Map.empty
 
@@ -47,31 +53,31 @@ module SetAnalyser =
         let transformSet (setData: SetDataMap) set (numberSet: CollectorNumber Set) =
             let setData =
                 setData.TryFind set
-                |> Option.map
-                    (fun { name = name; max = max } ->
-                        let collected =
-                            numberSet
-                            // We have to remove cards outside of the normal number range from the collected number
-                            |> Set.filter
-                                (fun (CollectorNumber number) ->
-                                    match number with
-                                    | Uint number -> number > 0u && number <= max
-                                    | _ -> false)
-                            |> Set.count
-                            |> uint32
+                |> Option.map (fun { name = name; max = max } ->
+                    let collected =
+                        numberSet
+                        // We have to remove cards outside of the normal number range from the collected number
+                        |> Set.filter (fun (CollectorNumber number) ->
+                            match number with
+                            | Uint number -> number > 0u && number <= max
+                            | _ -> false)
+                        |> Set.count
+                        |> uint32
 
-                        // Missing Cards for complete collection
-                        let missing =
-                            seq { 1u .. max }
-                            |> Seq.map (string >> CollectorNumber)
-                            |> Set.ofSeq
-                            |> Set.filter (fun x -> Set.contains x numberSet |> not)
+                    // Missing Cards for complete collection
+                    let missing =
+                        seq { 1u .. max }
+                        |> Seq.map (string >> CollectorNumber)
+                        |> Set.ofSeq
+                        |> Set.filter (fun x -> Set.contains x numberSet |> not)
 
-                        { missing = missing
-                          name = name
-                          collected = collected
-                          max = max
-                          percent = calcPercent collected max })
+                    {
+                        missing = missing
+                        name = name
+                        collected = collected
+                        max = max
+                        percent = calcPercent collected max
+                    })
 
             { cards = numberSet; setData = setData }
 
@@ -105,70 +111,69 @@ module SetAnalyser =
         let setsSorted =
             result
             |> Map.toSeq
-            |> Seq.sortBy
-                (fun (_, value) ->
-                    value.setData
-                    |> Option.map (fun setData -> setData.percent * -100.0) // Use negative numbers
-                    |> Option.defaultValue (
-                        value.cards.Count |> (-) 1000 |> double // Stay in positive numbers
-                    ))
+            |> Seq.sortBy (fun (_, value) ->
+                value.setData
+                |> Option.map (fun setData -> setData.percent * -100.0) // Use negative numbers
+                |> Option.defaultValue (
+                    value.cards.Count |> (-) 1000 |> double // Stay in positive numbers
+                ))
 
         let titleLine = "Set Analysis" |> Seq.singleton
 
         let setLines =
             setsSorted
-            |> Seq.map
-                (fun (set, value) ->
-                    match value.setData with
-                    | Some setData ->
-                        // Print set line and maybe token set line
-                        Print.setLine numBase set setData
-                    | None ->
-                        let setValue = MagicSet.unwrap set
+            |> Seq.map (fun (set, value) ->
+                match value.setData with
+                | Some setData ->
+                    // Print set line and maybe token set line
+                    Print.setLine numBase set setData
+                | None ->
+                    let setValue = MagicSet.unwrap set
 
-                        $"%5s{setValue} - No set data found (%2i{value.cards.Count})"
-                        |> Seq.singleton)
+                    $"%5s{setValue} - No set data found (%2i{value.cards.Count})"
+                    |> Seq.singleton)
             |> Seq.concat
 
         let missingLines =
             setsSorted
-            |> Seq.choose
-                (fun (set, value) ->
-                    let setData = value.setData
+            |> Seq.choose (fun (set, value) ->
+                let setData = value.setData
 
-                    match setData with
-                    | Some ({ missing = missing; percent = percent } as setData) when
-                        percent > prefs.missingPercent
-                        && missing.Count > 0 -> Some(set, setData)
-                    | _ -> None)
-            |> Seq.map
-                (fun ((MagicSet set), setData) ->
-                    let missing = setData.missing.Count |> Numbers.print numBase 0
+                match setData with
+                | Some ({ missing = missing; percent = percent } as setData) when
+                    percent > prefs.missingPercent
+                    && missing.Count > 0
+                    ->
+                    Some(set, setData)
+                | _ -> None)
+            |> Seq.map (fun ((MagicSet set), setData) ->
+                let missing = setData.missing.Count |> Numbers.print numBase 0
 
-                    let titleLine =
-                        $"%-3s{set} - %2s{missing} missing:"
+                let titleLine =
+                    $"%-3s{set} - %2s{missing} missing:"
+                    |> Seq.singleton
+
+                let cardIds = setData.missing
+
+                let mutable missingLines = Seq.empty
+
+                if Seq.length cardIds > 0 then
+                    missingLines <-
+                        cardIds
+                        |> Seq.map (fun (CollectorNumber number) -> number |> Numbers.print numBase 0)
+                        |> Seq.reduce (fun x y -> x + "," + y)
                         |> Seq.singleton
+                        |> Seq.append missingLines
 
-                    let cardIds = setData.missing
-
-                    let mutable missingLines = Seq.empty
-
-                    if Seq.length cardIds > 0 then
-                        missingLines <-
-                            cardIds
-                            |> Seq.map
-                                (fun (CollectorNumber number) -> number |> Numbers.print numBase 0)
-                            |> Seq.reduce (fun x y -> x + "," + y)
-                            |> Seq.singleton
-                            |> Seq.append missingLines
-
-                    [ titleLine; missingLines ] |> Seq.concat)
+                [ titleLine; missingLines ] |> Seq.concat)
             |> Seq.reduce (fun x y -> [ x; Seq.singleton ""; y ] |> Seq.concat)
 
-        [ titleLine
-          setLines
-          Seq.singleton ""
-          missingLines ]
+        [
+            titleLine
+            setLines
+            Seq.singleton ""
+            missingLines
+        ]
         |> Seq.concat
 
     let get = Analyser.create createEmpty collect postprocess print

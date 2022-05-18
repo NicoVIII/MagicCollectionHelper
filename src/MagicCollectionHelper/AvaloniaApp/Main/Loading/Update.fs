@@ -14,9 +14,11 @@ module Update =
         | AsyncError x -> raise x
         | StartUp ->
             let cmd =
-                [ PrepareCardInfo
-                  PrepareSetData
-                  LoadCollection ]
+                [
+                    PrepareCardInfo
+                    PrepareSetData
+                    LoadCollection
+                ]
                 |> List.map Cmd.ofMsg
                 |> Cmd.batch
 
@@ -104,8 +106,7 @@ module Update =
                 match state.cardInfo, state.dsEntries, state.entries, state.setData with
                 | Ready cardInfo, Ready dsEntries, Ready entries, Ready setData ->
                     Cmd.none, ChangeToReady(cardInfo, dsEntries, entries, setData)
-                | Ready cardInfo, Ready dsEntries, _, _ ->
-                    CalcEntries(cardInfo, dsEntries) |> Cmd.ofMsg, DoNothing
+                | Ready cardInfo, Ready dsEntries, _, _ -> CalcEntries(cardInfo, dsEntries) |> Cmd.ofMsg, DoNothing
                 | _ -> Cmd.none, DoNothing
 
             state, cmd, intent

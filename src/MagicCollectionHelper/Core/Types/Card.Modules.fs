@@ -12,8 +12,10 @@ module CardTypesModules =
         let isToken (card: Card) =
             let setValue = card ^. CardLenses.set |> MagicSet.unwrap
 
-            [ String.length >> (=) 4
-              String.startsWith "T" ]
+            [
+                String.length >> (=) 4
+                String.startsWith "T"
+            ]
             |> List.forall (fun fnc -> fnc setValue)
 
     module Entry =
@@ -69,8 +71,7 @@ module CardTypesModules =
         /// Checks if those two cards are rulewise the same. They do not have to be from the same set
         let isSame (card1: CardWithInfo) (card2: CardWithInfo) = WithInfo.isSame card1 card2
 
-        let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) =
-            Card.isExactSame card1.data card2.data
+        let isExactSame (card1: CardWithInfo) (card2: CardWithInfo) = Card.isExactSame card1.data card2.data
 
     module EntryWithInfo =
         let create entry info : EntryWithInfo = { data = entry; info = info }
@@ -104,10 +105,7 @@ module CardTypesModules =
         let create info card : AgedCardWithInfo = WithInfo.create info card
 
         let fromCard infoMap =
-            WithInfo.addInfo
-                infoMap
-                (Optic.get AgedCardLenses.set)
-                (Optic.get AgedCardLenses.number)
+            WithInfo.addInfo infoMap (Optic.get AgedCardLenses.set) (Optic.get AgedCardLenses.number)
 
         let removeAge = WithInfo.map (Optic.get AgedCardLenses.card)
 
@@ -115,10 +113,7 @@ module CardTypesModules =
         let create info entry : AgedEntryWithInfo = WithInfo.create info entry
 
         let fromEntry infoMap =
-            WithInfo.addInfo
-                infoMap
-                (Optic.get AgedEntryLenses.set)
-                (Optic.get AgedEntryLenses.number)
+            WithInfo.addInfo infoMap (Optic.get AgedEntryLenses.set) (Optic.get AgedEntryLenses.number)
 
         let removeAge = WithInfo.map (Optic.get AgedEntryLenses.entry)
 

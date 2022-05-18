@@ -48,14 +48,17 @@ module Inventory =
         let fitsColorIdentity cardWithInfo rules =
             let colorIdentity = cardWithInfo ^. CardWithInfoLenses.colorIdentity
 
-            fitsRule rules.colorIdentity (fun colorIdentities ->
-                Set.contains colorIdentity colorIdentities)
+            fitsRule rules.colorIdentity (fun colorIdentities -> Set.contains colorIdentity colorIdentities)
 
         let fitsLimit cardsInLoc cardWithInfo rules =
             let rule limit =
                 let sum =
                     List.sumBy
-                        (fun c -> if CardWithInfo.isSame c cardWithInfo then 1 else 0)
+                        (fun c ->
+                            if CardWithInfo.isSame c cardWithInfo then
+                                1
+                            else
+                                0)
                         cardsInLoc
 
                 (uint) sum < limit
@@ -66,7 +69,11 @@ module Inventory =
             let rule limitExact =
                 let sum =
                     List.sumBy
-                        (fun c -> if CardWithInfo.isExactSame c cardWithInfo then 1 else 0)
+                        (fun c ->
+                            if CardWithInfo.isExactSame c cardWithInfo then
+                                1
+                            else
+                                0)
                         cardsInLoc
 
                 (uint) sum < limitExact
@@ -74,16 +81,18 @@ module Inventory =
             fitsRule rules.limitExact rule
 
         let fitsAll cardsInLoc cardWithInfo rules =
-            [ fitsInSetRule
-              fitsInLanguageRule
-              fitsIsFoil
-              fitsIsToken
-              fitsTypeContains
-              fitsTypeNotContains
-              fitsColorIdentity
-              fitsRarity
-              fitsLimit cardsInLoc
-              fitsLimitExact cardsInLoc ]
+            [
+                fitsInSetRule
+                fitsInLanguageRule
+                fitsIsFoil
+                fitsIsToken
+                fitsTypeContains
+                fitsTypeNotContains
+                fitsColorIdentity
+                fitsRarity
+                fitsLimit cardsInLoc
+                fitsLimitExact cardsInLoc
+            ]
             // Evaluate functions
             |> List.map (fun fnc -> fnc cardWithInfo rules)
             |> List.forall id
@@ -138,9 +147,12 @@ module Inventory =
             typeContains
             |> List.fold
                 (fun (found, strng) typeContains ->
-                    if found then (true, strng + "9")
-                    else if typeLine.Contains typeContains then (true, strng + "1")
-                    else (false, strng + "9"))
+                    if found then
+                        (true, strng + "9")
+                    else if typeLine.Contains typeContains then
+                        (true, strng + "1")
+                    else
+                        (false, strng + "9"))
                 (false, "")
             |> snd
         | ByRarity rarities ->
@@ -149,7 +161,10 @@ module Inventory =
             rarities
             |> List.indexed
             |> List.tryPick (fun (index, raritySet) ->
-                if Set.contains rarity raritySet then Some index else None)
+                if Set.contains rarity raritySet then
+                    Some index
+                else
+                    None)
             |> Option.defaultValue (List.length rarities)
             |> string
         | ByLanguage languages ->
@@ -158,7 +173,10 @@ module Inventory =
             languages
             |> List.indexed
             |> List.tryPick (fun (index, sLanguage) ->
-                if sLanguage = language then Some index else None)
+                if sLanguage = language then
+                    Some index
+                else
+                    None)
             |> Option.defaultValue (List.length languages)
             |> string
 
@@ -176,7 +194,12 @@ module Inventory =
             sortRules
             |> List.map (getSortByValue setData entryWithInfo)
             // We add a random factor at the end
-            |> (fun lst -> List.append lst [ random.Next(0, 10000) |> sprintf "%04i" ])
+            |> (fun lst ->
+                List.append
+                    lst
+                    [
+                        random.Next(0, 10000) |> sprintf "%04i"
+                    ])
 
         entries |> List.sortBy sortBy
 
@@ -212,17 +235,18 @@ module Inventory =
                 let set = entry ^. AgedEntryWithInfoLenses.set
 
                 [ // Language
-                  match language with
-                  | "en" -> "0"
-                  | "de" -> "1"
-                  | _ -> "2"
-                  // Foil
-                  if foil then "0" else "1"
-                  // Set
-                  (Map.find set setData).date
-                  number
-                  // Random
-                  random.Next(0, 10000) |> string ])
+                    match language with
+                    | "en" -> "0"
+                    | "de" -> "1"
+                    | _ -> "2"
+                    // Foil
+                    if foil then "0" else "1"
+                    // Set
+                    (Map.find set setData).date
+                    number
+                    // Random
+                    random.Next(0, 10000) |> string
+                ])
 
         for agedEntryWithInfo in agedEntriesWithInfo do
             let getCard old =
@@ -240,7 +264,11 @@ module Inventory =
             let mutable i = 0u
 
             while i < agedEntryWithInfo.data.data.amount do
-                let card = if i < agedEntryWithInfo.data.amountOld then old else notOld
+                let card =
+                    if i < agedEntryWithInfo.data.amountOld then
+                        old
+                    else
+                        notOld
 
                 let location =
                     card
@@ -249,10 +277,8 @@ module Inventory =
 
                 match location with
                 | Some location ->
-                    locCardMap <-
-                        Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
-                | None ->
-                    locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
+                    locCardMap <- Map.change (Custom location) (Option.map (fun l -> card :: l)) locCardMap
+                | None -> locCardMap <- Map.change Fallback (Option.map (fun l -> card :: l)) locCardMap
 
                 i <- i + 1u
 

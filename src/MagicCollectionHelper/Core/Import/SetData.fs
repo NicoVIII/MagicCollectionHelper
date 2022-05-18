@@ -8,10 +8,12 @@ open MagicCollectionHelper.Core
 
 module SetData =
     type SetDataCSV =
-        { code: string
-          name: string
-          released_at: string
-          card_count: uint }
+        {
+            code: string
+            name: string
+            released_at: string
+            card_count: uint
+        }
 
     type SetDataListCSV = { data: SetDataCSV list }
 
@@ -44,15 +46,16 @@ module SetData =
                 text
                 |> Json.deserialize<SetDataListCSV>
                 |> (fun data -> data.data)
-                |> List.map
-                    (fun setData ->
-                        let setCode = setData.code.ToUpper() |> MagicSet.create
+                |> List.map (fun setData ->
+                    let setCode = setData.code.ToUpper() |> MagicSet.create
 
-                        let setData =
-                            { SetData.name = setData.name
-                              date = setData.released_at
-                              max = setData.card_count }
+                    let setData =
+                        {
+                            SetData.name = setData.name
+                            date = setData.released_at
+                            max = setData.card_count
+                        }
 
-                        setCode, setData)
+                    setCode, setData)
                 |> Map.ofList
         }

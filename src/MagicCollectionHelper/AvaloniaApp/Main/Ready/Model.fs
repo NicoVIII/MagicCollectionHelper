@@ -11,19 +11,23 @@ type ViewMode =
 
 [<Generator.Lenses("main.ready", "SimpleOptics.Lens")>]
 type CommonState =
-    { analyseText: string
-      cardInfo: MagicCollectionHelper.Core.CardTypes.CardInfoMap
-      dsEntries: MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list
-      entries: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.Entry> list
-      prefs: MagicCollectionHelper.Core.DomainTypes.Prefs
-      setData: MagicCollectionHelper.Core.DomainTypes.SetDataMap
-      viewMode: ViewMode }
+    {
+        analyseText: string
+        cardInfo: MagicCollectionHelper.Core.CardTypes.CardInfoMap
+        dsEntries: MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list
+        entries: MagicCollectionHelper.Core.CardTypes.OldAmountable<MagicCollectionHelper.Core.CardTypes.Entry> list
+        prefs: MagicCollectionHelper.Core.DomainTypes.Prefs
+        setData: MagicCollectionHelper.Core.DomainTypes.SetDataMap
+        viewMode: ViewMode
+    }
 
 [<Generator.Lenses("main.ready", "SimpleOptics.Lens")>]
 type State =
-    { common: CommonState
-      collection: MagicCollectionHelper.AvaloniaApp.Components.Collection.State
-      inventory: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State }
+    {
+        common: CommonState
+        collection: MagicCollectionHelper.AvaloniaApp.Components.Collection.State
+        inventory: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State
+    }
 
 open MagicCollectionHelper.Core
 
@@ -49,12 +53,14 @@ module Model =
     open MagicCollectionHelper.Core
 
     let arrow =
-        [ "     ."
-          "   .:;:."
-          " .:;;;;;:."
-          "   ;;;;;"
-          "   ;;;;; Press here after 'Import'"
-          "   ;;;;;" ]
+        [
+            "     ."
+            "   .:;:."
+            " .:;;;;;:."
+            "   ;;;;;"
+            "   ;;;;; Press here after 'Import'"
+            "   ;;;;;"
+        ]
         |> String.concat Environment.NewLine
 
     let initCommon cardInfo dsEntries entries setData =
@@ -62,8 +68,10 @@ module Model =
         let entries =
             List.map
                 (fun entry ->
-                    { amountOld = entry.amount
-                      data = entry })
+                    {
+                        amountOld = entry.amount
+                        data = entry
+                    })
                 entries
 
         let prefs =
@@ -71,17 +79,21 @@ module Model =
             |> Option.defaultValue (Prefs.create 20u 40u Decimal Config.missingPercentDefault false)
 
         let state =
-            { analyseText = arrow
-              cardInfo = cardInfo
-              dsEntries = dsEntries
-              entries = entries
-              prefs = prefs
-              setData = setData
-              viewMode = Collection }
+            {
+                analyseText = arrow
+                cardInfo = cardInfo
+                dsEntries = dsEntries
+                entries = entries
+                prefs = prefs
+                setData = setData
+                viewMode = Collection
+            }
 
         state
 
     let init cardInfo dsEntries entries setData =
-        { common = initCommon cardInfo dsEntries entries setData
-          collection = Collection.Model.init ()
-          inventory = Inventory.Model.init () }
+        {
+            common = initCommon cardInfo dsEntries entries setData
+            collection = Collection.Model.init ()
+            inventory = Inventory.Model.init ()
+        }

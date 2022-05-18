@@ -9,10 +9,12 @@ open Avalonia.Layout
 open MagicCollectionHelper.AvaloniaApp
 
 type ActionButtonProps =
-    { action: Avalonia.Interactivity.RoutedEventArgs -> unit
-      isEnabled: bool
-      subPatch: SubPatchOptions
-      text: string }
+    {
+        action: Avalonia.Interactivity.RoutedEventArgs -> unit
+        isEnabled: bool
+        subPatch: SubPatchOptions
+        text: string
+    }
 
 module ActionButton =
     let create props =
@@ -74,15 +76,12 @@ module TabView =
                         StackPanel.orientation orientation
                         StackPanel.children [
                             for tab in tabs do
-                                let tabText : string = renderTab tab
+                                let tabText: string = renderTab tab
 
                                 ToggleButton.create [
                                     ToggleButton.content tabText
                                     ToggleButton.isChecked (tab = current |> Some)
-                                    ToggleButton.onClick (
-                                        (fun _ -> tab |> dispatchMsg),
-                                        OnChangeOf current
-                                    )
+                                    ToggleButton.onClick ((fun _ -> tab |> dispatchMsg), OnChangeOf current)
                                 ]
                         ]
                     ]
@@ -107,7 +106,10 @@ module TabView =
                     let tabs = tab :: tabs
 
                     let content =
-                        if current = tab then renderTabData tab tabData |> Some else content
+                        if current = tab then
+                            renderTabData tab tabData |> Some
+                        else
+                            content
 
                     tabs, content)
                 list

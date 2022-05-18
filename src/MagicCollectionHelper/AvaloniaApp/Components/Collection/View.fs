@@ -22,10 +22,12 @@ let buttonBar (state: State) (dispatch: Dispatch) : IView =
 
     ActionButtonBar.create [
         ActionButton.create
-            { text = "Import collection"
-              isEnabled = not loadInProgress
-              action = (fun _ -> ImportCollection |> dispatch)
-              subPatch = Never }
+            {
+                text = "Import collection"
+                isEnabled = not loadInProgress
+                action = (fun _ -> ImportCollection |> dispatch)
+                subPatch = Never
+            }
     ]
 
 let renderText prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =
@@ -71,18 +73,20 @@ let headerItem column label =
     :> IView
 
 let entryRow columns i entry =
-    [ for (j, (_, get)) in List.indexed columns do
-          Border.create [
-              Border.row i
-              Border.column (2 * j)
-              Border.padding 5.
-              Border.child (
-                  TextBlock.create [
-                      TextBlock.text (get entry)
-                  ]
-              )
-          ]
-          :> IView ]
+    [
+        for (j, (_, get)) in List.indexed columns do
+            Border.create [
+                Border.row i
+                Border.column (2 * j)
+                Border.padding 5.
+                Border.child (
+                    TextBlock.create [
+                        TextBlock.text (get entry)
+                    ]
+                )
+            ]
+            :> IView
+    ]
 
 let pagingBar entries (state: State) dispatch =
     let pageAmount =
@@ -123,15 +127,11 @@ let pagingBar entries (state: State) dispatch =
                                     250
                                 ]
                                 ComboBox.selectedItem state.pageSize
-                                ComboBox.onSelectedItemChanged (
-                                    unbox<int> >> SetPageSize >> dispatch
-                                )
+                                ComboBox.onSelectedItemChanged (unbox<int> >> SetPageSize >> dispatch)
                             ]
                             Button.create [
                                 Button.content ">"
-                                Button.isEnabled (
-                                    (state.pageOffset + 1) * state.pageSize < List.length entries
-                                )
+                                Button.isEnabled ((state.pageOffset + 1) * state.pageSize < List.length entries)
                                 Button.onClick (fun _ -> (+) 1 |> ChangePage |> dispatch)
                             ]
                         ]
@@ -146,12 +146,14 @@ module Lenses = AgedEntryWithInfoLenses
 
 let tableView entries state =
     let columns =
-        [ "Name", Optic.get Lenses.name
-          "Set", (Optic.get Lenses.set) >> MagicSet.unwrap
-          "Nr.",
-          (Optic.get Lenses.number)
-          >> CollectorNumber.unwrap
-          "Language", (Optic.get Lenses.language) >> Language.unwrap ]
+        [
+            "Name", Optic.get Lenses.name
+            "Set", (Optic.get Lenses.set) >> MagicSet.unwrap
+            "Nr.",
+            (Optic.get Lenses.number)
+            >> CollectorNumber.unwrap
+            "Language", (Optic.get Lenses.language) >> Language.unwrap
+        ]
 
     // Paging
     let entries =

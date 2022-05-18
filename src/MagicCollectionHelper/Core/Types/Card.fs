@@ -8,10 +8,12 @@ module CardTypes =
     [<Generator.Fields("core")>]
     [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type Card =
-        { foil: bool
-          language: Language
-          number: CollectorNumber
-          set: MagicSet }
+        {
+            foil: bool
+            language: Language
+            number: CollectorNumber
+            set: MagicSet
+        }
 
     /// A card entry, which is used to condense multiple cards into one card object and an amount
     [<Generator.Fields("core")>]
@@ -22,15 +24,17 @@ module CardTypes =
     [<Generator.Fields("core")>]
     [<Generator.Lenses("core", "SimpleOptics.Lens")>]
     type CardInfo =
-        { name: string
-          set: MagicSet
-          collectorNumber: CollectorNumber
-          colors: Set<Color>
-          colorIdentity: ColorIdentity
-          oracleId: string
-          rarity: Rarity
-          typeLine: string
-          cmc: uint }
+        {
+            name: string
+            set: MagicSet
+            collectorNumber: CollectorNumber
+            colors: Set<Color>
+            colorIdentity: ColorIdentity
+            oracleId: string
+            rarity: Rarity
+            typeLine: string
+            cmc: uint
+        }
 
     type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 

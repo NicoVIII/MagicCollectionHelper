@@ -116,38 +116,40 @@ module CardPartTypesModules =
         let allColors = [ White; Blue; Black; Red; Green ] |> Set.ofList
 
         let private sorted =
-            [ colorless
-              white
-              blue
-              black
-              red
-              green
-              azorius
-              dimir
-              rakdos
-              gruul
-              selesnya
-              orzhov
-              izzet
-              golgari
-              boros
-              simic
-              bant
-              esper
-              grixis
-              jund
-              naya
-              abzan
-              jeskai
-              sultai
-              mardu
-              temur
-              nonWhite
-              nonBlue
-              nonBlack
-              nonRed
-              nonGreen
-              allColors ]
+            [
+                colorless
+                white
+                blue
+                black
+                red
+                green
+                azorius
+                dimir
+                rakdos
+                gruul
+                selesnya
+                orzhov
+                izzet
+                golgari
+                boros
+                simic
+                bant
+                esper
+                grixis
+                jund
+                naya
+                abzan
+                jeskai
+                sultai
+                mardu
+                temur
+                nonWhite
+                nonBlue
+                nonBlack
+                nonRed
+                nonGreen
+                allColors
+            ]
 
         let toString (ci: ColorIdentity) =
             match ci with

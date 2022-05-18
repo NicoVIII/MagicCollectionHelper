@@ -6,9 +6,11 @@ open MagicCollectionHelper.Core
 
 [<Generator.Lenses("components-collection", "SimpleOptics.Lens")>]
 type State =
-    { loadInProgress: bool
-      pageSize: int
-      pageOffset: int }
+    {
+        loadInProgress: bool
+        pageSize: int
+        pageOffset: int
+    }
 
 [<Generator.DuCases("components-collection")>]
 type Msg =
@@ -26,6 +28,8 @@ type Dispatch = Msg -> unit
 
 module Model =
     let init () =
-        { loadInProgress = false
-          pageSize = 50
-          pageOffset = 0 }
+        {
+            loadInProgress = false
+            pageSize = 50
+            pageOffset = 0
+        }

@@ -47,10 +47,12 @@ let createTab (header: string) (content: IView) =
     ]
 
 let createTabs state dispatch : IView list =
-    [ createTab "Collection" (renderCollectionView state dispatch)
-      createTab "Analyse" (AnalyseView.render state dispatch)
-      createTab "Inventory" (renderInventoryView state dispatch)
-      createTab "Preferences" (PreferenceView.render state dispatch) ]
+    [
+        createTab "Collection" (renderCollectionView state dispatch)
+        createTab "Analyse" (AnalyseView.render state dispatch)
+        createTab "Inventory" (renderInventoryView state dispatch)
+        createTab "Preferences" (PreferenceView.render state dispatch)
+    ]
 
 let render (state: State) (dispatch: Dispatch) : IView =
     TabControl.create [

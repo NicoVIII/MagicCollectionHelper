@@ -49,10 +49,9 @@ module LocationEdit =
         let valueControl =
             TextBox.create [
                 TextBox.text (string inLanguage)
-                TextBox.onTextChanged
-                    (fun lang ->
-                        UpdateLocationRules(locationName, Rules.withInLanguage (Language lang))
-                        |> dispatch)
+                TextBox.onTextChanged (fun lang ->
+                    UpdateLocationRules(locationName, Rules.withInLanguage (Language lang))
+                    |> dispatch)
             ]
 
         ("In language", valueControl)

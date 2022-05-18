@@ -17,23 +17,27 @@ module PreferenceView =
     let numInputProps dispatch (min, max) lens prefs =
         let currentValue = Optic.get lens prefs |> double
 
-        [ NumericUpDown.margin (10., 0., 0., 0.)
-          NumericUpDown.maximum max
-          NumericUpDown.minimum min
-          NumericUpDown.value currentValue
-          NumericUpDown.onValueChanged (
-              (fun newValue ->
-                  if currentValue <> newValue then
-                      newValue
-                      |> Optic.set lens
-                      |> ChangePrefs
-                      |> dispatch),
-              OnChangeOf currentValue
-          ) ]
+        [
+            NumericUpDown.margin (10., 0., 0., 0.)
+            NumericUpDown.maximum max
+            NumericUpDown.minimum min
+            NumericUpDown.value currentValue
+            NumericUpDown.onValueChanged (
+                (fun newValue ->
+                    if currentValue <> newValue then
+                        newValue
+                        |> Optic.set lens
+                        |> ChangePrefs
+                        |> dispatch),
+                OnChangeOf currentValue
+            )
+        ]
 
     let withTableProps row column attrList =
-        [ NumericUpDown.column column
-          NumericUpDown.row row ]
+        [
+            NumericUpDown.column column
+            NumericUpDown.row row
+        ]
         |> List.append attrList
 
     let render (state: State) (dispatch: Dispatch) : IView =
@@ -66,17 +70,13 @@ module PreferenceView =
                                     StackPanel.children [
                                         numInputProps
                                             (0., 200.)
-                                            (Optic.compose
-                                                PrefsLenses.cardGroupMinSize
-                                                uintDoubleLens)
+                                            (Optic.compose PrefsLenses.cardGroupMinSize uintDoubleLens)
                                             prefs
                                         |> NumericUpDown.create
 
                                         numInputProps
                                             (0., 200.)
-                                            (Optic.compose
-                                                PrefsLenses.cardGroupMaxSize
-                                                uintDoubleLens)
+                                            (Optic.compose PrefsLenses.cardGroupMaxSize uintDoubleLens)
                                             prefs
                                         |> NumericUpDown.create
                                     ]

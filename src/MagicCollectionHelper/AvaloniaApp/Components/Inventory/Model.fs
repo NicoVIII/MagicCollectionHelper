@@ -13,11 +13,13 @@ type LocationWithHungTree =
 
 [<Generator.Lenses("components.inventory", "SimpleOptics.Lens")>]
 type State =
-    { filteredInventory: LocationWithHungTree list
-      inventory: MagicCollectionHelper.Core.DomainTypes.LocationWithCards
-      locations: MagicCollectionHelper.Core.DomainTypes.CustomLocation list
-      search: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search
-      viewMode: ViewMode }
+    {
+        filteredInventory: LocationWithHungTree list
+        inventory: MagicCollectionHelper.Core.DomainTypes.LocationWithCards
+        locations: MagicCollectionHelper.Core.DomainTypes.CustomLocation list
+        search: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search
+        viewMode: ViewMode
+    }
 
 open MagicCollectionHelper.Core
 
@@ -44,8 +46,10 @@ module Model =
             Persistence.CustomLocation.load ()
             |> Option.defaultValue []
 
-        { inventory = []
-          filteredInventory = []
-          locations = locations
-          search = { text = ""; old = None }
-          viewMode = Empty }
+        {
+            inventory = []
+            filteredInventory = []
+            locations = locations
+            search = { text = ""; old = None }
+            viewMode = Empty
+        }

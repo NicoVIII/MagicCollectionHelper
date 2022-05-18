@@ -2,27 +2,33 @@ namespace MagicCollectionHelper.Core
 
 module BasicAnalyser =
     type Result =
-        { amount: uint
-          uniqueWithSet: uint
-          withLanguage: uint
-          withSet: uint
-          foils: uint }
+        {
+            amount: uint
+            uniqueWithSet: uint
+            withLanguage: uint
+            withSet: uint
+            foils: uint
+        }
 
     type CollectData =
-        { amount: uint
-          foils: uint
-          uniqueWithSet: Set<MagicSet * CollectorNumber>
-          withSet: uint
-          withLanguage: uint }
+        {
+            amount: uint
+            foils: uint
+            uniqueWithSet: Set<MagicSet * CollectorNumber>
+            withSet: uint
+            withLanguage: uint
+        }
 
     type Preferences = { numBase: NumBase }
 
     let private createEmpty () : CollectData =
-        { amount = 0u
-          uniqueWithSet = Set.empty
-          foils = 0u
-          withSet = 0u
-          withLanguage = 0u }
+        {
+            amount = 0u
+            uniqueWithSet = Set.empty
+            foils = 0u
+            withSet = 0u
+            withLanguage = 0u
+        }
 
     let private collect _ (data: CollectData) (entry: DeckStatsCardEntry) =
         let addFoils =
@@ -44,18 +50,21 @@ module BasicAnalyser =
             | None -> data.withLanguage
 
         { data with
-              amount = data.amount + entry.amount
-              uniqueWithSet = unique
-              foils = data.foils + addFoils
-              withSet = withSet
-              withLanguage = withLanguage }
+            amount = data.amount + entry.amount
+            uniqueWithSet = unique
+            foils = data.foils + addFoils
+            withSet = withSet
+            withLanguage = withLanguage
+        }
 
     let postprocess (_: SetDataMap) data : Result =
-        { amount = data.amount
-          uniqueWithSet = data.uniqueWithSet |> Set.count |> uint
-          withSet = data.withSet
-          foils = data.foils
-          withLanguage = data.withLanguage }
+        {
+            amount = data.amount
+            uniqueWithSet = data.uniqueWithSet |> Set.count |> uint
+            withSet = data.withSet
+            foils = data.foils
+            withLanguage = data.withLanguage
+        }
 
     let print (prefs: Preferences) (result: Result) =
         let p = sprintf

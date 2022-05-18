@@ -70,8 +70,7 @@ module Update =
 
             state, Cmd.none
         | CollectionMsg msg ->
-            let (iState, iCmd, intent) =
-                Collection.Update.perform msg state.collection
+            let (iState, iCmd, intent) = Collection.Update.perform msg state.collection
 
             (state, iCmd |> Cmd.map CollectionMsg)
             |> Tuple2.mapFst (Optic.set StateLenses.collection iState)

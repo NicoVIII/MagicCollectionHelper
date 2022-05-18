@@ -45,8 +45,10 @@ module DomainTypesModules =
             // We remove now all duplicates
             |> List.groupBy (fun entry -> entry.card)
             |> List.map (fun (card, entryList) ->
-                { amount = List.sumBy (Optic.get EntryLenses.amount) entryList
-                  card = card })
+                {
+                    amount = List.sumBy (Optic.get EntryLenses.amount) entryList
+                    card = card
+                })
             |> List.rev
 
         let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =
@@ -54,23 +56,27 @@ module DomainTypesModules =
 
     module Analyser =
         let create emptyData collect postprocess print =
-            { emptyData = emptyData
-              collect = collect
-              postprocess = postprocess
-              print = print }
+            {
+                emptyData = emptyData
+                collect = collect
+                postprocess = postprocess
+                print = print
+            }
 
     module Rules =
         let empty =
-            { inSet = None
-              inLanguage = None
-              isFoil = None
-              isToken = None
-              typeContains = None
-              typeNotContains = None
-              limit = None
-              limitExact = None
-              rarity = None
-              colorIdentity = None }
+            {
+                inSet = None
+                inLanguage = None
+                isFoil = None
+                isToken = None
+                typeContains = None
+                typeNotContains = None
+                limit = None
+                limitExact = None
+                rarity = None
+                colorIdentity = None
+            }
 
         let withInSet v rules = { rules with inSet = Some v }
         let withInLanguage v rules = { rules with inLanguage = Some v }

@@ -64,45 +64,49 @@ module CardData =
 
             match collectorNumber, typeLine, cmc with
             | Some collectorNumber, Some typeLine, Some cmc ->
-                { name = jObject.["name"] |> string
-                  set = jObject.["set"] |> string |> MagicSet.create
-                  collectorNumber = collectorNumber
-                  colors =
-                    Option.ofObj jObject.["colors"]
-                    |> function
-                        | Some token -> tokenToColorSet token
-                        | None -> Set.empty
-                  colorIdentity = jObject.["color_identity"] |> tokenToColorSet
-                  oracleId = jObject.["oracle_id"] |> string
-                  rarity =
-                    jObject.["rarity"]
-                    |> Option.ofObj
-                    |> Option.map (string >> Option.ofObj)
-                    |> Option.flatten
-                    |> function
-                        | Some value ->
-                            value
-                            |> (fun s -> s.Trim())
-                            // Capitalize
-                            |> Seq.mapi (fun i c ->
-                                match i with
-                                | 0 -> Char.ToUpper(c)
-                                | _ -> c)
-                            |> String.Concat
-                            |> Rarity.fromString
-                            |> function
-                                | Some rarity -> rarity
-                                | None -> failwith "We have no valid rarity for now.."
-                        | None -> failwith "Got no rarity for some reason.."
-                  typeLine = typeLine
-                  cmc = cmc }
+                {
+                    name = jObject.["name"] |> string
+                    set = jObject.["set"] |> string |> MagicSet.create
+                    collectorNumber = collectorNumber
+                    colors =
+                        Option.ofObj jObject.["colors"]
+                        |> function
+                            | Some token -> tokenToColorSet token
+                            | None -> Set.empty
+                    colorIdentity = jObject.["color_identity"] |> tokenToColorSet
+                    oracleId = jObject.["oracle_id"] |> string
+                    rarity =
+                        jObject.["rarity"]
+                        |> Option.ofObj
+                        |> Option.map (string >> Option.ofObj)
+                        |> Option.flatten
+                        |> function
+                            | Some value ->
+                                value
+                                |> (fun s -> s.Trim())
+                                // Capitalize
+                                |> Seq.mapi (fun i c ->
+                                    match i with
+                                    | 0 -> Char.ToUpper(c)
+                                    | _ -> c)
+                                |> String.Concat
+                                |> Rarity.fromString
+                                |> function
+                                    | Some rarity -> rarity
+                                    | None -> failwith "We have no valid rarity for now.."
+                            | None -> failwith "Got no rarity for some reason.."
+                    typeLine = typeLine
+                    cmc = cmc
+                }
                 |> Some
             | _ -> None
 
     let prepareImportFile () =
         let filePath =
-            [ SystemInfo.savePath
-              "default-cards.json" ]
+            [
+                SystemInfo.savePath
+                "default-cards.json"
+            ]
             |> Path.combine
 
         let fileExists = File.Exists filePath
@@ -125,7 +129,5 @@ module CardData =
                 |> Seq.map (lineToInfo)
                 |> Seq.filter (fun l -> l.IsSome)
                 |> Seq.map (fun l -> l.Value)
-                |> Seq.fold
-                    (fun map info -> Map.add (info.set, info.collectorNumber) info map)
-                    Map.empty
+                |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
         }

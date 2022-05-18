@@ -10,24 +10,26 @@ module Collection =
     type Collection = CsvProvider<"./example.csv">
 
     let private rowToEntry (row: Collection.Row) : DeckStatsCardEntry =
-        { amount = row.Amount |> uint
-          name = row.Card_name
-          number =
-              row.Collector_number
-              |> function
-              | "" -> None
-              | nr -> nr |> CollectorNumber.fromString |> Some
-          foil = row.Is_foil.GetValueOrDefault() = 1
-          language =
-              row.Language
-              |> function
-              | "" -> None
-              | set -> Language set |> Some
-          set =
-              row.Set_code
-              |> function
-              | "" -> None
-              | set -> MagicSet.create set |> Some }
+        {
+            amount = row.Amount |> uint
+            name = row.Card_name
+            number =
+                row.Collector_number
+                |> function
+                    | "" -> None
+                    | nr -> nr |> CollectorNumber.fromString |> Some
+            foil = row.Is_foil.GetValueOrDefault() = 1
+            language =
+                row.Language
+                |> function
+                    | "" -> None
+                    | set -> Language set |> Some
+            set =
+                row.Set_code
+                |> function
+                    | "" -> None
+                    | set -> MagicSet.create set |> Some
+        }
 
     let private parseCsv (filePath: string) =
         Collection.Load filePath

@@ -38,7 +38,9 @@ module Task =
 
     let setupTestdata () =
         if not (RuntimeInformation.IsOSPlatform OSPlatform.Linux) then
-            Job.error 3 [ "Setup-testdata is only supported on linux!" ]
+            Job.error [
+                "Setup-testdata is only supported on linux!"
+            ]
         else
             // Move workspace files
             Path.Combine(Config.dataFolder, "workspace")
@@ -49,12 +51,7 @@ module Task =
             Path.Combine(Config.dataFolder, "share")
             |> Directory.EnumerateFiles
             |> Shell.copy (
-                Path.Combine(
-                    Environment.GetEnvironmentVariable("HOME"),
-                    ".local",
-                    "share",
-                    "magic-collection-helper"
-                )
+                Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".local", "share", "magic-collection-helper")
             )
 
             Job.ok
@@ -107,6 +104,8 @@ let main args =
             }
         | [ "setup-testdata" ] -> Task.setupTestdata ()
         | _ ->
-            Job.error 1 [ "Usage: dotnet run [<command>]"
-                          "Look up available commands in run.fs" ]
+            Job.error [
+                "Usage: dotnet run [<command>]"
+                "Look up available commands in run.fs"
+            ]
     |> Job.execute

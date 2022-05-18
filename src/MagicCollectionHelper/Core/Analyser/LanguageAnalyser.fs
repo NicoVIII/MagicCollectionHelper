@@ -31,9 +31,7 @@ module LanguageAnalyser =
 
         let data =
             result
-            |> Map.map
-                (fun (Language key) value ->
-                    $"%s{key}: %s{Numbers.print prefs.numBase 0uy (int value)}")
+            |> Map.map (fun (Language key) value -> $"%s{key}: %s{Numbers.print prefs.numBase 0uy (int value)}")
             |> Map.toSeq
             |> Seq.map (fun (_, value) -> value)
 
