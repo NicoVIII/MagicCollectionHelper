@@ -24,28 +24,27 @@
     <!-- Collection component -->
     <Compile Include="Components/Collection/Model.fs" />
     <Compile Include="Components/Collection/Model.Optics.fs" />
-    <Compile Include="Components/Collection/ViewComponents/*.fs" />
     <Compile Include="Components/Collection/View.fs" />
     <Compile Include="Components/Collection/Update.fs" />
 
     <!-- Inventory component -->
     <Compile Include="Components/Inventory/Model.fs" />
     <Compile Include="Components/Inventory/Model.Optics.fs" />
-    <Compile Include="Components/Inventory/ViewComponents/*.fs" />
+    <Compile Include="Components/Inventory/ViewComponents/LocationEdit.fs" />
+    <Compile Include="Components/Inventory/ViewComponents/SearchBar.fs" />
     <Compile Include="Components/Inventory/View.fs" />
     <Compile Include="Components/Inventory/Update.fs" />
 
     <!-- Mainview Loading -->
     <Compile Include="Main/Loading/Model.fs" />
     <Compile Include="Main/Loading/Model.Optics.fs" />
-    <Compile Include="Main/Loading/ViewComponents/*.fs" />
     <Compile Include="Main/Loading/View.fs" />
     <Compile Include="Main/Loading/Update.fs" />
 
     <!-- Mainview Ready -->
     <Compile Include="Main/Ready/Model.fs" />
     <Compile Include="Main/Ready/Model.Optics.fs" />
-    <Compile Include="Main/Ready/ViewComponents/*.fs" />
+    <Compile Include="Main/Ready/ViewComponents/PreferenceView.fs" />
     <Compile Include="Main/Ready/View.fs" />
     <Compile Include="Main/Ready/Update.fs" />
 

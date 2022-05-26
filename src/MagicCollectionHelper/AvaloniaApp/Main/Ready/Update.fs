@@ -30,19 +30,6 @@ module Update =
     let perform (msg: Msg) (state: State) =
         match msg with
         | AsyncError x -> raise x
-        | Analyse ->
-            let prefs = Optic.get StateOptic.prefs state
-            let setData = Optic.get StateOptic.setData state
-            let entries = Optic.get StateOptic.dsEntries state
-
-            let state =
-                let value =
-                    Analyser.analyse setData prefs (entries |> Seq.ofList)
-                    |> String.concat Environment.NewLine
-
-                Optic.set StateOptic.analyseText value state
-
-            state, Cmd.none
         | ChangeViewMode viewMode ->
             let state = Optic.set StateOptic.viewMode viewMode state
 

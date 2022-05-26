@@ -32,8 +32,6 @@
     <Compile Include="Import/Collection.fs" />
     <Compile Include="Import/SetData.fs" />
 
-    <Compile Include="Analyser/*.fs" />
-    <Compile Include="Analyser.fs" />
     <Compile Include="Inventory.fs" />
   </ItemGroup>
 

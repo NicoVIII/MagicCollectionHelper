@@ -33,7 +33,6 @@ open MagicCollectionHelper.AvaloniaApp.Components
 
 type Msg =
     | AsyncError of exn
-    | Analyse
     | ChangeViewMode of ViewMode
     | ChangePrefs of (Prefs -> Prefs)
     | SavePrefs
