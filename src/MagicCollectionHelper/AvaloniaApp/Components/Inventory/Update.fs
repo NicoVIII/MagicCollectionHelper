@@ -47,11 +47,9 @@ let perform
                                 let lastAmount = List.length lastEntries
                                 let amount = List.length entries
 
-                                if (lastAmount + amount <= maxSize)
-                                   || lastAmount < minSize then
+                                if (lastAmount + amount <= maxSize) || lastAmount < minSize then
                                     // We merge the leafs
-                                    (List.append lastNames names, Leaf(List.append lastEntries entries))
-                                    :: tail
+                                    (List.append lastNames names, Leaf(List.append lastEntries entries)) :: tail
                                 else
                                     node :: nodes'
                             // We can eliminate Nodes with only one node
@@ -99,26 +97,14 @@ let perform
                     entries
                     |> List.groupBy (fun (entry: AgedEntryWithInfo) ->
                         if nameOffset > 0 then
-                            (entry ^. AgedEntryWithInfoOptic.name)
-                                .Substring(0, nameOffset + 1)
+                            (entry ^. AgedEntryWithInfoOptic.name).Substring(0, nameOffset + 1)
                         else
                             match sortBy with
-                            | ByCmc ->
-                                entry ^. AgedEntryWithInfoOptic.cmc
-                                |> sprintf "CmC %i"
-                            | BySet ->
-                                entry ^. AgedEntryWithInfoOptic.set
-                                |> MagicSet.unwrap
-                                |> sprintf "Set %s"
-                            | ByColorIdentity ->
-                                entry ^. AgedEntryWithInfoOptic.colorIdentity
-                                |> ColorIdentity.toString
-                            | ByName ->
-                                (entry ^. AgedEntryWithInfoOptic.name)
-                                    .Substring(0, 1)
-                            | ByCollectorNumber ->
-                                entry ^. AgedEntryWithInfoOptic.number
-                                |> CollectorNumber.unwrap
+                            | ByCmc -> entry ^. AgedEntryWithInfoOptic.cmc |> sprintf "CmC %i"
+                            | BySet -> entry ^. AgedEntryWithInfoOptic.set |> MagicSet.unwrap |> sprintf "Set %s"
+                            | ByColorIdentity -> entry ^. AgedEntryWithInfoOptic.colorIdentity |> ColorIdentity.toString
+                            | ByName -> (entry ^. AgedEntryWithInfoOptic.name).Substring(0, 1)
+                            | ByCollectorNumber -> entry ^. AgedEntryWithInfoOptic.number |> CollectorNumber.unwrap
                             | ByLanguage langList ->
                                 let language = entry ^. AgedEntryWithInfoOptic.language
 
@@ -131,11 +117,7 @@ let perform
 
                                 List.tryFind (Set.contains rarity) rarities
                                 |> function
-                                    | Some set ->
-                                        set
-                                        |> Set.map Rarity.toString
-                                        |> Set.toSeq
-                                        |> String.concat " / "
+                                    | Some set -> set |> Set.map Rarity.toString |> Set.toSeq |> String.concat " / "
                                     | None -> "Other"
                             | ByTypeContains types ->
                                 let typeLine = entry ^. AgedEntryWithInfoOptic.typeLine
@@ -164,10 +146,7 @@ let perform
                         match groups with
                         // With just one group, grouping makes no sense
                         | [ (_, entries) ] -> createTree sortBy tail entries
-                        | groups ->
-                            groups
-                            |> List.map (Tuple2.mapSnd (createTree sortBy tail))
-                            |> Nodes
+                        | groups -> groups |> List.map (Tuple2.mapSnd (createTree sortBy tail)) |> Nodes
 
                 let sortBy =
                     match location with
@@ -195,9 +174,7 @@ let perform
 
         (state, Cmd.ofMsg (FilterInventory inventory))
     | ChangeLocation location ->
-        let state =
-            state
-            |> Optic.set StateOptic.viewMode (Some location |> Location)
+        let state = state |> Optic.set StateOptic.viewMode (Some location |> Location)
 
         state, Cmd.none
     | OpenLocationEdit ->
@@ -205,12 +182,10 @@ let perform
 
         (state, Cmd.none)
     | CloseLocationEdit ->
-        let state =
-            state
-            |> Optic.set StateOptic.viewMode (Location None)
+        let state = state |> Optic.set StateOptic.viewMode (Location None)
 
         (state, Cmd.none)
-    | UpdateLocationRules (locationName, rulesMutation) ->
+    | UpdateLocationRules(locationName, rulesMutation) ->
         let mutateRules location =
             Optic.map CustomLocationOptic.rules rulesMutation location
 

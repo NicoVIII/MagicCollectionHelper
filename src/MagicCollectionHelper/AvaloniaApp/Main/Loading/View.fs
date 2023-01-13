@@ -12,13 +12,7 @@ module View =
         StackPanel.create [
             StackPanel.orientation Orientation.Horizontal
             StackPanel.spacing 5.
-            StackPanel.children [
-                icon
-                TextBlock.create [
-                    TextBlock.fontSize 24.
-                    TextBlock.text text
-                ]
-            ]
+            StackPanel.children [ icon; TextBlock.create [ TextBlock.fontSize 24.; TextBlock.text text ] ]
         ]
 
     let loadSetData state =

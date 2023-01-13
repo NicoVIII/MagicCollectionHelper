@@ -64,10 +64,7 @@ module SearchBar =
                 StackPanel.create [
                     StackPanel.orientation Orientation.Vertical
                     StackPanel.spacing 4.
-                    StackPanel.children [
-                        searchText search dispatch
-                        searchOld search dispatch
-                    ]
+                    StackPanel.children [ searchText search dispatch; searchOld search dispatch ]
                 ]
             )
         ]

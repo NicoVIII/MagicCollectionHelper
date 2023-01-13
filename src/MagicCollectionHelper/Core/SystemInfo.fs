@@ -34,17 +34,15 @@ module SystemInfo =
     let savePath =
         match currentOs with
         | Linux
-        | MacOS ->
-            [
-                Environment.GetEnvironmentVariable("HOME")
-                ".local"
-                "share"
-                Config.dataFolderName
-            ]
-        | Windows ->
-            [
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                Config.dataFolderName
-                "save"
-            ]
+        | MacOS -> [
+            Environment.GetEnvironmentVariable("HOME")
+            ".local"
+            "share"
+            Config.dataFolderName
+          ]
+        | Windows -> [
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+            Config.dataFolderName
+            "save"
+          ]
         |> Path.combine

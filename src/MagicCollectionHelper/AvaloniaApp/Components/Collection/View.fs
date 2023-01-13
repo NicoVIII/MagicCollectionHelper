@@ -63,34 +63,24 @@ let headerItem column label =
         Border.row 0
         Border.column column
         Border.borderThickness (0., 0., 0., 2.)
-        Border.child (
-            Button.create [
-                Button.content (label: string)
-            ]
-        )
+        Border.child (Button.create [ Button.content (label: string) ])
     ]
     :> IView
 
-let entryRow columns i entry =
-    [
-        for (j, (_, get)) in List.indexed columns do
-            Border.create [
-                Border.row i
-                Border.column (2 * j)
-                Border.padding 5.
-                Border.child (
-                    TextBlock.create [
-                        TextBlock.text (get entry)
-                    ]
-                )
-            ]
-            :> IView
-    ]
+let entryRow columns i entry = [
+    for (j, (_, get)) in List.indexed columns do
+        Border.create [
+            Border.row i
+            Border.column (2 * j)
+            Border.padding 5.
+            Border.child (TextBlock.create [ TextBlock.text (get entry) ])
+        ]
+        :> IView
+]
 
 let pagingBar entries (state: State) dispatch =
     let pageAmount =
-        (List.length entries |> double)
-        / (state.pageSize |> double)
+        (List.length entries |> double) / (state.pageSize |> double)
         |> Math.Ceiling
         |> int
 
@@ -118,13 +108,7 @@ let pagingBar entries (state: State) dispatch =
                                 Button.onClick (fun _ -> (+) -1 |> ChangePage |> dispatch)
                             ]
                             ComboBox.create [
-                                ComboBox.dataItems [
-                                    10
-                                    25
-                                    50
-                                    100
-                                    250
-                                ]
+                                ComboBox.dataItems [ 10; 25; 50; 100; 250 ]
                                 ComboBox.selectedItem state.pageSize
                                 ComboBox.onSelectedItemChanged (unbox<int> >> SetPageSize >> dispatch)
                             ]
@@ -144,13 +128,12 @@ let pagingBar entries (state: State) dispatch =
 module Optic = AgedEntryWithInfoOptic
 
 let tableView entries state =
-    let columns =
-        [
-            "Name", Optic.get Optic.name
-            "Set", (Optic.get Optic.set) >> MagicSet.unwrap
-            "Nr.", (Optic.get Optic.number) >> CollectorNumber.unwrap
-            "Language", (Optic.get Optic.language) >> Language.unwrap
-        ]
+    let columns = [
+        "Name", Optic.get Optic.name
+        "Set", (Optic.get Optic.set) >> MagicSet.unwrap
+        "Nr.", (Optic.get Optic.number) >> CollectorNumber.unwrap
+        "Language", (Optic.get Optic.language) >> Language.unwrap
+    ]
 
     // Paging
     let entries =
@@ -160,28 +143,19 @@ let tableView entries state =
             |> List.skip (state.pageOffset * state.pageSize)
             |> List.take state.pageSize
         | length when length > state.pageOffset * state.pageSize ->
-            entries
-            |> List.skip (state.pageOffset * state.pageSize)
+            entries |> List.skip (state.pageOffset * state.pageSize)
         | _ -> []
 
     Grid.create [
-        Grid.columnDefinitions (
-            List.replicate (List.length columns) "1*"
-            |> String.concat ",Auto,"
-        )
-        Grid.rowDefinitions (
-            List.replicate (List.length entries + 1) "Auto"
-            |> String.concat ","
-        )
+        Grid.columnDefinitions (List.replicate (List.length columns) "1*" |> String.concat ",Auto,")
+        Grid.rowDefinitions (List.replicate (List.length entries + 1) "Auto" |> String.concat ",")
         Grid.children [
             // Header
             for (i, (name, _)) in List.indexed columns do
                 headerItem (2 * i) name
 
                 if i < List.length columns - 1 then
-                    GridSplitter.create [
-                        GridSplitter.column (2 * i + 1)
-                    ]
+                    GridSplitter.create [ GridSplitter.column (2 * i + 1) ]
 
             // Rows
             for (i, entry) in List.indexed entries do

@@ -25,20 +25,13 @@ module PreferenceView =
             NumericUpDown.onValueChanged (
                 (fun newValue ->
                     if currentValue <> newValue then
-                        newValue
-                        |> Optic.set lens
-                        |> ChangePrefs
-                        |> dispatch),
+                        newValue |> Optic.set lens |> ChangePrefs |> dispatch),
                 OnChangeOf currentValue
             )
         ]
 
     let withTableProps row column attrList =
-        [
-            NumericUpDown.column column
-            NumericUpDown.row row
-        ]
-        |> List.append attrList
+        [ NumericUpDown.column column; NumericUpDown.row row ] |> List.append attrList
 
     let render (state: State) (dispatch: Dispatch) : IView =
         let numInputProps = numInputProps dispatch
@@ -103,18 +96,12 @@ module PreferenceView =
                                 ComboBox.create [
                                     ComboBox.column 1
                                     ComboBox.row 4
-                                    ComboBox.dataItems [
-                                        Decimal
-                                        Dozenal
-                                        Seximal
-                                    ]
+                                    ComboBox.dataItems [ Decimal; Dozenal; Seximal ]
                                     ComboBox.selectedItem prefs.numBase
                                     ComboBox.itemTemplate (
                                         DataTemplateView<NumBase>.create
                                             (fun numBase ->
-                                                TextBlock.create [
-                                                    TextBlock.text (NumBase.toString numBase)
-                                                ])
+                                                TextBlock.create [ TextBlock.text (NumBase.toString numBase) ])
                                     )
                                     ComboBox.onSelectedItemChanged (fun v ->
                                         if v <> null then
@@ -130,17 +117,11 @@ module PreferenceView =
                             CheckBox.content "Include Foils in Set Analyser"
                             CheckBox.isChecked prefs.setWithFoils
                             CheckBox.onChecked (
-                                (fun _ ->
-                                    (Optic.set PrefsOptic.setWithFoils true)
-                                    |> ChangePrefs
-                                    |> dispatch),
+                                (fun _ -> (Optic.set PrefsOptic.setWithFoils true) |> ChangePrefs |> dispatch),
                                 Never
                             )
                             CheckBox.onUnchecked (
-                                (fun _ ->
-                                    (Optic.set PrefsOptic.setWithFoils false)
-                                    |> ChangePrefs
-                                    |> dispatch),
+                                (fun _ -> (Optic.set PrefsOptic.setWithFoils false) |> ChangePrefs |> dispatch),
                                 Never
                             )
                         ]

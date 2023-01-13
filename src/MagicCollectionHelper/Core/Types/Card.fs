@@ -3,30 +3,28 @@ namespace MagicCollectionHelper.Core
 [<AutoOpen>]
 module CardTypes =
     /// A card identified by as few properties as possible
-    type Card =
-        {
-            foil: bool
-            language: Language
-            number: CollectorNumber
-            set: MagicSet
-        }
+    type Card = {
+        foil: bool
+        language: Language
+        number: CollectorNumber
+        set: MagicSet
+    }
 
     /// A card entry, which is used to condense multiple cards into one card object and an amount
     type Entry = { amount: uint; card: Card }
 
     /// Additional info for a card
-    type CardInfo =
-        {
-            name: string
-            set: MagicSet
-            collectorNumber: CollectorNumber
-            colors: Set<Color>
-            colorIdentity: ColorIdentity
-            oracleId: string
-            rarity: Rarity
-            typeLine: string
-            cmc: uint
-        }
+    type CardInfo = {
+        name: string
+        set: MagicSet
+        collectorNumber: CollectorNumber
+        colors: Set<Color>
+        colorIdentity: ColorIdentity
+        oracleId: string
+        rarity: Rarity
+        typeLine: string
+        cmc: uint
+    }
 
     type CardInfoMap = Map<MagicSet * CollectorNumber, CardInfo>
 

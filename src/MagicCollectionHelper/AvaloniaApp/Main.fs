@@ -23,9 +23,8 @@ module Update =
     let processLoadingIntent intent state =
         match intent with
         | Loading.DoNothing -> state
-        | Loading.ChangeToReady (cardInfo, dsEntries, entries, setData) ->
-            Ready.Model.init cardInfo dsEntries entries setData
-            |> Ready
+        | Loading.ChangeToReady(cardInfo, dsEntries, entries, setData) ->
+            Ready.Model.init cardInfo dsEntries entries setData |> Ready
 
     let perform msg state =
         match state, msg with

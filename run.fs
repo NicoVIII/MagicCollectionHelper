@@ -38,9 +38,7 @@ module Task =
 
     let setupTestdata () =
         if not (RuntimeInformation.IsOSPlatform OSPlatform.Linux) then
-            Job.error [
-                "Setup-testdata is only supported on linux!"
-            ]
+            Job.error [ "Setup-testdata is only supported on linux!" ]
         else
             // Move workspace files
             Path.Combine(Config.dataFolder, "workspace")
@@ -81,31 +79,23 @@ let main args =
     |> List.ofArray
     |> function
         | [ "restore" ] -> Task.restore ()
-        | [ "build" ] ->
-            job {
-                Task.restore ()
-                Task.build ()
-            }
+        | [ "build" ] -> job {
+            Task.restore ()
+            Task.build ()
+          }
         | []
-        | [ "run" ] ->
-            job {
-                Task.restore ()
-                Task.run ()
-            }
-        | [ "test" ] ->
-            job {
-                Task.restore ()
-                Task.test ()
-            }
-        | [ "publish" ] ->
-            job {
-                Task.restore ()
-                Task.publish ()
-            }
+        | [ "run" ] -> job {
+            Task.restore ()
+            Task.run ()
+          }
+        | [ "test" ] -> job {
+            Task.restore ()
+            Task.test ()
+          }
+        | [ "publish" ] -> job {
+            Task.restore ()
+            Task.publish ()
+          }
         | [ "setup-testdata" ] -> Task.setupTestdata ()
-        | _ ->
-            Job.error [
-                "Usage: dotnet run [<command>]"
-                "Look up available commands in run.fs"
-            ]
+        | _ -> Job.error [ "Usage: dotnet run [<command>]"; "Look up available commands in run.fs" ]
     |> Job.execute

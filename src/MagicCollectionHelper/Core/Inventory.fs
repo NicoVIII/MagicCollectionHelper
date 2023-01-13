@@ -53,13 +53,7 @@ module Inventory =
         let fitsLimit cardsInLoc cardWithInfo rules =
             let rule limit =
                 let sum =
-                    List.sumBy
-                        (fun c ->
-                            if CardWithInfo.isSame c cardWithInfo then
-                                1
-                            else
-                                0)
-                        cardsInLoc
+                    List.sumBy (fun c -> if CardWithInfo.isSame c cardWithInfo then 1 else 0) cardsInLoc
 
                 (uint) sum < limit
 
@@ -68,13 +62,7 @@ module Inventory =
         let fitsLimitExact cardsInLoc cardWithInfo rules =
             let rule limitExact =
                 let sum =
-                    List.sumBy
-                        (fun c ->
-                            if CardWithInfo.isExactSame c cardWithInfo then
-                                1
-                            else
-                                0)
-                        cardsInLoc
+                    List.sumBy (fun c -> if CardWithInfo.isExactSame c cardWithInfo then 1 else 0) cardsInLoc
 
                 (uint) sum < limitExact
 
@@ -105,15 +93,13 @@ module Inventory =
         Rules.fitsAll cardList card location.rules
 
     let determineLocation locCardMap locations card =
-        locations
-        |> List.tryFind (fitsInLocation locCardMap card)
+        locations |> List.tryFind (fitsInLocation locCardMap card)
 
     let getSortByValue setData entryWithInfo sortBy =
         match sortBy with
         | ByColorIdentity ->
             let pos =
-                entryWithInfo ^. EntryWithInfoOptic.colorIdentity
-                |> ColorIdentity.getPosition
+                entryWithInfo ^. EntryWithInfoOptic.colorIdentity |> ColorIdentity.getPosition
 
             sprintf "%02i" pos
         | ByName -> entryWithInfo ^. EntryWithInfoOptic.name
@@ -134,13 +120,10 @@ module Inventory =
 
             $"{date}{extension}"
         | ByCollectorNumber ->
-            (entryWithInfo ^. EntryWithInfoOptic.number
-             |> CollectorNumber.unwrap)
+            (entryWithInfo ^. EntryWithInfoOptic.number |> CollectorNumber.unwrap)
                 .PadLeft(3, '0')
             |> sprintf "%s"
-        | ByCmc ->
-            entryWithInfo ^. EntryWithInfoOptic.cmc
-            |> sprintf "%02i"
+        | ByCmc -> entryWithInfo ^. EntryWithInfoOptic.cmc |> sprintf "%02i"
         | ByTypeContains typeContains ->
             let typeLine = entryWithInfo ^. EntryWithInfoOptic.typeLine
 
@@ -160,11 +143,7 @@ module Inventory =
 
             rarities
             |> List.indexed
-            |> List.tryPick (fun (index, raritySet) ->
-                if Set.contains rarity raritySet then
-                    Some index
-                else
-                    None)
+            |> List.tryPick (fun (index, raritySet) -> if Set.contains rarity raritySet then Some index else None)
             |> Option.defaultValue (List.length rarities)
             |> string
         | ByLanguage languages ->
@@ -172,11 +151,7 @@ module Inventory =
 
             languages
             |> List.indexed
-            |> List.tryPick (fun (index, sLanguage) ->
-                if sLanguage = language then
-                    Some index
-                else
-                    None)
+            |> List.tryPick (fun (index, sLanguage) -> if sLanguage = language then Some index else None)
             |> Option.defaultValue (List.length languages)
             |> string
 
@@ -194,12 +169,7 @@ module Inventory =
             sortRules
             |> List.map (getSortByValue setData entryWithInfo)
             // We add a random factor at the end
-            |> (fun lst ->
-                List.append
-                    lst
-                    [
-                        random.Next(0, 10000) |> sprintf "%04i"
-                    ])
+            |> (fun lst -> List.append lst [ random.Next(0, 10000) |> sprintf "%04i" ])
 
         entries |> List.sortBy sortBy
 
@@ -224,13 +194,9 @@ module Inventory =
             |> List.sortBy (fun entry ->
                 let foil = entry ^. AgedEntryWithInfoOptic.foil
 
-                let language =
-                    entry ^. AgedEntryWithInfoOptic.language
-                    |> Language.unwrap
+                let language = entry ^. AgedEntryWithInfoOptic.language |> Language.unwrap
 
-                let number =
-                    entry ^. AgedEntryWithInfoOptic.number
-                    |> CollectorNumber.unwrap
+                let number = entry ^. AgedEntryWithInfoOptic.number |> CollectorNumber.unwrap
 
                 let set = entry ^. AgedEntryWithInfoOptic.set
 
@@ -251,9 +217,7 @@ module Inventory =
         for agedEntryWithInfo in agedEntriesWithInfo do
             let getCard old =
                 WithInfo.map
-                    (fun agedEntry ->
-                        agedEntry ^. AgedEntryOptic.card
-                        |> AgedCard.create old)
+                    (fun agedEntry -> agedEntry ^. AgedEntryOptic.card |> AgedCard.create old)
                     agedEntryWithInfo
 
             let old = getCard true
@@ -264,16 +228,10 @@ module Inventory =
             let mutable i = 0u
 
             while i < agedEntryWithInfo.data.data.amount do
-                let card =
-                    if i < agedEntryWithInfo.data.amountOld then
-                        old
-                    else
-                        notOld
+                let card = if i < agedEntryWithInfo.data.amountOld then old else notOld
 
                 let location =
-                    card
-                    |> AgedCardWithInfo.removeAge
-                    |> determineLocation locCardMap locations
+                    card |> AgedCardWithInfo.removeAge |> determineLocation locCardMap locations
 
                 match location with
                 | Some location ->
@@ -302,5 +260,4 @@ module Inventory =
             | Custom location -> List.findIndex (fun l -> location = l) locations)
 
     // Because this process can take some time, we provide an async version
-    let takeAsync setData infoMap locations entries =
-        async { return take setData infoMap locations entries }
+    let takeAsync setData infoMap locations entries = async { return take setData infoMap locations entries }

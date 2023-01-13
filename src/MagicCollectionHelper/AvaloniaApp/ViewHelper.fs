@@ -22,10 +22,7 @@ module ViewHelper =
 
             match tree with
             | Leaf value -> Leaf(mapValue value)
-            | Nodes nodes ->
-                nodes
-                |> List.map (fun (name, child) -> mapKey name, map child)
-                |> Nodes
+            | Nodes nodes -> nodes |> List.map (fun (name, child) -> mapKey name, map child) |> Nodes
 
         let inline mapKey mapKey = map mapKey id
         let inline mapValue mapValue = map id mapValue

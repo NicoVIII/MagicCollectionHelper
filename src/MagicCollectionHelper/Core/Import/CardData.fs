@@ -13,16 +13,14 @@ module CardData =
 
     type BulkDataDefaultCardsResponse = { download_uri: string }
 
-    let fetchBulkData (filePath: string) =
-        async {
-            let! rawResponse = httpAsync { GET "https://api.scryfall.com/bulk-data/default_cards" }
+    let fetchBulkData (filePath: string) = async {
+        let! rawResponse = httpAsync { GET "https://api.scryfall.com/bulk-data/default_cards" }
 
-            let response =
-                Response.toText rawResponse
-                |> Json.deserialize<BulkDataDefaultCardsResponse>
+        let response =
+            Response.toText rawResponse |> Json.deserialize<BulkDataDefaultCardsResponse>
 
-            return! downloadFile response.download_uri filePath
-        }
+        return! downloadFile response.download_uri filePath
+    }
 
     let private tokenToColorSet (jToken: JToken) =
         jToken.Children()
@@ -102,19 +100,13 @@ module CardData =
             | _ -> None
 
     let prepareImportFile () =
-        let filePath =
-            [
-                SystemInfo.savePath
-                "default-cards.json"
-            ]
-            |> Path.combine
+        let filePath = [ SystemInfo.savePath; "default-cards.json" ] |> Path.combine
 
         let fileExists = File.Exists filePath
 
         let fileOutdated =
             fileExists
-            && File.GetCreationTime filePath > (File.GetCreationTime filePath)
-                .AddHours Config.maxAgeCardDataHours
+            && File.GetCreationTime filePath > (File.GetCreationTime filePath).AddHours Config.maxAgeCardDataHours
 
         // If we have a file we use it only for a week
         if not fileExists || fileOutdated then
@@ -122,12 +114,11 @@ module CardData =
         else
             filePath |> FileExists
 
-    let importFile (filePath: string) =
-        async {
-            return
-                File.ReadLines(filePath)
-                |> Seq.map (lineToInfo)
-                |> Seq.filter (fun l -> l.IsSome)
-                |> Seq.map (fun l -> l.Value)
-                |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
-        }
+    let importFile (filePath: string) = async {
+        return
+            File.ReadLines(filePath)
+            |> Seq.map (lineToInfo)
+            |> Seq.filter (fun l -> l.IsSome)
+            |> Seq.map (fun l -> l.Value)
+            |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
+    }

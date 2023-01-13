@@ -8,13 +8,12 @@ open Avalonia.Layout
 
 open MagicCollectionHelper.AvaloniaApp
 
-type ActionButtonProps =
-    {
-        action: Avalonia.Interactivity.RoutedEventArgs -> unit
-        isEnabled: bool
-        subPatch: SubPatchOptions
-        text: string
-    }
+type ActionButtonProps = {
+    action: Avalonia.Interactivity.RoutedEventArgs -> unit
+    isEnabled: bool
+    subPatch: SubPatchOptions
+    text: string
+}
 
 module ActionButton =
     let create props =
@@ -89,13 +88,7 @@ module TabView =
             ]
             :> IView
 
-        DockPanel.create [
-            DockPanel.children [
-                tabContainer
-                content
-            ]
-        ]
-        :> IView
+        DockPanel.create [ DockPanel.children [ tabContainer; content ] ] :> IView
 
     /// Does render a tab view from a map. It has to be provided as list because
     /// order matters in this context

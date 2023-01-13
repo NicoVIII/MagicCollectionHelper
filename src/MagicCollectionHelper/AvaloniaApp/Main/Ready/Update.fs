@@ -39,8 +39,7 @@ module Update =
 
             state, Cmd.ofMsg SavePrefs
         | SavePrefs ->
-            state ^. StateOptic.prefs
-            |> Persistence.Prefs.save
+            state ^. StateOptic.prefs |> Persistence.Prefs.save
 
             state, Cmd.none
         | SaveEntries entries ->
@@ -51,9 +50,7 @@ module Update =
 
             let comparedEntries = AgedEntry.determineCardAge oldEntries entries
 
-            let state =
-                state
-                |> Optic.set StateOptic.entries comparedEntries
+            let state = state |> Optic.set StateOptic.entries comparedEntries
 
             state, Cmd.none
         | CollectionMsg msg ->

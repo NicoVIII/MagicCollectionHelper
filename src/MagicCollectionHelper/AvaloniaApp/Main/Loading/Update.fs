@@ -12,11 +12,7 @@ module Update =
         | AsyncError x -> raise x
         | StartUp ->
             let cmd =
-                [
-                    PrepareCardInfo
-                    PrepareSetData
-                    LoadCollection
-                ]
+                [ PrepareCardInfo; PrepareSetData; LoadCollection ]
                 |> List.map Cmd.ofMsg
                 |> Cmd.batch
 
@@ -42,9 +38,7 @@ module Update =
 
             state, cmd, DoNothing
         | SaveCardInfo import ->
-            let state =
-                state
-                |> Optic.set StateOptic.cardInfo (Ready import)
+            let state = state |> Optic.set StateOptic.cardInfo (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | PrepareSetData ->
@@ -68,9 +62,7 @@ module Update =
 
             state, cmd, DoNothing
         | SaveSetData import ->
-            let state =
-                state
-                |> Optic.set StateOptic.setData (Ready import)
+            let state = state |> Optic.set StateOptic.setData (Ready import)
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
         | LoadCollection ->
@@ -85,7 +77,7 @@ module Update =
                 Optic.set StateOptic.dsEntries value state
 
             state, Cmd.ofMsg CheckLoadingState, DoNothing
-        | CalcEntries (cardInfo, entries) ->
+        | CalcEntries(cardInfo, entries) ->
             let state = state |> Optic.set StateOptic.entries Import
 
             let fnc () =

@@ -17,9 +17,7 @@ module DomainTypesModules =
         let toEntry cardInfoMap (entry: DeckStatsCardEntry) =
             match entry.set, entry.number, entry.language with
             | Some set, Some number, Some lang ->
-                Card.create entry.foil lang number set
-                |> Entry.create entry.amount
-                |> Some
+                Card.create entry.foil lang number set |> Entry.create entry.amount |> Some
             // We try to determine the number with name and set
             | Some set, None, Some lang ->
                 cardInfoMap
@@ -53,52 +51,49 @@ module DomainTypesModules =
                 []
             // We remove now all duplicates
             |> List.groupBy (fun entry -> entry.card)
-            |> List.map (fun (card, entryList) ->
-                {
-                    amount = List.sumBy (Optic.get EntryOptic.amount) entryList
-                    card = card
-                })
+            |> List.map (fun (card, entryList) -> {
+                amount = List.sumBy (Optic.get EntryOptic.amount) entryList
+                card = card
+            })
             |> List.rev
 
-        let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =
-            async { return listToEntries cardInfoMap entries }
+        let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) = async {
+            return listToEntries cardInfoMap entries
+        }
 
     [<RequireQualifiedAccess>]
     module Analyser =
-        let create emptyData collect postprocess print =
-            {
-                emptyData = emptyData
-                collect = collect
-                postprocess = postprocess
-                print = print
-            }
+        let create emptyData collect postprocess print = {
+            emptyData = emptyData
+            collect = collect
+            postprocess = postprocess
+            print = print
+        }
 
     [<RequireQualifiedAccess>]
     module Prefs =
-        let create cardGroupMinSize cardGroupMaxSize numBase missingPercent setWithFoils : Prefs =
-            {
-                cardGroupMinSize = cardGroupMinSize
-                cardGroupMaxSize = cardGroupMaxSize
-                numBase = numBase
-                missingPercent = missingPercent
-                setWithFoils = setWithFoils
-            }
+        let create cardGroupMinSize cardGroupMaxSize numBase missingPercent setWithFoils : Prefs = {
+            cardGroupMinSize = cardGroupMinSize
+            cardGroupMaxSize = cardGroupMaxSize
+            numBase = numBase
+            missingPercent = missingPercent
+            setWithFoils = setWithFoils
+        }
 
     [<RequireQualifiedAccess>]
     module Rules =
-        let empty =
-            {
-                inSet = None
-                inLanguage = None
-                isFoil = None
-                isToken = None
-                typeContains = None
-                typeNotContains = None
-                limit = None
-                limitExact = None
-                rarity = None
-                colorIdentity = None
-            }
+        let empty = {
+            inSet = None
+            inLanguage = None
+            isFoil = None
+            isToken = None
+            typeContains = None
+            typeNotContains = None
+            limit = None
+            limitExact = None
+            rarity = None
+            colorIdentity = None
+        }
 
         let withInSet v rules = { rules with inSet = Some v }
         let withInLanguage v rules = { rules with inLanguage = Some v }

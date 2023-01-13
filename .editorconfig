@@ -10,8 +10,8 @@ trim_trailing_whitespace = true
 indent_size = 2
 
 [*.fs]
+fsharp_experimental_stroustrup_style = true
 fsharp_multiline_block_brackets_on_same_column = true
-fsharp_single_argument_web_mode = true
 indent_size = 4
 
 [*.xaml]

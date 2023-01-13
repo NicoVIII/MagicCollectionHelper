@@ -14,9 +14,7 @@ module Icons =
                 for clas in classes do
                     clas
             ]
-            Canvas.children [
-                Path.create [ Path.data data ]
-            ]
+            Canvas.children [ Path.create [ Path.data data ] ]
         ]
 
     let create = createWithClasses []

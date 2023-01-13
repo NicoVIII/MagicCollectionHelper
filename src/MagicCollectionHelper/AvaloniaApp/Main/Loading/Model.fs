@@ -6,13 +6,12 @@ type Loadable<'a> =
     | Import
     | Ready of 'a
 
-type State =
-    {
-        cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
-        dsEntries: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>
-        entries: Loadable<MagicCollectionHelper.Core.CardTypes.Entry list>
-        setData: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap>
-    }
+type State = {
+    cardInfo: Loadable<MagicCollectionHelper.Core.CardTypes.CardInfoMap>
+    dsEntries: Loadable<MagicCollectionHelper.Core.DomainTypes.DeckStatsCardEntry list>
+    entries: Loadable<MagicCollectionHelper.Core.CardTypes.Entry list>
+    setData: Loadable<MagicCollectionHelper.Core.DomainTypes.SetDataMap>
+}
 
 open Elmish
 
@@ -41,12 +40,11 @@ type Intent =
 
 module Model =
     let init () =
-        let state =
-            {
-                cardInfo = Prepare
-                dsEntries = Prepare
-                entries = Prepare
-                setData = Prepare
-            }
+        let state = {
+            cardInfo = Prepare
+            dsEntries = Prepare
+            entries = Prepare
+            setData = Prepare
+        }
 
         state, Cmd.ofMsg StartUp

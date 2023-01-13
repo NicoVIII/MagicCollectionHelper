@@ -19,23 +19,17 @@ let actionBar (infoMap: CardInfoMap) (entries: 'a list) (state: State) (dispatch
         ActionButton.create
             {
                 text = "Take inventory"
-                isEnabled =
-                    (not (
-                        infoMap.IsEmpty
-                        || entries.IsEmpty
-                        || state.viewMode = Loading
-                    ))
+                isEnabled = (not (infoMap.IsEmpty || entries.IsEmpty || state.viewMode = Loading))
                 action = (fun _ -> TakeInventory |> dispatch)
                 subPatch = Never
             }
     ]
 
-type LocCards =
-    {
-        location: InventoryLocation
-        amount: uint
-        cards: string seq
-    }
+type LocCards = {
+    location: InventoryLocation
+    amount: uint
+    cards: string seq
+}
 
 let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
     let amount = entry ^. AgedEntryWithInfoOptic.amount
@@ -43,17 +37,11 @@ let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
     let foil = entry ^. AgedEntryWithInfoOptic.foil
     let name = entry ^. AgedEntryWithInfoOptic.name
 
-    let langValue =
-        entry ^. AgedEntryWithInfoOptic.language
-        |> Language.unwrap
+    let langValue = entry ^. AgedEntryWithInfoOptic.language |> Language.unwrap
 
-    let numberValue =
-        entry ^. AgedEntryWithInfoOptic.number
-        |> CollectorNumber.unwrap
+    let numberValue = entry ^. AgedEntryWithInfoOptic.number |> CollectorNumber.unwrap
 
-    let setValue =
-        entry ^. AgedEntryWithInfoOptic.set
-        |> MagicSet.unwrap
+    let setValue = entry ^. AgedEntryWithInfoOptic.set |> MagicSet.unwrap
 
     let star = if foil then "★" else " "
     let old = amount = amountOld
@@ -86,28 +74,18 @@ let cardItem prefs (state: State) (entry: AgedEntryWithInfo) =
 
 let wrapLayer withBorder children =
     let stack =
-        StackPanel.create [
-            StackPanel.spacing 4.
-            StackPanel.children children
-        ]
-        :> IView
+        StackPanel.create [ StackPanel.spacing 4.; StackPanel.children children ] :> IView
 
     if withBorder then
-        Border.create [
-            Border.padding (8., 0.)
-            Border.child stack
-        ]
-        :> IView
+        Border.create [ Border.padding (8., 0.); Border.child stack ] :> IView
     else
         stack
 
 let renderEntryList prefs state entries =
-    wrapLayer
-        true
-        [
-            for entry in entries do
-                cardItem prefs state entry
-        ]
+    wrapLayer true [
+        for entry in entries do
+            cardItem prefs state entry
+    ]
 
 let rec renderEntryTree prefs state dispatch first tree =
     let renderEntryTree = renderEntryTree prefs state dispatch false
@@ -118,20 +96,18 @@ let rec renderEntryTree prefs state dispatch first tree =
     // If we have only one node, we skip it
     | Nodes [ (_, child) ] -> renderEntryTree child
     | Nodes nodes ->
-        wrapLayer
-            (not first)
-            [
-                for (name: string, child) in nodes do
-                    // We want to add the amount
-                    let amount = ExpanderTree.sumUpCards state.search child
-                    let name = $"{name} ({pN 0 amount})"
+        wrapLayer (not first) [
+            for (name: string, child) in nodes do
+                // We want to add the amount
+                let amount = ExpanderTree.sumUpCards state.search child
+                let name = $"{name} ({pN 0 amount})"
 
-                    Expander.create [
-                        Expander.header name
-                        Expander.isExpanded (amount > 0u)
-                        Expander.content (renderEntryTree child)
-                    ]
-            ]
+                Expander.create [
+                    Expander.header name
+                    Expander.isExpanded (amount > 0u)
+                    Expander.content (renderEntryTree child)
+                ]
+        ]
     | Leaf entries -> renderEntryList prefs state entries
 
 let renderEntryTreeForLocation prefs state dispatch (location: InventoryLocation) trees =
@@ -165,22 +141,14 @@ let content prefs (state: State) (dispatch: Dispatch) : IView =
     | Empty ->
         Border.create [
             Border.padding 10.
-            Border.child (
-                TextBlock.create [
-                    TextBlock.text "Press 'Take inventory' to start processing."
-                ]
-            )
+            Border.child (TextBlock.create [ TextBlock.text "Press 'Take inventory' to start processing." ])
         ]
         :> IView
     | Edit -> LocationEdit.render state dispatch
     | Loading ->
         Border.create [
             Border.padding 10.
-            Border.child (
-                TextBlock.create [
-                    TextBlock.text "Loading..."
-                ]
-            )
+            Border.child (TextBlock.create [ TextBlock.text "Loading..." ])
         ]
         :> IView
     | Location location ->
@@ -190,18 +158,13 @@ let content prefs (state: State) (dispatch: Dispatch) : IView =
         let inline pN p = Numbers.print prefs.numBase p
 
         let nameFromLocation map (location: InventoryLocation) =
-            let amount =
-                Map.find location map
-                |> ExpanderTree.sumUpCards state.search
-                |> pN 0
+            let amount = Map.find location map |> ExpanderTree.sumUpCards state.search |> pN 0
 
             match location with
             | Custom location -> $"{location.name} ({amount})"
             | Fallback -> $"Leftover ({amount})"
 
-        let current =
-            location
-            |> Option.defaultValue (locations |> List.head |> fst)
+        let current = location |> Option.defaultValue (locations |> List.head |> fst)
 
         TabView.renderFromList
             (nameFromLocation locationMap)
@@ -213,9 +176,6 @@ let content prefs (state: State) (dispatch: Dispatch) : IView =
 
 let render prefs (infoMap: CardInfoMap) entries (state: State) (dispatch: Dispatch) : IView =
     DockPanel.create [
-        DockPanel.children [
-            actionBar infoMap entries state dispatch
-            content prefs state dispatch
-        ]
+        DockPanel.children [ actionBar infoMap entries state dispatch; content prefs state dispatch ]
     ]
     :> IView

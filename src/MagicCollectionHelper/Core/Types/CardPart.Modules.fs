@@ -84,10 +84,7 @@ module CardPartTypesModules =
             | "10ED" -> "10E" // Tenth Edition
             | set -> set
 
-        let create =
-            (fun (s: string) -> s.ToUpper())
-            >> convertSetAbbrev
-            >> MagicSet
+        let create = (fun (s: string) -> s.ToUpper()) >> convertSetAbbrev >> MagicSet
 
         let unwrap (MagicSet v) = v
 
@@ -128,53 +125,48 @@ module CardPartTypesModules =
 
         // Four colors - shards of alara + div.
         let nonWhite = [ Blue; Black; Red; Green ] |> Set.ofList
-
         let nonBlue = [ Black; Red; Green; White ] |> Set.ofList
-
         let nonBlack = [ Red; Green; White; Blue ] |> Set.ofList
-
         let nonRed = [ Green; White; Blue; Black ] |> Set.ofList
-
         let nonGreen = [ White; Blue; Black; Red ] |> Set.ofList
 
         // Five colors
         let allColors = [ White; Blue; Black; Red; Green ] |> Set.ofList
 
-        let private sorted =
-            [
-                colorless
-                white
-                blue
-                black
-                red
-                green
-                azorius
-                dimir
-                rakdos
-                gruul
-                selesnya
-                orzhov
-                izzet
-                golgari
-                boros
-                simic
-                bant
-                esper
-                grixis
-                jund
-                naya
-                abzan
-                jeskai
-                sultai
-                mardu
-                temur
-                nonWhite
-                nonBlue
-                nonBlack
-                nonRed
-                nonGreen
-                allColors
-            ]
+        let private sorted = [
+            colorless
+            white
+            blue
+            black
+            red
+            green
+            azorius
+            dimir
+            rakdos
+            gruul
+            selesnya
+            orzhov
+            izzet
+            golgari
+            boros
+            simic
+            bant
+            esper
+            grixis
+            jund
+            naya
+            abzan
+            jeskai
+            sultai
+            mardu
+            temur
+            nonWhite
+            nonBlue
+            nonBlack
+            nonRed
+            nonGreen
+            allColors
+        ]
 
         let toString (ci: ColorIdentity) =
             match ci with

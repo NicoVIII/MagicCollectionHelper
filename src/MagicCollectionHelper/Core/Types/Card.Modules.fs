@@ -6,13 +6,12 @@ open SimpleOptics
 module CardTypesModules =
     [<RequireQualifiedAccess>]
     module Card =
-        let create foil language number set =
-            {
-                foil = foil
-                language = language
-                number = number
-                set = set
-            }
+        let create foil language number set = {
+            foil = foil
+            language = language
+            number = number
+            set = set
+        }
 
         let isExactSame (card1: Card) (card2: Card) =
             card1 ^. CardOptic.set = card2 ^. CardOptic.set
@@ -21,10 +20,7 @@ module CardTypesModules =
         let isToken (card: Card) =
             let setValue = card ^. CardOptic.set |> MagicSet.unwrap
 
-            [
-                String.length >> (=) 4
-                String.startsWith "T"
-            ]
+            [ String.length >> (=) 4; String.startsWith "T" ]
             |> List.forall (fun fnc -> fnc setValue)
 
     [<RequireQualifiedAccess>]
@@ -36,14 +32,7 @@ module CardTypesModules =
             cardList
             |> List.fold
                 (fun cardAmountMap card ->
-                    Map.change
-                        card
-                        (fun mapEntry ->
-                            mapEntry
-                            |> Option.defaultValue 0u
-                            |> (+) 1u
-                            |> Some)
-                        cardAmountMap)
+                    Map.change card (fun mapEntry -> mapEntry |> Option.defaultValue 0u |> (+) 1u |> Some) cardAmountMap)
                 Map.empty
             |> Map.toList
             |> List.map (fun (card, amount) -> { card = card; amount = amount })
@@ -107,9 +96,7 @@ module CardTypesModules =
         let determineCardAge oldList newList =
             // We first create a map
             let oldMap =
-                oldList
-                |> List.map (fun (entry: Entry) -> entry.card, entry)
-                |> Map.ofList
+                oldList |> List.map (fun (entry: Entry) -> entry.card, entry) |> Map.ofList
 
             newList
             |> List.map (fun (entry: Entry) ->

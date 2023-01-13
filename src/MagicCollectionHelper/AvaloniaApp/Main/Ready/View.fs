@@ -18,9 +18,7 @@ let renderCollectionView state dispatch =
     let dispatch = CollectionMsg >> dispatch
 
     let agedEntriesWithInfo =
-        entries
-        |> List.map (AgedEntryWithInfo.fromEntry cardInfo)
-        |> List.choose id
+        entries |> List.map (AgedEntryWithInfo.fromEntry cardInfo) |> List.choose id
 
     Components.Collection.View.render prefs dsEntries agedEntriesWithInfo state.collection dispatch
 
@@ -40,18 +38,13 @@ let createTab (header: string) (content: IView) =
             Border.child content
         ]
 
-    TabItem.create [
-        TabItem.fontSize 22.
-        TabItem.header header
-        TabItem.content content
-    ]
+    TabItem.create [ TabItem.fontSize 22.; TabItem.header header; TabItem.content content ]
 
-let createTabs state dispatch : IView list =
-    [
-        createTab "Collection" (renderCollectionView state dispatch)
-        createTab "Inventory" (renderInventoryView state dispatch)
-        createTab "Preferences" (PreferenceView.render state dispatch)
-    ]
+let createTabs state dispatch : IView list = [
+    createTab "Collection" (renderCollectionView state dispatch)
+    createTab "Inventory" (renderInventoryView state dispatch)
+    createTab "Preferences" (PreferenceView.render state dispatch)
+]
 
 let render (state: State) (dispatch: Dispatch) : IView =
     TabControl.create [
