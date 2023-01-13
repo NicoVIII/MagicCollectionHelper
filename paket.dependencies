@@ -3,10 +3,11 @@ source https://api.nuget.org/v3/index.json
 storage: none
 framework: auto-detect
 
+nuget FSharp.Core ~> 6.0
 nuget FSharp.Data
 nuget NicoVIII.TypedPersistence.Json prerelease
 nuget Avalonia.Diagnostics
-nuget Elmish
+nuget Elmish ~> 3.0
 nuget JaggerJo.Avalonia.FuncUI.DSL
 nuget JaggerJo.Avalonia.FuncUI.Elmish
 nuget Newtonsoft.Json
