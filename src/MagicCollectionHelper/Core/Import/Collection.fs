@@ -35,8 +35,9 @@ module Collection =
 
     let private searchImportFile () =
         Directory.EnumerateFiles "."
+        |> Seq.filter (Path.GetFileName >> (String.startsWith "collection"))
         |> Seq.sortDescending
-        |> Seq.tryFind (Path.GetFileName >> (String.startsWith "collection"))
+        |> Seq.tryHead
         // Convert to absolute path
         |> Option.map (Path.GetFullPath)
 
