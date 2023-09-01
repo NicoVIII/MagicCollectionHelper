@@ -6,6 +6,7 @@ open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.FuncUI
 open Avalonia.FuncUI.Elmish
 open Avalonia.FuncUI.Hosts
+open Avalonia.Themes.Fluent
 
 open MagicCollectionHelper.AvaloniaApp.Main
 
@@ -23,14 +24,13 @@ type MainWindow() as this =
 
         Program.mkProgram Model.init Update.perform View.render
         |> Program.withHost this
-        |> Program.run
+        |> Program.runWithAvaloniaSyncDispatch ()
 
 type App() =
     inherit Application()
 
     override this.Initialize() =
-        this.Styles.Load "avares://Avalonia.Themes.Default/DefaultTheme.xaml"
-        this.Styles.Load "avares://Avalonia.Themes.Default/Accents/BaseDark.xaml"
+        this.Styles.Add(FluentTheme())
         this.Styles.Load "avares://MagicCollectionHelper.AvaloniaApp/Styles.xaml"
 
     override this.OnFrameworkInitializationCompleted() =

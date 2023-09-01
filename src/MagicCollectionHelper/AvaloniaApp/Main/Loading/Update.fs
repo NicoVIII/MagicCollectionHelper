@@ -68,7 +68,7 @@ module Update =
         | LoadCollection ->
             let fnc = Persistence.DeckStatsCardEntry.loadAsync
 
-            let cmd = Cmd.OfAsync.perform fnc () SaveCollection
+            let cmd = Cmd.OfAsync.either fnc () SaveCollection AsyncError
 
             state, cmd, DoNothing
         | SaveCollection collection ->

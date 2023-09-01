@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/MagicCollectionHelper/AvaloniaApp/bin/Debug/net6.0/MagicCollectionHelper.AvaloniaApp.dll",
+            "program": "${workspaceFolder}/src/MagicCollectionHelper/AvaloniaApp/bin/Debug/net7.0/MagicCollectionHelper.AvaloniaApp.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

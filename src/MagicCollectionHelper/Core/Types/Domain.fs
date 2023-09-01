@@ -12,7 +12,7 @@ module DomainTypes =
         cardGroupMinSize: uint
         cardGroupMaxSize: uint
         numBase: NumBase
-        missingPercent: float
+        missingPercent: decimal
         setWithFoils: bool
     }
 

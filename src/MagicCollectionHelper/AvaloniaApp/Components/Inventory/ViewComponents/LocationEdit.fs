@@ -15,12 +15,7 @@ module LocationEdit =
     let inSetLine _ _ inSet =
         let valueControl =
             TextBlock.create [
-                TextBlock.text (
-                    inSet
-                    |> Set.map MagicSet.unwrap
-                    |> Set.toList
-                    |> String.concat ","
-                )
+                TextBlock.text (inSet |> Set.map MagicSet.unwrap |> Set.toList |> String.concat ",")
             ]
 
         ("In set", valueControl)
@@ -30,15 +25,11 @@ module LocationEdit =
             CheckBox.create [
                 CheckBox.isChecked (Some isFoil)
                 CheckBox.onChecked (
-                    (fun _ ->
-                        UpdateLocationRules(locationName, Rules.withIsFoil true)
-                        |> dispatch),
+                    (fun _ -> UpdateLocationRules(locationName, Rules.withIsFoil true) |> dispatch),
                     OnChangeOf locationName
                 )
                 CheckBox.onUnchecked (
-                    (fun _ ->
-                        UpdateLocationRules(locationName, Rules.withIsFoil false)
-                        |> dispatch),
+                    (fun _ -> UpdateLocationRules(locationName, Rules.withIsFoil false) |> dispatch),
                     OnChangeOf locationName
                 )
             ]
@@ -59,13 +50,11 @@ module LocationEdit =
     let limitLine dispatch locationName (limit: uint) =
         let valueControl =
             NumericUpDown.create [
-                NumericUpDown.maximum 99999.
-                NumericUpDown.minimum 1.
-                NumericUpDown.value (float limit)
+                NumericUpDown.maximum 99999
+                NumericUpDown.minimum 1
+                NumericUpDown.value limit
                 NumericUpDown.onValueChanged (
-                    (fun v ->
-                        UpdateLocationRules(locationName, Rules.withLimit (uint v))
-                        |> dispatch),
+                    (fun v -> UpdateLocationRules(locationName, Rules.withLimit (uint v.Value)) |> dispatch),
                     OnChangeOf locationName
                 )
             ]
@@ -75,12 +64,12 @@ module LocationEdit =
     let limitExactLine dispatch locationName (limitExact: uint) =
         let valueControl =
             NumericUpDown.create [
-                NumericUpDown.maximum 99999.
-                NumericUpDown.minimum 1.
-                NumericUpDown.value (float limitExact)
+                NumericUpDown.maximum 99999
+                NumericUpDown.minimum 1
+                NumericUpDown.value limitExact
                 NumericUpDown.onValueChanged (
                     (fun v ->
-                        UpdateLocationRules(locationName, Rules.withLimitExact (uint v))
+                        UpdateLocationRules(locationName, Rules.withLimitExact (uint v.Value))
                         |> dispatch),
                     OnChangeOf locationName
                 )

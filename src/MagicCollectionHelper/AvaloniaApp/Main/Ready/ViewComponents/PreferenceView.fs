@@ -14,8 +14,8 @@ open MagicCollectionHelper.AvaloniaApp.Main.Ready
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 module PreferenceView =
-    let numInputProps dispatch (min, max) lens prefs =
-        let currentValue = Optic.get lens prefs |> double
+    let numInputProps dispatch (min: uint, max: uint) lens prefs =
+        let currentValue: uint = Optic.get lens prefs
 
         [
             NumericUpDown.margin (10., 0., 0., 0.)
@@ -24,6 +24,8 @@ module PreferenceView =
             NumericUpDown.value currentValue
             NumericUpDown.onValueChanged (
                 (fun newValue ->
+                    let newValue = uint newValue.Value
+
                     if currentValue <> newValue then
                         newValue |> Optic.set lens |> ChangePrefs |> dispatch),
                 OnChangeOf currentValue
@@ -37,9 +39,6 @@ module PreferenceView =
         let numInputProps = numInputProps dispatch
 
         let prefs = Optic.get StateOptic.prefs state
-
-        // Lens to convert uintToDouble
-        let uintDoubleLens = Lens(double, (fun _ v -> uint v))
 
         Border.create [
             Border.padding 10.
@@ -61,16 +60,10 @@ module PreferenceView =
                                     StackPanel.column 1
                                     StackPanel.orientation Orientation.Horizontal
                                     StackPanel.children [
-                                        numInputProps
-                                            (0., 200.)
-                                            (Optic.compose PrefsOptic.cardGroupMinSize uintDoubleLens)
-                                            prefs
+                                        numInputProps (0u, 200u) PrefsOptic.cardGroupMinSize prefs
                                         |> NumericUpDown.create
 
-                                        numInputProps
-                                            (0., 200.)
-                                            (Optic.compose PrefsOptic.cardGroupMaxSize uintDoubleLens)
-                                            prefs
+                                        numInputProps (0u, 200u) PrefsOptic.cardGroupMaxSize prefs
                                         |> NumericUpDown.create
                                     ]
                                 ]
@@ -78,14 +71,14 @@ module PreferenceView =
                                 NumericUpDown.create [
                                     NumericUpDown.column 1
                                     NumericUpDown.margin (10., 0., 0., 0.)
-                                    NumericUpDown.maximum 100.
-                                    NumericUpDown.minimum 0.
+                                    NumericUpDown.maximum 100
+                                    NumericUpDown.minimum 0
                                     NumericUpDown.row 2
-                                    NumericUpDown.value (prefs.missingPercent * 100.)
+                                    NumericUpDown.value (uint (prefs.missingPercent * 100m))
                                     NumericUpDown.onValueChanged (
                                         (fun value ->
-                                            if value <> prefs.missingPercent * 100. then
-                                                value / 100.
+                                            if value.Value <> decimal (prefs.missingPercent * 100m) then
+                                                value.Value / 100m
                                                 |> Optic.set PrefsOptic.missingPercent
                                                 |> ChangePrefs
                                                 |> dispatch),
