@@ -3,7 +3,6 @@ namespace MagicCollectionHelper.Core.Import
 [<RequireQualifiedAccess>]
 module CardData =
     open FsHttp
-    open FsHttp.DslCE
     open FSharp.Json
     open Newtonsoft.Json.Linq
     open System
@@ -14,7 +13,9 @@ module CardData =
     type BulkDataDefaultCardsResponse = { download_uri: string }
 
     let fetchBulkData (filePath: string) = async {
-        let! rawResponse = httpAsync { GET "https://api.scryfall.com/bulk-data/default_cards" }
+        let! rawResponse =
+            http { GET "https://api.scryfall.com/bulk-data/default_cards" }
+            |> Request.sendAsync
 
         let response =
             Response.toText rawResponse |> Json.deserialize<BulkDataDefaultCardsResponse>
