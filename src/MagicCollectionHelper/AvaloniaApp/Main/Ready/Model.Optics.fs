@@ -33,9 +33,6 @@ module StateOptic =
     let collection =
         Lens((fun (state: State) -> state.collection), (fun (state: State) value -> { state with collection = value }))
 
-    let inventory =
-        Lens((fun (state: State) -> state.inventory), (fun (state: State) value -> { state with inventory = value }))
-
     let analyseText = Optic.compose common CommonStateOptic.analyseText
 
     let cardInfo = Optic.compose common CommonStateOptic.cardInfo

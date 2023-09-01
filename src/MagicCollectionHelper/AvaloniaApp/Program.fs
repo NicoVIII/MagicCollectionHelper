@@ -22,9 +22,7 @@ type MainWindow() as this =
         base.Width <- 800.0
         base.Height <- 600.0
 
-        Program.mkProgram Model.init Update.perform View.render
-        |> Program.withHost this
-        |> Program.runWithAvaloniaSyncDispatch ()
+        this.Content <- Main.view
 
 type App() =
     inherit Application()
@@ -32,6 +30,7 @@ type App() =
     override this.Initialize() =
         this.Styles.Add(FluentTheme())
         this.Styles.Load "avares://MagicCollectionHelper.AvaloniaApp/Styles.xaml"
+        this.RequestedThemeVariant <- Styling.ThemeVariant.Dark
 
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with

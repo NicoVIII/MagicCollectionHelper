@@ -59,16 +59,3 @@ module Update =
             (state, iCmd |> Cmd.map CollectionMsg)
             |> Tuple2.mapFst (Optic.set StateOptic.collection iState)
             |> processCollectionIntent intent
-        | InventoryMsg msg ->
-            let cardInfo = Optic.get StateOptic.cardInfo state
-            let setData = Optic.get StateOptic.setData state
-            let entries = Optic.get StateOptic.entries state
-            let prefs = Optic.get StateOptic.prefs state
-
-            let (iState, iCmd) =
-                Inventory.Update.perform prefs setData cardInfo entries msg state.inventory
-
-            let state = Optic.set StateOptic.inventory iState state
-            let cmd = iCmd |> Cmd.map InventoryMsg
-
-            state, cmd

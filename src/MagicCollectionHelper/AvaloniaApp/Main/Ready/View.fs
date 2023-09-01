@@ -22,13 +22,12 @@ let renderCollectionView state dispatch =
 
     Components.Collection.View.render prefs dsEntries agedEntriesWithInfo state.collection dispatch
 
-let renderInventoryView state dispatch =
+let renderInventoryView state =
     let prefs = state ^. StateOptic.prefs
     let entries = state ^. StateOptic.entries
     let setData = state ^. StateOptic.setData
     let cardInfo = state ^. StateOptic.cardInfo
-    let dispatch = InventoryMsg >> dispatch
-    Components.Inventory.View.render prefs cardInfo entries state.inventory dispatch
+    Components.Inventory.Component.view prefs setData cardInfo entries
 
 let createTab (header: string) (content: IView) =
     let content =
@@ -42,7 +41,7 @@ let createTab (header: string) (content: IView) =
 
 let createTabs state dispatch : IView list = [
     createTab "Collection" (renderCollectionView state dispatch)
-    createTab "Inventory" (renderInventoryView state dispatch)
+    createTab "Inventory" (renderInventoryView state)
     createTab "Preferences" (PreferenceView.render state dispatch)
 ]
 

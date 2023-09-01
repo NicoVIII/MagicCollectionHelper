@@ -45,3 +45,13 @@ module View =
         match state with
         | Loading state -> Loading.View.render state (LoadingMsg >> dispatch)
         | Ready state -> Ready.View.render state (ReadyMsg >> dispatch)
+
+[<AutoOpen>]
+module Main =
+    open Avalonia.FuncUI
+    open Avalonia.FuncUI.Elmish.ElmishHook
+
+    let view =
+        Component(fun ctx ->
+            let (state, dispatch) = ctx.useElmish (Model.init, Update.perform, id)
+            View.render state dispatch)
