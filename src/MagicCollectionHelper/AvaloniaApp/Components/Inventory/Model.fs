@@ -7,16 +7,16 @@ type ViewMode =
     | Location of MagicCollectionHelper.Core.DomainTypes.InventoryLocation option
 
 type LocationWithHungTree =
-    MagicCollectionHelper.Core.DomainTypes.InventoryLocation * MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.CardTypes.AgedEntryWithInfo list>
+    MagicCollectionHelper.Core.DomainTypes.InventoryLocation *
+    MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.CardTypes.AgedEntryWithInfo list>
 
-type State =
-    {
-        filteredInventory: LocationWithHungTree list
-        inventory: MagicCollectionHelper.Core.DomainTypes.LocationWithCards
-        locations: MagicCollectionHelper.Core.DomainTypes.CustomLocation list
-        search: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search
-        viewMode: ViewMode
-    }
+type State = {
+    filteredInventory: LocationWithHungTree list
+    inventory: MagicCollectionHelper.Core.DomainTypes.LocationWithCards
+    locations: MagicCollectionHelper.Core.DomainTypes.CustomLocation list
+    search: MagicCollectionHelper.AvaloniaApp.DomainTypes.Search
+    viewMode: ViewMode
+}
 
 open MagicCollectionHelper.Core
 
@@ -38,6 +38,7 @@ module Model =
         // Test Locations
         let locations =
             Persistence.CustomLocation.load ()
+            |> Async.RunSynchronously // TODO: not sure if this is good
             |> Option.defaultValue []
 
         {

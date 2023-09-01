@@ -10,24 +10,29 @@ open MagicCollectionHelper.AvaloniaApp.Components.Collection
 
 let perform (msg: Msg) (state: State) =
     match msg with
+    | AsyncError x -> raise x
     | ImportCollection ->
         let state = Optic.set StateOptic.loadInProgress true state
 
         let fnc = Collection.importAsync
 
-        let cmd = Cmd.OfAsync.perform fnc () WriteCollection
+        let cmd = Cmd.OfAsync.either fnc () WriteCollection AsyncError
 
         state, cmd, DoNothing
     | WriteCollection import ->
         let entryList = Option.map List.ofSeq import
 
-        match entryList with
-        | Some entryList ->
-            // And now we save the file
-            Persistence.DeckStatsCardEntry.save entryList
-        | None -> ()
+        let cmd =
+            Cmd.batch [
+                Cmd.ofMsg (SaveCollection entryList)
+                match entryList with
+                | Some entryList ->
+                    // And now we save the file
+                    Cmd.OfAsync.attempt Persistence.DeckStatsCardEntry.save entryList AsyncError
+                | None -> ()
+            ]
 
-        state, Cmd.ofMsg (SaveCollection entryList), DoNothing
+        state, cmd, DoNothing
     | SaveCollection import ->
         let state = Optic.set StateOptic.loadInProgress false state
 

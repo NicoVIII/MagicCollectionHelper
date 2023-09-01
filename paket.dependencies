@@ -5,7 +5,7 @@ framework: auto-detect
 
 nuget FSharp.Core ~> 7.0
 nuget FSharp.Data
-nuget NicoVIII.TypedPersistence.Json 0.6.0-alpha.8
+nuget NicoVIII.TypedPersistence.Json prerelease
 nuget Avalonia.Desktop
 nuget Avalonia.Diagnostics
 nuget Avalonia.FuncUI

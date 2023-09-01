@@ -10,6 +10,7 @@ type State =
     }
 
 type Msg =
+    | AsyncError of exn
     | ImportCollection
     | WriteCollection of DeckStatsCardEntry seq option
     | SaveCollection of DeckStatsCardEntry list option

@@ -12,5 +12,3 @@ module DeckStatsCardEntry =
     let save = save<DeckStatsCardEntry list> filePath
 
     let load () = load<DeckStatsCardEntry list> filePath
-
-    let loadAsync () = async { return load () }

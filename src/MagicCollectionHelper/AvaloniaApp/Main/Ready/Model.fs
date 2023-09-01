@@ -64,6 +64,7 @@ module Model =
 
         let prefs =
             Persistence.Prefs.load ()
+            |> Async.RunSynchronously
             |> Option.defaultValue (Prefs.create 20u 40u Decimal Config.missingPercentDefault false)
 
         let state = {

@@ -39,9 +39,9 @@ module Update =
 
             state, Cmd.ofMsg SavePrefs
         | SavePrefs ->
-            state ^. StateOptic.prefs |> Persistence.Prefs.save
+            let prefs = Optic.get StateOptic.prefs state
 
-            state, Cmd.none
+            state, Cmd.OfAsync.attempt Persistence.Prefs.save prefs AsyncError
         | SaveEntries entries ->
             let oldEntries =
                 state
