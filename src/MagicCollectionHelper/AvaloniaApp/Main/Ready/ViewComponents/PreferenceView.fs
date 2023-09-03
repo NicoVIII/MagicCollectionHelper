@@ -48,7 +48,7 @@ module PreferenceView =
                     StackPanel.children [
                         TextBlock.create [
                             TextBlock.text
-                                "All numbers in the preferences use base ten, indipendent of the number base setting."
+                                "All numbers in the preferences use base ten, independent of the number base setting."
                         ]
                         Grid.create [
                             Grid.columnDefinitions "Auto, Auto"
