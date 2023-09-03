@@ -107,7 +107,7 @@ module CardData =
 
         let fileOutdated =
             fileExists
-            && File.GetCreationTime filePath > (File.GetCreationTime filePath).AddHours Config.maxAgeCardDataHours
+            && DateTime.Now > (File.GetCreationTime filePath).AddHours Config.maxAgeCardDataHours
 
         // If we have a file we use it only for a week
         if not fileExists || fileOutdated then
