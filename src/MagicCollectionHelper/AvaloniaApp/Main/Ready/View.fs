@@ -1,9 +1,9 @@
 module MagicCollectionHelper.AvaloniaApp.Main.Ready.View
 
 open Avalonia.Controls
-
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
+open Elmish
 
 open MagicCollectionHelper.Core
 
@@ -22,12 +22,11 @@ let renderCollectionView state dispatch =
 
     Components.Collection.View.render prefs dsEntries agedEntriesWithInfo state.collection dispatch
 
-let renderInventoryView state =
+let renderInventoryView state dispatch =
     let prefs = state ^. StateOptic.prefs
     let entries = state ^. StateOptic.entries
-    let setData = state ^. StateOptic.setData
     let cardInfo = state ^. StateOptic.cardInfo
-    Components.Inventory.Component.view prefs setData cardInfo entries
+    Components.Inventory.View.render prefs cardInfo entries state.inventory (InventoryMsg >> dispatch)
 
 let createTab (header: string) (content: IView) =
     let content =
@@ -41,7 +40,7 @@ let createTab (header: string) (content: IView) =
 
 let createTabs state dispatch : IView list = [
     createTab "Collection" (renderCollectionView state dispatch)
-    createTab "Inventory" (renderInventoryView state)
+    createTab "Inventory" (renderInventoryView state dispatch)
     createTab "Preferences" (PreferenceView.render state dispatch)
 ]
 

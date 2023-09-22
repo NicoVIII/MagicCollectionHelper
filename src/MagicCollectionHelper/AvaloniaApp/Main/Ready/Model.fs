@@ -21,6 +21,7 @@ type CommonState = {
 type State = {
     common: CommonState
     collection: MagicCollectionHelper.AvaloniaApp.Components.Collection.State
+    inventory: MagicCollectionHelper.AvaloniaApp.Components.Inventory.State
 }
 
 open MagicCollectionHelper.Core
@@ -35,6 +36,7 @@ type Msg =
     | SavePrefs
     | SaveEntries of Entry list
     | CollectionMsg of Collection.Msg
+    | InventoryMsg of Inventory.Msg
 
 type Dispatch = Msg -> unit
 
@@ -80,4 +82,5 @@ module Model =
     let init cardInfo dsEntries entries setData = {
         common = initCommon cardInfo dsEntries entries setData
         collection = Collection.Model.init ()
+        inventory = Inventory.Model.init ()
     }
