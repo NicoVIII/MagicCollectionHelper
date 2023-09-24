@@ -13,8 +13,6 @@ It is typically called something like `collection_000000_0000_0000000000.csv`.
 When starting the program and importing your collection, the program will take the newest csv inside
 of the folder of the executable.
 
-Imported collections are not saved for now. You have to import again after every start.
-
 You can adjust your preferences in the preferences tab of the application.
 
 For now this project is very experimental. But maybe if I have the time and motivation I will
@@ -27,7 +25,7 @@ collection and check, if everything is where it should be.
 You need to include set (often set number) and language so that the cards can be used in the inventory.
 
 To define your location you have to use a json for now, but you will be able to define them inside of
-the application soon.
+the application eventually.
 
 The json is located at ~/.local/share/magic-collection-helper/locations.json
 (Windows: %appdata%/magic-collection-helper/save/locations.json) and looks like this for me atm:
