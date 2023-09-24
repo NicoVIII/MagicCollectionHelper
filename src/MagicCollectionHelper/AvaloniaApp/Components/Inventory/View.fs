@@ -97,17 +97,47 @@ module View =
         // If we have only one node, we skip it
         | Nodes [ (_, child) ] -> renderEntryTree child
         | Nodes nodes ->
+            let listWithPreAndSuccessor =
+                List.windowed 3 [ None; yield! List.map Some nodes; None ]
+                |> List.map (function
+                    | [ predecessor; Some item; successor ] -> predecessor, item, successor
+                    | _ -> failwith "This should never happen")
+
+            let mutable firstNotToRender = true
+
             wrapLayer (not first) [
-                for (name: string, child) in nodes do
+                for (predecessor, (name, child), successor) in listWithPreAndSuccessor do
                     // We want to add the amount
                     let amount = ExpanderTree.sumUpCards state.search child
-                    let name = $"{name} ({pN 0 amount})"
+                    let name = $"%s{name} ({pN 0 amount})"
 
-                    Expander.create [
-                        Expander.header name
-                        Expander.isExpanded (amount > 0u)
-                        Expander.content (renderEntryTree child)
-                    ]
+                    // We don't render it, if itself, the predecessor and the successor are empty
+                    let render =
+                        amount > 0u
+                        || match predecessor with
+                           | Some predecessor -> ExpanderTree.sumUpCards state.search (snd predecessor) > 0u
+                           | None -> false
+                        || match successor with
+                           | Some successor -> ExpanderTree.sumUpCards state.search (snd successor) > 0u
+                           | None -> false
+
+                    if render then
+                        firstNotToRender <- true
+
+                        Expander.create [
+                            Expander.header name
+                            Expander.isExpanded (amount > 0u)
+                            Expander.content (renderEntryTree child)
+                        ]
+                    else if firstNotToRender then
+                        firstNotToRender <- false
+
+                        Expander.create [
+                            Expander.header "... (0)"
+                            Expander.isExpanded false
+                            Expander.content
+                                "Not shown because there are no results for the current search in this cluster"
+                        ]
             ]
         | Leaf entries -> renderEntryList prefs state entries
 
