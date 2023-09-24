@@ -210,3 +210,28 @@ module View =
             DockPanel.children [ actionBar infoMap entries state dispatch; content prefs state dispatch ]
         ]
         :> IView
+
+    open Avalonia.FuncUI
+    open Avalonia.FuncUI.Elmish.ElmishHook
+
+    type Input = {
+        cardInfo: IReadable<CardInfoMap>
+        entries: IReadable<AgedEntry list>
+        prefs: IReadable<Prefs>
+        setData: IReadable<SetDataMap>
+    }
+
+    let view input =
+        Component.create (
+            "inventory-tab",
+            fun ctx ->
+                let prefs = ctx.usePassedRead input.prefs
+                let infoMap = ctx.usePassedRead input.cardInfo
+                let entries = ctx.usePassedRead input.entries
+                let setData = ctx.usePassedRead input.setData
+
+                let state, dispatch =
+                    ctx.useElmish (Model.init, Update.perform prefs setData infoMap entries)
+
+                render prefs.Current infoMap.Current entries.Current state dispatch
+        )

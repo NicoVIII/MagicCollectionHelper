@@ -204,3 +204,31 @@ module View =
             ]
         ]
         :> IView
+
+    open Avalonia.FuncUI
+    open Avalonia.FuncUI.Elmish.ElmishHook
+
+    type Input = {
+        cardInfo: IReadable<CardInfoMap>
+        dsEntries: IWritable<DeckStatsCardEntry list>
+        entries: IReadable<AgedEntry list>
+        prefs: IReadable<Prefs>
+    }
+
+    let view input =
+        Component.create (
+            "collection-tab",
+            fun ctx ->
+                let cardInfo = ctx.usePassedRead input.cardInfo
+                let dsEntries = ctx.usePassed input.dsEntries
+                let entries = ctx.usePassedRead input.entries
+                let prefs = ctx.usePassedRead input.prefs
+
+                let agedInfo =
+                    entries.Current
+                    |> List.map (AgedEntryWithInfo.fromEntry cardInfo.Current)
+                    |> List.choose id
+
+                let state, dispatch = ctx.useElmish (Model.init, Update.perform dsEntries)
+                render prefs.Current dsEntries.Current agedInfo state dispatch
+        )

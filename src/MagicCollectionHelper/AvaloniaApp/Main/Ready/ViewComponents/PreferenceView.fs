@@ -10,12 +10,11 @@ open Avalonia.FuncUI.Types
 
 open MagicCollectionHelper.Core
 
-open MagicCollectionHelper.AvaloniaApp.Main.Ready
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 module PreferenceView =
-    let numInputProps dispatch (min: uint, max: uint) lens prefs =
-        let currentValue: uint = Optic.get lens prefs
+    let numInputProps (prefs: IWritable<Prefs>) (min: uint, max: uint) lens =
+        let currentValue: uint = Optic.get lens prefs.Current
 
         [
             NumericUpDown.margin (10., 0., 0., 0.)
@@ -27,7 +26,7 @@ module PreferenceView =
                     let newValue = uint newValue.Value
 
                     if currentValue <> newValue then
-                        newValue |> Optic.set lens |> ChangePrefs |> dispatch),
+                        Optic.set lens newValue prefs.Current |> prefs.Set),
                 OnChangeOf currentValue
             )
         ]
@@ -35,10 +34,8 @@ module PreferenceView =
     let withTableProps row column attrList =
         [ NumericUpDown.column column; NumericUpDown.row row ] |> List.append attrList
 
-    let render (state: State) (dispatch: Dispatch) : IView =
-        let numInputProps = numInputProps dispatch
-
-        let prefs = Optic.get StateOptic.prefs state
+    let render (prefs: IWritable<Prefs>) : IView =
+        let numInputProps = numInputProps prefs
 
         Border.create [
             Border.padding 10.
@@ -60,11 +57,8 @@ module PreferenceView =
                                     StackPanel.column 1
                                     StackPanel.orientation Orientation.Horizontal
                                     StackPanel.children [
-                                        numInputProps (0u, 200u) PrefsOptic.cardGroupMinSize prefs
-                                        |> NumericUpDown.create
-
-                                        numInputProps (0u, 200u) PrefsOptic.cardGroupMaxSize prefs
-                                        |> NumericUpDown.create
+                                        numInputProps (0u, 200u) PrefsOptic.cardGroupMinSize |> NumericUpDown.create
+                                        numInputProps (0u, 200u) PrefsOptic.cardGroupMaxSize |> NumericUpDown.create
                                     ]
                                 ]
                                 label 2 "Missing from percent"
@@ -74,15 +68,13 @@ module PreferenceView =
                                     NumericUpDown.maximum 100
                                     NumericUpDown.minimum 0
                                     NumericUpDown.row 2
-                                    NumericUpDown.value (uint (prefs.missingPercent * 100m))
+                                    NumericUpDown.value (uint (prefs.Current.missingPercent * 100m))
                                     NumericUpDown.onValueChanged (
                                         (fun value ->
-                                            if value.Value <> decimal (prefs.missingPercent * 100m) then
-                                                value.Value / 100m
-                                                |> Optic.set PrefsOptic.missingPercent
-                                                |> ChangePrefs
-                                                |> dispatch),
-                                        OnChangeOf prefs.missingPercent
+                                            if value.Value <> decimal (prefs.Current.missingPercent * 100m) then
+                                                Optic.set PrefsOptic.missingPercent (value.Value / 100m) prefs.Current
+                                                |> prefs.Set),
+                                        OnChangeOf prefs.Current.missingPercent
                                     )
                                 ]
                                 label 4 "Number base"
@@ -90,7 +82,7 @@ module PreferenceView =
                                     ComboBox.column 1
                                     ComboBox.row 4
                                     ComboBox.dataItems [ Decimal; Dozenal; Seximal ]
-                                    ComboBox.selectedItem prefs.numBase
+                                    ComboBox.selectedItem prefs.Current.numBase
                                     ComboBox.itemTemplate (
                                         DataTemplateView<NumBase>.create
                                             (fun numBase ->
@@ -98,23 +90,19 @@ module PreferenceView =
                                     )
                                     ComboBox.onSelectedItemChanged (fun v ->
                                         if v <> null then
-                                            v
-                                            |> unbox<NumBase>
-                                            |> Optic.set PrefsOptic.numBase
-                                            |> ChangePrefs
-                                            |> dispatch)
+                                            Optic.set PrefsOptic.numBase (unbox<NumBase> v) prefs.Current |> prefs.Set)
                                 ]
                             ]
                         ]
                         CheckBox.create [
                             CheckBox.content "Include Foils in Set Analyser"
-                            CheckBox.isChecked prefs.setWithFoils
+                            CheckBox.isChecked prefs.Current.setWithFoils
                             CheckBox.onChecked (
-                                (fun _ -> (Optic.set PrefsOptic.setWithFoils true) |> ChangePrefs |> dispatch),
+                                (fun _ -> Optic.set PrefsOptic.setWithFoils true prefs.Current |> prefs.Set),
                                 Never
                             )
                             CheckBox.onUnchecked (
-                                (fun _ -> (Optic.set PrefsOptic.setWithFoils false) |> ChangePrefs |> dispatch),
+                                (fun _ -> Optic.set PrefsOptic.setWithFoils false prefs.Current |> prefs.Set),
                                 Never
                             )
                         ]
@@ -123,3 +111,12 @@ module PreferenceView =
             )
         ]
         :> IView
+
+    let view prefs =
+        Component.create (
+            "preference-view",
+            fun (ctx) ->
+                let prefs = ctx.usePassed prefs
+
+                render prefs
+        )

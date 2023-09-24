@@ -9,54 +9,63 @@ open MagicCollectionHelper.Core
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
 
-let renderCollectionView state dispatch =
-    let prefs = state ^. StateOptic.prefs
-    let cardInfo = state ^. StateOptic.cardInfo
-    let dsEntries = state ^. StateOptic.dsEntries
-    let entries = state ^. StateOptic.entries
-    let dispatch = CollectionMsg >> dispatch
+open Avalonia.FuncUI
 
-    let agedEntriesWithInfo =
-        entries |> List.map (AgedEntryWithInfo.fromEntry cardInfo) |> List.choose id
+type State = {
+    cardInfo: IReadable<CardInfoMap>
+    dsEntries: IWritable<DeckStatsCardEntry list>
+    entries: IReadable<AgedEntry list>
+    prefs: IWritable<Prefs>
+    setData: IReadable<SetDataMap>
+}
 
-    Components.Collection.View.render prefs dsEntries agedEntriesWithInfo state.collection dispatch
+let renderCollectionView state : IView =
+    Components.Collection.View.view
+        {
+            cardInfo = state.cardInfo
+            dsEntries = state.dsEntries
+            entries = state.entries
+            prefs = state.prefs
+        }
 
-let renderInventoryView state dispatch =
-    let prefs = state ^. StateOptic.prefs
-    let entries = state ^. StateOptic.entries
-    let cardInfo = state ^. StateOptic.cardInfo
-    Components.Inventory.View.render prefs cardInfo entries state.inventory (InventoryMsg >> dispatch)
+let renderInventoryView state : IView =
+    Components.Inventory.View.view
+        {
+            cardInfo = state.cardInfo
+            entries = state.entries
+            prefs = state.prefs
+            setData = state.setData
+        }
 
-let createTab (header: string) (content: IView) =
+let createTab (header: string) content =
     let content =
         Border.create [
             Border.borderThickness (0., 1., 0., 0.)
             Border.borderBrush Config.lineColor
-            Border.child content
+            Border.child (content: IView)
         ]
 
     TabItem.create [ TabItem.fontSize 22.; TabItem.header header; TabItem.content content ]
 
-let createTabs state dispatch : IView list = [
-    createTab "Collection" (renderCollectionView state dispatch)
-    createTab "Inventory" (renderInventoryView state dispatch)
-    createTab "Preferences" (PreferenceView.render state dispatch)
+let createTabs state : IView list = [
+    createTab "Collection" (renderCollectionView state)
+    createTab "Inventory" (renderInventoryView state)
+    createTab "Preferences" (PreferenceView.render state.prefs)
 ]
 
-let render (state: State) (dispatch: Dispatch) : IView =
+let render (state: State) : IView =
     TabControl.create [
         TabControl.tabStripPlacement Dock.Top // Change this property to tell the app where to show the tab bar
-        TabControl.viewItems (createTabs state dispatch)
+        TabControl.viewItems (createTabs state)
     ]
     :> IView
 
-open Avalonia.FuncUI
-open Avalonia.FuncUI.Elmish.ElmishHook
 
 type Input = {
     cardInfo: IReadable<CardInfoMap>
-    dsEntries: IReadable<DeckStatsCardEntry list>
-    entries: IReadable<Entry list>
+    dsEntries: IWritable<DeckStatsCardEntry list>
+    entries: IReadable<AgedEntry list>
+    prefs: IWritable<Prefs>
     setData: IReadable<SetDataMap>
 }
 
@@ -64,16 +73,13 @@ let view input =
     Component.create (
         "ReadyView",
         fun (ctx) ->
-            let cardInfo = ctx.usePassedRead input.cardInfo
-            let dsEntries = ctx.usePassedRead input.dsEntries
-            let entries = ctx.usePassedRead input.entries
-            let setData = ctx.usePassedRead input.setData
+            let state: State = {
+                cardInfo = ctx.usePassedRead input.cardInfo
+                dsEntries = ctx.usePassed input.dsEntries
+                entries = ctx.usePassedRead input.entries
+                prefs = ctx.usePassed input.prefs
+                setData = ctx.usePassedRead input.setData
+            }
 
-            let state, dispatch =
-                ctx.useElmish (
-                    Model.init cardInfo.Current dsEntries.Current entries.Current setData.Current,
-                    Update.perform
-                )
-
-            render state dispatch
+            render state
     )

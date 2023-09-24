@@ -2,17 +2,17 @@ module MagicCollectionHelper.AvaloniaApp.Components.Inventory.Update
 
 open Elmish
 open SimpleOptics
-
+open Avalonia.FuncUI
 open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 let perform
-    (prefs: Prefs)
-    (setData: SetDataMap)
-    (infoMap: CardInfoMap)
-    (entries: OldAmountable<Entry> list)
+    (prefs: IReadable<Prefs>)
+    (setData: IReadable<SetDataMap>)
+    (infoMap: IReadable<CardInfoMap>)
+    (entries: IReadable<AgedEntry list>)
     (msg: Msg)
     state
     =
@@ -20,6 +20,10 @@ let perform
     | AsyncError error -> raise error
     | ChangeState map -> map state, Cmd.none
     | TakeInventory ->
+        let setData = setData.Current
+        let infoMap = infoMap.Current
+        let entries = entries.Current
+
         let state = state |> (Optic.set StateOptic.viewMode Loading)
 
         let fnc () =
@@ -29,6 +33,9 @@ let perform
 
         state, cmd
     | FilterInventory inventory ->
+        let prefs = prefs.Current
+        let infoMap = infoMap.Current
+
         let minSize = prefs.cardGroupMinSize |> int
         let maxSize = prefs.cardGroupMaxSize |> int
 

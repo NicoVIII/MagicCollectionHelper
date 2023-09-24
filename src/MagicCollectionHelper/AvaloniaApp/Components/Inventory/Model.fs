@@ -34,11 +34,13 @@ type Msg =
 type Dispatch = Msg -> unit
 
 module Model =
-    let init () : State =
+    open Elmish
+
+    let init () : State * Cmd<'a> =
         // Test Locations
         let locations =
             Persistence.CustomLocation.load ()
-            |> Async.RunSynchronously // TODO: not sure if this is good
+            |> Async.RunSynchronously // TODO: Move to loading step or implement loading for inventory step
             |> Option.defaultValue []
 
         {
@@ -47,4 +49,5 @@ module Model =
             locations = locations
             search = { text = ""; old = None }
             viewMode = Empty
-        }
+        },
+        Cmd.none

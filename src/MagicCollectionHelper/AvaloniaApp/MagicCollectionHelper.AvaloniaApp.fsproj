@@ -38,9 +38,6 @@
     <Compile Include="Components/Inventory/View.fs" />
 
     <!-- Mainview Ready -->
-    <Compile Include="Main/Ready/Model.fs" />
-    <Compile Include="Main/Ready/Model.Optics.fs" />
-    <Compile Include="Main/Ready/Update.fs" />
     <Compile Include="Main/Ready/ViewComponents/PreferenceView.fs" />
     <Compile Include="Main/Ready/View.fs" />
 
