@@ -3,7 +3,6 @@ module MagicCollectionHelper.AvaloniaApp.Main.Ready.View
 open Avalonia.Controls
 open Avalonia.FuncUI.DSL
 open Avalonia.FuncUI.Types
-open Elmish
 
 open MagicCollectionHelper.Core
 
@@ -50,3 +49,31 @@ let render (state: State) (dispatch: Dispatch) : IView =
         TabControl.viewItems (createTabs state dispatch)
     ]
     :> IView
+
+open Avalonia.FuncUI
+open Avalonia.FuncUI.Elmish.ElmishHook
+
+type Input = {
+    cardInfo: IReadable<CardInfoMap>
+    dsEntries: IReadable<DeckStatsCardEntry list>
+    entries: IReadable<Entry list>
+    setData: IReadable<SetDataMap>
+}
+
+let view input =
+    Component.create (
+        "ReadyView",
+        fun (ctx) ->
+            let cardInfo = ctx.usePassedRead input.cardInfo
+            let dsEntries = ctx.usePassedRead input.dsEntries
+            let entries = ctx.usePassedRead input.entries
+            let setData = ctx.usePassedRead input.setData
+
+            let state, dispatch =
+                ctx.useElmish (
+                    Model.init cardInfo.Current dsEntries.Current entries.Current setData.Current,
+                    Update.perform
+                )
+
+            render state dispatch
+    )

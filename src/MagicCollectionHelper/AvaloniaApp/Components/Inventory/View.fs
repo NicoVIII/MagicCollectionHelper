@@ -11,7 +11,7 @@ open MagicCollectionHelper.Core
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory
 open MagicCollectionHelper.AvaloniaApp.Components.Inventory.ViewComponents
-open MagicCollectionHelper.AvaloniaApp.Elements
+open MagicCollectionHelper.AvaloniaApp.ViewComponent
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
 module View =

@@ -14,7 +14,7 @@ open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp
 open MagicCollectionHelper.AvaloniaApp.Components.Collection
-open MagicCollectionHelper.AvaloniaApp.Elements
+open MagicCollectionHelper.AvaloniaApp.ViewComponent
 
 module View =
     let buttonBar (state: State) (dispatch: Dispatch) : IView =

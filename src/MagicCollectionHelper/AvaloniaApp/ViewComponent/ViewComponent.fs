@@ -1,4 +1,4 @@
-namespace MagicCollectionHelper.AvaloniaApp.Elements
+namespace MagicCollectionHelper.AvaloniaApp.ViewComponent
 
 open Avalonia.Controls
 open Avalonia.Controls.Primitives

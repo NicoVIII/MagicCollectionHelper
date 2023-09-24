@@ -79,8 +79,12 @@ module Model =
 
         state
 
-    let init cardInfo dsEntries entries setData = {
-        common = initCommon cardInfo dsEntries entries setData
-        collection = Collection.Model.init ()
-        inventory = Inventory.Model.init ()
-    }
+    open Elmish
+
+    let init cardInfo dsEntries entries setData () =
+        {
+            common = initCommon cardInfo dsEntries entries setData
+            collection = Collection.Model.init ()
+            inventory = Inventory.Model.init ()
+        },
+        Cmd.none

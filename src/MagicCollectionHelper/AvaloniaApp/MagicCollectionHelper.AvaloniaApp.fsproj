@@ -20,8 +20,8 @@
 
     <Compile Include="ViewHelper.fs" />
 
-    <!-- Elements -->
-    <Compile Include="Elements/Elements.fs" />
+    <!-- Components for views -->
+    <Compile Include="ViewComponent/ViewComponent.fs" />
 
     <!-- Collection component -->
     <Compile Include="Components/Collection/Model.fs" />
@@ -37,12 +37,6 @@
     <Compile Include="Components/Inventory/ViewComponents/SearchBar.fs" />
     <Compile Include="Components/Inventory/View.fs" />
 
-    <!-- Mainview Loading -->
-    <Compile Include="Main/Loading/Model.fs" />
-    <Compile Include="Main/Loading/Model.Optics.fs" />
-    <Compile Include="Main/Loading/Update.fs" />
-    <Compile Include="Main/Loading/View.fs" />
-
     <!-- Mainview Ready -->
     <Compile Include="Main/Ready/Model.fs" />
     <Compile Include="Main/Ready/Model.Optics.fs" />
@@ -50,7 +44,7 @@
     <Compile Include="Main/Ready/ViewComponents/PreferenceView.fs" />
     <Compile Include="Main/Ready/View.fs" />
 
-    <Compile Include="Main.fs" />
+    <Compile Include="AppRoot.fs" />
 
     <Compile Include="Program.fs" />
   </ItemGroup>
