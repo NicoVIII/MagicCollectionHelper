@@ -16,9 +16,9 @@ module Inventory =
             fitsRule rules.inSet (Set.contains set)
 
         let fitsInLanguageRule cardWithInfo rules =
-            let language = cardWithInfo ^. CardWithInfoOptic.language
+            let cardLang = cardWithInfo ^. CardWithInfoOptic.language
 
-            fitsRule rules.inLanguage (fun language -> language = language)
+            fitsRule rules.inLanguage (fun lang -> lang = cardLang)
 
         let fitsIsFoil cardWithInfo rules =
             let foil = cardWithInfo ^. CardWithInfoOptic.foil
