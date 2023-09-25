@@ -76,8 +76,6 @@ module DomainTypesModules =
             cardGroupMinSize = cardGroupMinSize
             cardGroupMaxSize = cardGroupMaxSize
             numBase = numBase
-            missingPercent = missingPercent
-            setWithFoils = setWithFoils
         }
 
     [<RequireQualifiedAccess>]

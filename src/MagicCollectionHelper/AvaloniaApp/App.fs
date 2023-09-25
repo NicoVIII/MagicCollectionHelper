@@ -48,7 +48,7 @@ module App =
     let createTabs state : IView list = [
         createTab "Collection" (renderCollectionView state)
         createTab "Inventory" (renderInventoryView state)
-        createTab "Preferences" (Tab.Preference.render state.prefs)
+        createTab "Preferences" (Tab.Preference.create state.prefs)
     ]
 
     let render (state: State) : IView =
