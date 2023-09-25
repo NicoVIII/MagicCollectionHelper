@@ -37,13 +37,15 @@
     <Compile Include="Components/Inventory/ViewComponents/SearchBar.fs" />
     <Compile Include="Components/Inventory/View.fs" />
 
-    <!-- Mainview Ready -->
-    <Compile Include="Main/Ready/ViewComponents/PreferenceView.fs" />
-    <Compile Include="Main/Ready/View.fs" />
+    <!-- Tabs -->
+    <Compile Include="Tab/Preference.fs" />
 
-    <Compile Include="AppRoot.fs" />
+    <Compile Include="App.fs" />
 
-    <Compile Include="Program.fs" />
+    <!-- Loads necessary data for the app initially -->
+    <Compile Include="Loading.fs" />
+
+    <Compile Include="EntryPoint.fs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove=".template.config\**" />

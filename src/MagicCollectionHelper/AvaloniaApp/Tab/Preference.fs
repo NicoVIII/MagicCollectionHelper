@@ -1,4 +1,4 @@
-namespace MagicCollectionHelper.AvaloniaApp.Main.Ready.ViewComponents
+namespace MagicCollectionHelper.AvaloniaApp.Tab
 
 open Avalonia.Controls
 open Avalonia.Layout
@@ -12,7 +12,8 @@ open MagicCollectionHelper.Core
 
 open MagicCollectionHelper.AvaloniaApp.ViewHelper
 
-module PreferenceView =
+[<RequireQualifiedAccess>]
+module Preference =
     let numInputProps (prefs: IWritable<Prefs>) (min: uint, max: uint) lens =
         let currentValue: uint = Optic.get lens prefs.Current
 

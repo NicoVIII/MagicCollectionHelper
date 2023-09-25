@@ -9,9 +9,7 @@ module DomainTypeModules =
     module Search =
         let fits (search: Search) (entry: AgedEntryWithInfo) =
             let amount = entry ^. AgedEntryWithInfoOptic.amount
-
             let amountOld = entry ^. AgedEntryWithInfoOptic.amountOld
-
             let name = entry ^. AgedEntryWithInfoOptic.name
 
             let fitOld () =
