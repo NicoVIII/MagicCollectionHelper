@@ -3,7 +3,7 @@ source https://api.nuget.org/v3/index.json
 storage: none
 framework: auto-detect
 
-nuget FSharp.Core ~> 7.0
+nuget FSharp.Core ~> 8.0
 nuget FSharp.Data
 nuget NicoVIII.TypedPersistence.Json prerelease
 nuget Avalonia.Desktop
