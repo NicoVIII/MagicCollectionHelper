@@ -109,7 +109,8 @@ let perform
                             match sortBy with
                             | ByCmc -> entry ^. AgedEntryWithInfoOptic.cmc |> sprintf "CmC %i"
                             | BySet -> entry ^. AgedEntryWithInfoOptic.set |> MagicSet.unwrap |> sprintf "Set %s"
-                            | ByColorIdentity -> entry ^. AgedEntryWithInfoOptic.colorIdentity |> ColorIdentity.toString
+                            | ByColorIdentity ->
+                                entry ^. AgedEntryWithInfoOptic.colorIdentity |> ColorIdentity.toString
                             | ByName -> (entry ^. AgedEntryWithInfoOptic.name).Substring(0, 1)
                             | ByCollectorNumber -> entry ^. AgedEntryWithInfoOptic.number |> CollectorNumber.unwrap
                             | ByLanguage langList ->

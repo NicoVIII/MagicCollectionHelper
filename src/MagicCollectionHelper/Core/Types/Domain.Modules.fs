@@ -57,9 +57,8 @@ module DomainTypesModules =
             })
             |> List.rev
 
-        let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) = async {
-            return listToEntries cardInfoMap entries
-        }
+        let listToEntriesAsync cardInfoMap (entries: DeckStatsCardEntry list) =
+            async { return listToEntries cardInfoMap entries }
 
     [<RequireQualifiedAccess>]
     module Analyser =

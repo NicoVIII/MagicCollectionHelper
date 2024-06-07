@@ -12,16 +12,17 @@ module CardData =
 
     type BulkDataDefaultCardsResponse = { download_uri: string }
 
-    let fetchBulkData (filePath: string) = async {
-        let! rawResponse =
-            http { GET "https://api.scryfall.com/bulk-data/default_cards" }
-            |> Request.sendAsync
+    let fetchBulkData (filePath: string) =
+        async {
+            let! rawResponse =
+                http { GET "https://api.scryfall.com/bulk-data/default_cards" }
+                |> Request.sendAsync
 
-        let response =
-            Response.toText rawResponse |> Json.deserialize<BulkDataDefaultCardsResponse>
+            let response =
+                Response.toText rawResponse |> Json.deserialize<BulkDataDefaultCardsResponse>
 
-        return! downloadFile response.download_uri filePath
-    }
+            return! downloadFile response.download_uri filePath
+        }
 
     let private tokenToColorSet (jToken: JToken) =
         jToken.Children()
@@ -115,11 +116,12 @@ module CardData =
         else
             filePath |> FileExists
 
-    let importFile (filePath: string) = async {
-        return
-            File.ReadLines(filePath)
-            |> Seq.map (lineToInfo)
-            |> Seq.filter (fun l -> l.IsSome)
-            |> Seq.map (fun l -> l.Value)
-            |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
-    }
+    let importFile (filePath: string) =
+        async {
+            return
+                File.ReadLines(filePath)
+                |> Seq.map (lineToInfo)
+                |> Seq.filter (fun l -> l.IsSome)
+                |> Seq.map (fun l -> l.Value)
+                |> Seq.fold (fun map info -> Map.add (info.set, info.collectorNumber) info map) Map.empty
+        }

@@ -70,9 +70,8 @@ module Preference =
                                         ComboBox.dataItems [ Decimal; Dozenal; Seximal ]
                                         ComboBox.selectedItem prefs.Current.numBase
                                         ComboBox.itemTemplate (
-                                            DataTemplateView<NumBase>.create
-                                                (fun numBase ->
-                                                    TextBlock.create [ TextBlock.text (NumBase.toString numBase) ])
+                                            DataTemplateView<NumBase>.create (fun numBase ->
+                                                TextBlock.create [ TextBlock.text (NumBase.toString numBase) ])
                                         )
                                         ComboBox.onSelectedItemChanged (fun v ->
                                             if v <> null then

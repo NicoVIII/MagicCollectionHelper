@@ -260,4 +260,5 @@ module Inventory =
             | Custom location -> List.findIndex (fun l -> location = l) locations)
 
     // Because this process can take some time, we provide an async version
-    let takeAsync setData infoMap locations entries = async { return take setData infoMap locations entries }
+    let takeAsync setData infoMap locations entries =
+        async { return take setData infoMap locations entries }

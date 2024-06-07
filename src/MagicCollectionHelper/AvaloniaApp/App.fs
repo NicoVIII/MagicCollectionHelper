@@ -18,22 +18,20 @@ module App =
     }
 
     let renderCollectionView state : IView =
-        Components.Collection.View.view
-            {
-                cardInfo = state.cardInfo
-                dsEntries = state.dsEntries
-                entries = state.entries
-                prefs = state.prefs
-            }
+        Components.Collection.View.view {
+            cardInfo = state.cardInfo
+            dsEntries = state.dsEntries
+            entries = state.entries
+            prefs = state.prefs
+        }
 
     let renderInventoryView state : IView =
-        Components.Inventory.View.view
-            {
-                cardInfo = state.cardInfo
-                entries = state.entries
-                prefs = state.prefs
-                setData = state.setData
-            }
+        Components.Inventory.View.view {
+            cardInfo = state.cardInfo
+            entries = state.entries
+            prefs = state.prefs
+            setData = state.setData
+        }
 
     let createTab (header: string) content =
         let content =

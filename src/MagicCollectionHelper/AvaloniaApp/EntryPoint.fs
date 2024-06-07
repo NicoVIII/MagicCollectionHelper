@@ -18,13 +18,14 @@ module AppRoot =
     }
 
     module Effect =
-        let recalculateEntries cardInfo dsEntries (entries: IWritable<AgedEntry list>) = async {
-            let! newEntries = DeckStatsCardEntry.listToEntriesAsync cardInfo dsEntries
+        let recalculateEntries cardInfo dsEntries (entries: IWritable<AgedEntry list>) =
+            async {
+                let! newEntries = DeckStatsCardEntry.listToEntriesAsync cardInfo dsEntries
 
-            let oldEntries = entries.Current |> List.map (fun agedEntry -> agedEntry.data)
+                let oldEntries = entries.Current |> List.map (fun agedEntry -> agedEntry.data)
 
-            AgedEntry.determineCardAge oldEntries newEntries |> entries.Set
-        }
+                AgedEntry.determineCardAge oldEntries newEntries |> entries.Set
+            }
 
     let setupEffects (ctx: IComponentContext) state =
         // Recalculate entries and save collection to file, when something changes
@@ -63,14 +64,13 @@ module AppRoot =
 
                 setupEffects ctx state
 
-                App.create
-                    {
-                        cardInfo = state.cardInfo
-                        dsEntries = state.dsEntries
-                        entries = state.entries
-                        prefs = state.prefs
-                        setData = state.setData
-                    }
+                App.create {
+                    cardInfo = state.cardInfo
+                    dsEntries = state.dsEntries
+                    entries = state.entries
+                    prefs = state.prefs
+                    setData = state.setData
+                }
             | None -> Loading.create initialState)
 
 type MainWindow() as this =

@@ -17,13 +17,12 @@ open MagicCollectionHelper.AvaloniaApp.ViewHelper
 module View =
     let actionBar (infoMap: CardInfoMap) (entries: 'a list) (state: State) (dispatch: Dispatch) =
         ActionButtonBar.create [
-            ActionButton.create
-                {
-                    text = "Take inventory"
-                    isEnabled = (not (infoMap.IsEmpty || entries.IsEmpty || state.viewMode = Loading))
-                    action = (fun _ -> TakeInventory |> dispatch)
-                    subPatch = Never
-                }
+            ActionButton.create {
+                text = "Take inventory"
+                isEnabled = (not (infoMap.IsEmpty || entries.IsEmpty || state.viewMode = Loading))
+                action = (fun _ -> TakeInventory |> dispatch)
+                subPatch = Never
+            }
         ]
 
     type LocCards = {

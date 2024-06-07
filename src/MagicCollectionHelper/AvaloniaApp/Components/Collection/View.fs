@@ -21,13 +21,12 @@ module View =
         let loadInProgress = Optic.get StateOptic.loadInProgress state
 
         ActionButtonBar.create [
-            ActionButton.create
-                {
-                    text = "Import collection"
-                    isEnabled = not loadInProgress
-                    action = (fun _ -> ImportCollection |> dispatch)
-                    subPatch = Never
-                }
+            ActionButton.create {
+                text = "Import collection"
+                isEnabled = not loadInProgress
+                action = (fun _ -> ImportCollection |> dispatch)
+                subPatch = Never
+            }
         ]
 
     let renderText prefs dsEntries agedEntriesWithInfo (state: State) (dispatch: Dispatch) : IView =

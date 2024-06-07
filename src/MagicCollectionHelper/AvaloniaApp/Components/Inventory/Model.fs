@@ -8,7 +8,10 @@ type ViewMode =
 
 type LocationWithHungTree =
     MagicCollectionHelper.Core.DomainTypes.InventoryLocation *
-    MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<string, MagicCollectionHelper.Core.CardTypes.AgedEntryWithInfo list>
+    MagicCollectionHelper.AvaloniaApp.ViewHelper.HungTree<
+        string,
+        MagicCollectionHelper.Core.CardTypes.AgedEntryWithInfo list
+     >
 
 type State = {
     filteredInventory: LocationWithHungTree list

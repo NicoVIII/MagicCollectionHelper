@@ -32,7 +32,10 @@ module CardTypesModules =
             cardList
             |> List.fold
                 (fun cardAmountMap card ->
-                    Map.change card (fun mapEntry -> mapEntry |> Option.defaultValue 0u |> (+) 1u |> Some) cardAmountMap)
+                    Map.change
+                        card
+                        (fun mapEntry -> mapEntry |> Option.defaultValue 0u |> (+) 1u |> Some)
+                        cardAmountMap)
                 Map.empty
             |> Map.toList
             |> List.map (fun (card, amount) -> { card = card; amount = amount })
@@ -135,7 +138,7 @@ module CardTypesModules =
                         (fun mapEntry ->
                             mapEntry
                             |> Option.defaultValue (0u, 0u)
-                            |> (fun (a, b) -> a + 1u, b + if card.data.old then 1u else 0u)
+                            |> (fun (a, b) -> a + 1u, b + (if card.data.old then 1u else 0u))
                             |> Some)
                         cardAmountMap)
                 Map.empty
