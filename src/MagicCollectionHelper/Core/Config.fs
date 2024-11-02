@@ -6,3 +6,4 @@ module Config =
     let dataFolderName = "magic-collection-helper"
     let missingPercentDefault = 0.8m
     let maxAgeCardDataHours = 24. * 7.
+    let userAgent = "MagicCollectionHelper"

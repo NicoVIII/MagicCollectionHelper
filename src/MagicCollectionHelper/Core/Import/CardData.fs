@@ -14,12 +14,27 @@ module CardData =
 
     let fetchBulkData (filePath: string) =
         async {
+            printfn "Fetching bulk data url from scryfall..."
+
             let! rawResponse =
-                http { GET "https://api.scryfall.com/bulk-data/default_cards" }
+                http {
+                    GET "https://api.scryfall.com/bulk-data/default_cards"
+                    Accept "application/json"
+                    UserAgent "MagicCollectionHelper"
+                }
                 |> Request.sendAsync
 
             let response =
-                Response.toText rawResponse |> Json.deserialize<BulkDataDefaultCardsResponse>
+                let text = Response.toText rawResponse
+
+                try
+                    Json.deserialize<BulkDataDefaultCardsResponse> text
+                with :? JsonDeserializationError as ex ->
+                    printfn "Failed to deserialize bulk data response: %s" ex.Message
+                    printfn "Response: %s" text
+                    failwith "Failed to deserialize bulk data response"
+
+            printfn "Got bulk data download url: %s" response.download_uri
 
             return! downloadFile response.download_uri filePath
         }
