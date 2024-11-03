@@ -82,6 +82,7 @@ module CardPartTypesModules =
             // Deckstats has strange abbreviations I fix here
             | "GU" -> "ULG" // Urza's Legacy
             | "10ED" -> "10E" // Tenth Edition
+            | "PLIST" -> "PLST" // The List
             | set -> set
 
         let create = (fun (s: string) -> s.ToUpper()) >> convertSetAbbrev >> MagicSet
