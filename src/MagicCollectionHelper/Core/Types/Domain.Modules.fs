@@ -1,6 +1,7 @@
 namespace MagicCollectionHelper.Core
 
 open SimpleOptics
+open System
 
 [<AutoOpen>]
 module DomainTypesModules =
@@ -17,18 +18,27 @@ module DomainTypesModules =
         let toEntry cardInfoMap (entry: DeckStatsCardEntry) =
             match entry.set, entry.language with
             | Some set, Some lang ->
-                match set, entry.number with
-                // Special case for "The List", because numbers differ between scryfall and deckstats
-                | MagicSet "PLST" as set, _
-                | set, None ->
-                    // We try to determine the number with name and set
+                let lookupByName set =
                     cardInfoMap
                     |> Map.tryFind (entry.name, set)
                     |> Option.map (fun info ->
                         Card.create entry.foil lang info.collectorNumber set
                         |> Entry.create entry.amount)
+
+                match set, entry.number with
+                // Special case for "The List", because older entrys can have different ids than scryfall
+                | MagicSet "PLST" as set, Some(CollectorNumber numberValue) when Int32.TryParse numberValue |> fst ->
+                    lookupByName set
+                | set, None ->
+                    // We try to determine the number with name and set
+                    lookupByName set
                 | set, Some number -> Card.create entry.foil lang number set |> Entry.create entry.amount |> Some
             | _ -> None // We need set and lang as minimum
+#if DEBUG
+            |> Option.orElseWith (fun () ->
+                printfn "Not enough info found for %A" entry
+                None)
+#endif
 
         let listToEntries cardInfoMap (entries: DeckStatsCardEntry list) =
             // We change the map to improve lookup perf

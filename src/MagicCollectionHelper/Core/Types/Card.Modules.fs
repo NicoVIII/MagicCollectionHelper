@@ -60,6 +60,11 @@ module CardTypesModules =
 
         let addInfo infoMap getSet getNumber data =
             Map.tryFind (getSet data, getNumber data) infoMap
+#if DEBUG
+            |> Option.orElseWith (fun () ->
+                printfn "No info found for %A" data
+                None)
+#endif
             |> Option.map (fun info -> create info data)
 
         let inline map mapper (wrapper: WithInfo<'a>) : WithInfo<'b> =
