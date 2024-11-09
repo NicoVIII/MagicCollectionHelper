@@ -15,17 +15,20 @@ module DomainTypesModules =
     [<RequireQualifiedAccess>]
     module DeckStatsCardEntry =
         let toEntry cardInfoMap (entry: DeckStatsCardEntry) =
-            match entry.set, entry.number, entry.language with
-            | Some set, Some number, Some lang ->
-                Card.create entry.foil lang number set |> Entry.create entry.amount |> Some
-            // We try to determine the number with name and set
-            | Some set, None, Some lang ->
-                cardInfoMap
-                |> Map.tryFind (entry.name, set)
-                |> Option.map (fun info ->
-                    Card.create entry.foil lang info.collectorNumber set
-                    |> Entry.create entry.amount)
-            | _ -> None
+            match entry.set, entry.language with
+            | Some set, Some lang ->
+                match set, entry.number with
+                // Special case for "The List", because numbers differ between scryfall and deckstats
+                | MagicSet "PLST" as set, _
+                | set, None ->
+                    // We try to determine the number with name and set
+                    cardInfoMap
+                    |> Map.tryFind (entry.name, set)
+                    |> Option.map (fun info ->
+                        Card.create entry.foil lang info.collectorNumber set
+                        |> Entry.create entry.amount)
+                | set, Some number -> Card.create entry.foil lang number set |> Entry.create entry.amount |> Some
+            | _ -> None // We need set and lang as minimum
 
         let listToEntries cardInfoMap (entries: DeckStatsCardEntry list) =
             // We change the map to improve lookup perf
